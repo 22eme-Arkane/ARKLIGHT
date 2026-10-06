@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.venv/
+__pycache__/
+*.log
+
+# données de l'utilisateur (scènes, images de fond, captures Bluetooth)
+scenes/
+captures/
+config.json
+
+# notes de recherche (résumés de manuels de fabricants) : gardées hors du dépôt public
+docs/recherche/
+
+# réglages locaux des outils
+.claude/

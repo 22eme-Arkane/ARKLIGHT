@@ -1,0 +1,97 @@
+{
+  "name": "arklight",
+  "version": "0.1.0-alpha.1",
+  "private": true,
+  "description": "ARKLIGHT — simulateur d'entraînement lumière (projecteurs, DMX, plan de feu). Logiciel libre GPL-3.0.",
+  "homepage": "https://github.com/22eme-Arkane/ARKLIGHT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/22eme-Arkane/ARKLIGHT.git"
+  },
+  "bugs": "https://github.com/22eme-Arkane/ARKLIGHT/issues",
+  "type": "module",
+  "main": "desktop/main.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "desktop": "electron .",
+    "dist": "electron-builder --win nsis --publish never",
+    "test": "node --test \"test/**/*.test.mjs\""
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "three": "^0.186.1",
+    "ws": "^8.22.0"
+  },
+  "author": "22eme ARKANE",
+  "license": "GPL-3.0-or-later",
+  "arklight": {
+    "updateRepo": "22eme-Arkane/ARKLIGHT"
+  },
+  "build": {
+    "appId": "com.arkane.arklight.pc",
+    "productName": "ARKLIGHT",
+    "copyright": "22eme ARKANE — logiciel libre GPL-3.0",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "desktop/**",
+      "server/**",
+      "shared/**",
+      "web/**",
+      "ble/*.py",
+      "package.json",
+      "LICENSE",
+      "!**/*.test.*"
+    ],
+    "asar": false,
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "ARKLIGHT",
+      "uninstallDisplayName": "ARKLIGHT",
+      "artifactName": "ARKLIGHT-Setup-${version}.${ext}",
+      "license": "LICENSE"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "22eme-Arkane",
+        "repo": "ARKLIGHT",
+        "releaseType": "prerelease"
+      }
+    ],
+    "extraResources": [
+      {
+        "from": "node_modules/three/examples/jsm",
+        "to": "app/node_modules/three/examples/jsm",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ]
+  },
+  "devDependencies": {
+    "electron": "^44.5.1",
+    "electron-builder": "^26.15.3"
+  },
+  "allowScripts": {
+    "electron@44.5.1": true
+  }
+}

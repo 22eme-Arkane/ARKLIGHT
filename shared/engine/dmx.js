@@ -14,7 +14,7 @@ import { directionFromDmx, programFromDmx, renderProgram } from './effects.js';
 
 export const EMITTER_FUNCTIONS = ['red', 'green', 'blue', 'white', 'amber', 'mint', 'lime', 'cyan', 'uv', 'ww', 'cw', 'magenta', 'yellow', 'indigo'];
 
-const DEFAULT_RANGES = {
+export const DEFAULT_RANGES = {
   cct: [2000, 10000],
   hue: [0, 360],
   tint: [-1, 1],
@@ -81,7 +81,8 @@ function slotValue(data, start, slot) {
   const range = def.range || DEFAULT_RANGES[slot.f];
   if (def.neutral !== undefined) {
     // zone neutre en bas de course (ex. ARRI : 0–10 = pas de correction), puis toute la plage au-dessus
-    if (n <= def.neutral) return def.neutralValue ?? 0;
+    // seuil arrondi dans la bibliothèque (10/255 noté 0,0392) : un demi-pas de tolérance
+    if (n <= def.neutral + 0.5 / 255) return def.neutralValue ?? 0;
     const k = (n - def.neutral) / (1 - def.neutral);
     const r = range || [0, 1];
     return r[0] + k * (r[1] - r[0]);
@@ -183,7 +184,11 @@ export function attributesToRgb(attrs, opts) {
   }
   if (attrs.hue !== undefined) {
     const white = attrs.cct !== undefined ? cctToRgb(attrs.cct, attrs.tint || 0) : whiteRgb;
-    return hsToRgb(attrs.hue, attrs.sat ?? 1, white);
+    const hsi = hsToRgb(attrs.hue, attrs.sat ?? 1, white);
+    // fondu Kelvin ↔ HSI (modes « CCT & HSI ») : 0 = blanc du canal Kelvin, 1 = couleur
+    if (attrs.crossfade === undefined || attrs.cct === undefined) return hsi;
+    const k = attrs.crossfade;
+    return [white[0] * (1 - k) + hsi[0] * k, white[1] * (1 - k) + hsi[1] * k, white[2] * (1 - k) + hsi[2] * k];
   }
   if (attrs.cct !== undefined) return cctToRgb(attrs.cct, attrs.tint || 0);
   if (attrs.x !== undefined && attrs.y !== undefined) return xyToRgb(attrs.x, attrs.y);

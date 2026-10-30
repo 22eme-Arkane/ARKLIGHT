@@ -35,7 +35,7 @@ export const SUPPORTS = {
     maxH: 3.4,
     load: 20,
     spread: 1.2,
-    look: 'combo',
+    look: 'junior',
     ref: 'Avenger A5034 (Roller 34)',
     confidence: 'à vérifier',
   },
@@ -50,6 +50,32 @@ export const SUPPORTS = {
     look: 'windup',
     ref: 'Manfrotto 087NW (valeurs typiques)',
     confidence: 'estimé',
+  },
+  'super-windup': {
+    name: 'Super Wind-Up (manivelle, roulant)',
+    short: 'Super Wind-Up',
+    spigot: '28 mm',
+    minH: 1.72,
+    maxH: 3.86,
+    load: 80,
+    spread: 1.5,
+    weight: 39,
+    look: 'superwindup',
+    ref: 'Manfrotto / Avenger 387XU (Panavision SB35HA4)',
+    confidence: 'vérifié (hauteurs, charge, poids) ; emprise estimée',
+  },
+  'long-john': {
+    name: 'Long John Silver (roulant, 28 mm)',
+    short: 'Long John',
+    spigot: '28 mm',
+    minH: 1.77,
+    maxH: 5.7,
+    load: 120,
+    spread: 1.9,
+    weight: 85,
+    look: 'longjohn',
+    ref: 'Avenger B7057FF (Matthews Long John Silver)',
+    confidence: 'vérifié (hauteurs, charge, poids) ; emprise estimée',
   },
   cstand: {
     name: 'C-stand (bras et rotule)',
@@ -102,6 +128,8 @@ export function resolveSupport(type, choice = 'auto', top = 0) {
     // posé au sol (ou presque), ou boîtier comme l'AsteraBox : pas de pied
     if (top < 0.6 || type.category === 'device') id = 'none';
     else if (top < 1.0) id = 'lowboy';
+    else if (top > 4.5 || w > 80) id = 'long-john';
+    else if (w > 60) id = 'super-windup';
     else if (w > 20 || top > 3.76) id = 'windup';
     else if (HEAVY_MOUNT.test(type.mount || '') || w > 9) id = top <= 2 && w <= 35 && !HEAVY_MOUNT.test(type.mount || '') ? 'stand-baby-5k' : 'stand-junior';
     else id = 'stand-1000';

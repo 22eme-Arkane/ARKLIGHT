@@ -1,0 +1,3084 @@
+{
+ "app": "ARKLIGHT",
+ "format": 2,
+ "name": "Catalogue « essai » & <tests>",
+ "environment": {
+  "floor": true,
+  "cyc": true,
+  "stands": true,
+  "labels": false,
+  "labelPatch": false,
+  "haze": 0.2,
+  "ambient": 0.04,
+  "exposure": 1
+ },
+ "fixtures": [
+  {
+   "id": "f-dome",
+   "type": "aputure.ls-600d-pro",
+   "name": "Dôme & grille",
+   "position": [
+    0,
+    2.2,
+    4
+   ],
+   "rotation": [
+    0,
+    3.141592653589793,
+    0
+   ],
+   "settings": {
+    "universe": 1,
+    "dmxAddress": 40,
+    "dmxMode": "m1",
+    "whitePoint": 5600,
+    "dimmingCurve": "linear",
+    "support": "auto",
+    "modifier": "dome-90",
+    "front": "lee-216",
+    "grid": "grid-40",
+    "gel": "lee-204",
+    "fixtureNumber": 101
+   },
+   "state": {
+    "power": true,
+    "battery": 100,
+    "charging": false,
+    "manual": {
+     "mode": "cct",
+     "intensity": 0.6,
+     "cct": 5600,
+     "tint": 0,
+     "hue": 0,
+     "sat": 1
+    }
+   }
+  },
+  {
+   "id": "f-chimera",
+   "type": "arri.skypanel-s60c",
+   "name": "Chimera <M> \"face\"",
+   "position": [
+    3,
+    2.5,
+    2
+   ],
+   "rotation": [
+    0.3,
+    -0.6,
+    0
+   ],
+   "settings": {
+    "universe": 2,
+    "dmxAddress": 100,
+    "dmxMode": "m1",
+    "whitePoint": 5600,
+    "dimmingCurve": "linear",
+    "support": "windup",
+    "modifier": "chimera-m",
+    "front": "none",
+    "gel": "lee-216",
+    "fixtureNumber": 102
+   },
+   "state": {
+    "power": true,
+    "battery": 100,
+    "charging": false,
+    "manual": {
+     "mode": "cct",
+     "intensity": 0.6,
+     "cct": 5600,
+     "tint": 0,
+     "hue": 0,
+     "sat": 1
+    }
+   }
+  },
+  {
+   "id": "f-down",
+   "type": "arri.m18",
+   "name": "M18 plongée",
+   "position": [
+    -3,
+    4.8,
+    2
+   ],
+   "rotation": [
+    1.5707963267948966,
+    0,
+    0
+   ],
+   "settings": {
+    "universe": 1,
+    "dmxAddress": 200,
+    "dmxMode": "hmi1",
+    "whitePoint": 5600,
+    "dimmingCurve": "linear",
+    "support": "long-john",
+    "zoom": 40,
+    "gel": "lee-201",
+    "grid": "grid-20",
+    "fixtureNumber": 103
+   },
+   "state": {
+    "power": true,
+    "battery": 100,
+    "charging": false,
+    "manual": {
+     "mode": "cct",
+     "intensity": 0.6,
+     "cct": 5600,
+     "tint": 0,
+     "hue": 0,
+     "sat": 1
+    }
+   }
+  },
+  {
+   "id": "f-off",
+   "type": "astera.titan",
+   "name": "Titan éteint",
+   "position": [
+    -2,
+    1.4,
+    -1
+   ],
+   "rotation": [
+    0,
+    0.4,
+    1.5707963267948966
+   ],
+   "settings": {
+    "universe": 1,
+    "dmxAddress": 300,
+    "dmxMode": "1",
+    "whitePoint": 5600,
+    "dimmingCurve": "linear",
+    "support": "hanging",
+    "inputSelect": "AUTO",
+    "dimmerCurve": "STANDARD",
+    "dmxFail": "HOLD",
+    "acFailure": "NO ACTION",
+    "runtime": 5,
+    "brightness": 100,
+    "crmxLinked": true,
+    "wired": false,
+    "radioPin": "0000",
+    "rfRegion": "EU",
+    "ax1Compat": false,
+    "setAddress": 0,
+    "setSize": 1,
+    "posInSet": 1,
+    "groupAddress": 1,
+    "standalone": {
+     "program": 0,
+     "intensity": 100,
+     "speed": 5,
+     "fade": 50,
+     "colors": [
+      {
+       "kind": "named",
+       "name": "RED"
+      },
+      {
+       "kind": "named",
+       "name": "GREEN"
+      },
+      {
+       "kind": "named",
+       "name": "BLUE"
+      },
+      {
+       "kind": "named",
+       "name": "5500K"
+      }
+     ]
+    }
+   },
+   "state": {
+    "power": false,
+    "battery": 100,
+    "charging": false,
+    "manual": {
+     "mode": "cct",
+     "intensity": 0.6,
+     "cct": 5600,
+     "tint": 0,
+     "hue": 0,
+     "sat": 1
+    }
+   }
+  },
+  {
+   "id": "f-bar",
+   "type": "astera.ax2-100",
+   "name": "Barre AX2",
+   "position": [
+    1.5,
+    0.3,
+    -2
+   ],
+   "rotation": [
+    -0.2,
+    0.8,
+    0
+   ],
+   "settings": {
+    "universe": 2,
+    "dmxAddress": 1,
+    "dmxMode": "1",
+    "whitePoint": 5600,
+    "dimmingCurve": "linear",
+    "support": "auto",
+    "inputSelect": "AUTO",
+    "dimmerCurve": "STANDARD",
+    "dmxFail": "HOLD",
+    "acFailure": "NO ACTION",
+    "runtime": 5,
+    "brightness": 100,
+    "crmxLinked": true,
+    "wired": false,
+    "radioPin": "0000",
+    "rfRegion": "EU",
+    "ax1Compat": false,
+    "setAddress": 0,
+    "setSize": 1,
+    "posInSet": 1,
+    "groupAddress": 1,
+    "standalone": {
+     "program": 0,
+     "intensity": 100,
+     "speed": 5,
+     "fade": 50,
+     "colors": [
+      {
+       "kind": "named",
+       "name": "RED"
+      },
+      {
+       "kind": "named",
+       "name": "GREEN"
+      },
+      {
+       "kind": "named",
+       "name": "BLUE"
+      },
+      {
+       "kind": "named",
+       "name": "5500K"
+      }
+     ]
+    },
+    "gel": "lee-106",
+    "fixtureNumber": 104
+   },
+   "state": {
+    "power": true,
+    "battery": 100,
+    "charging": false,
+    "manual": {
+     "mode": "cct",
+     "intensity": 0.6,
+     "cct": 5600,
+     "tint": 0,
+     "hue": 0,
+     "sat": 1
+    }
+   }
+  },
+  {
+   "id": "f-box",
+   "type": "astera.art7",
+   "name": "AsteraBox",
+   "position": [
+    4,
+    1,
+    -3
+   ],
+   "rotation": [
+    0,
+    0,
+    0
+   ],
+   "settings": {
+    "universe": 1,
+    "dmxAddress": 1,
+    "dmxMode": null,
+    "whitePoint": 5600,
+    "dimmingCurve": "linear",
+    "support": "none",
+    "crmxMode": "TX",
+    "rxLinked": false
+   },
+   "state": {
+    "power": true,
+    "battery": 100,
+    "charging": false,
+    "manual": {
+     "mode": "cct",
+     "intensity": 0.6,
+     "cct": 5600,
+     "tint": 0,
+     "hue": 0,
+     "sat": 1
+    }
+   }
+  },
+  {
+   "id": "f-bulb",
+   "type": "astera.nyx",
+   "name": "NYX sur pied",
+   "position": [
+    -4.5,
+    1.8,
+    0.5
+   ],
+   "rotation": [
+    0,
+    0,
+    0
+   ],
+   "settings": {
+    "universe": 1,
+    "dmxAddress": 400,
+    "dmxMode": "1",
+    "whitePoint": 5600,
+    "dimmingCurve": "linear",
+    "support": "stand-1000",
+    "inputSelect": "AUTO",
+    "dimmerCurve": "STANDARD",
+    "dmxFail": "HOLD",
+    "acFailure": "NO ACTION",
+    "runtime": 5,
+    "brightness": 100,
+    "crmxLinked": true,
+    "wired": false,
+    "radioPin": "0000",
+    "rfRegion": "EU",
+    "ax1Compat": false,
+    "setAddress": 0,
+    "setSize": 1,
+    "posInSet": 1,
+    "groupAddress": 1,
+    "standalone": {
+     "program": 0,
+     "intensity": 100,
+     "speed": 5,
+     "fade": 50,
+     "colors": [
+      {
+       "kind": "named",
+       "name": "RED"
+      },
+      {
+       "kind": "named",
+       "name": "GREEN"
+      },
+      {
+       "kind": "named",
+       "name": "BLUE"
+      },
+      {
+       "kind": "named",
+       "name": "5500K"
+      }
+     ]
+    },
+    "fixtureNumber": 105
+   },
+   "state": {
+    "power": true,
+    "battery": 100,
+    "charging": false,
+    "manual": {
+     "mode": "cct",
+     "intensity": 0.6,
+     "cct": 5600,
+     "tint": 0,
+     "hue": 0,
+     "sat": 1
+    }
+   }
+  },
+  {
+   "id": "f-hydra",
+   "type": "astera.hydrapanel",
+   "name": "Hydra « chimera »",
+   "position": [
+    2.2,
+    1.6,
+    0.4
+   ],
+   "rotation": [
+    0,
+    -2.4,
+    0
+   ],
+   "settings": {
+    "universe": 1,
+    "dmxAddress": 450,
+    "dmxMode": "1",
+    "whitePoint": 5600,
+    "dimmingCurve": "linear",
+    "support": "auto",
+    "inputSelect": "AUTO",
+    "dimmerCurve": "STANDARD",
+    "dmxFail": "HOLD",
+    "acFailure": "NO ACTION",
+    "runtime": 5,
+    "brightness": 100,
+    "crmxLinked": true,
+    "wired": false,
+    "radioPin": "0000",
+    "rfRegion": "EU",
+    "ax1Compat": false,
+    "setAddress": 0,
+    "setSize": 1,
+    "posInSet": 1,
+    "groupAddress": 1,
+    "standalone": {
+     "program": 0,
+     "intensity": 100,
+     "speed": 5,
+     "fade": 50,
+     "colors": [
+      {
+       "kind": "named",
+       "name": "RED"
+      },
+      {
+       "kind": "named",
+       "name": "GREEN"
+      },
+      {
+       "kind": "named",
+       "name": "BLUE"
+      },
+      {
+       "kind": "named",
+       "name": "5500K"
+      }
+     ]
+    },
+    "modifier": "chimera-panel",
+    "fixtureNumber": 106
+   },
+   "state": {
+    "power": true,
+    "battery": 100,
+    "charging": false,
+    "manual": {
+     "mode": "cct",
+     "intensity": 0.6,
+     "cct": 5600,
+     "tint": 0,
+     "hue": 0,
+     "sat": 1
+    }
+   }
+  },
+  {
+   "id": "f-baby",
+   "type": "mole.baby-1k",
+   "name": "Baby 1K",
+   "position": [
+    5.5,
+    2.9,
+    3.5
+   ],
+   "rotation": [
+    0.2,
+    0.9,
+    0
+   ],
+   "settings": {
+    "universe": 1,
+    "dmxAddress": 500,
+    "dmxMode": "dim1",
+    "whitePoint": 5600,
+    "dimmingCurve": "linear",
+    "support": "auto",
+    "zoom": 31,
+    "grid": "grid-60",
+    "fixtureNumber": 107
+   },
+   "state": {
+    "power": true,
+    "battery": 100,
+    "charging": false,
+    "manual": {
+     "mode": "cct",
+     "intensity": 0.6,
+     "cct": 5600,
+     "tint": 0,
+     "hue": 0,
+     "sat": 1
+    }
+   }
+  },
+  {
+   "id": "f-sky",
+   "type": "arri.skypanel-s360c",
+   "name": "S360 haut",
+   "position": [
+    -6,
+    5.2,
+    4.5
+   ],
+   "rotation": [
+    0.4,
+    -2.2,
+    0
+   ],
+   "settings": {
+    "universe": 3,
+    "dmxAddress": 1,
+    "dmxMode": "m1",
+    "whitePoint": 5600,
+    "dimmingCurve": "linear",
+    "support": "auto",
+    "fixtureNumber": 108
+   },
+   "state": {
+    "power": true,
+    "battery": 100,
+    "charging": false,
+    "manual": {
+     "mode": "cct",
+     "intensity": 0.6,
+     "cct": 5600,
+     "tint": 0,
+     "hue": 0,
+     "sat": 1
+    }
+   }
+  }
+ ],
+ "groups": [],
+ "objects": [
+  {
+   "id": "o-person-man",
+   "type": "person-man",
+   "name": "Homme",
+   "position": [
+    -14,
+    0,
+    -16
+   ],
+   "rotation": [
+    0,
+    0,
+    0
+   ],
+   "props": {
+    "pose": "pointing",
+    "height": 180,
+    "build": "man",
+    "skin": "#e0aa83",
+    "hair": "short",
+    "hairColor": "#2b1d14",
+    "top": "#3d4f6b",
+    "pants": "#2a2e35"
+   }
+  },
+  {
+   "id": "o-person-woman",
+   "type": "person-woman",
+   "name": "Femme",
+   "position": [
+    -10.9,
+    0,
+    -16
+   ],
+   "rotation": [
+    0,
+    0.6457718232379019,
+    0
+   ],
+   "props": {
+    "pose": "lying",
+    "height": 166,
+    "build": "woman",
+    "skin": "#f2cfb3",
+    "hair": "long",
+    "hairColor": "#5a3a22",
+    "top": "#8c3b4a",
+    "pants": "#2f3340"
+   }
+  },
+  {
+   "id": "o-person-child",
+   "type": "person-child",
+   "name": "Enfant",
+   "position": [
+    -7.8,
+    0,
+    -16
+   ],
+   "rotation": [
+    0,
+    1.2915436464758039,
+    0
+   ],
+   "props": {
+    "pose": "sitting",
+    "height": 110,
+    "build": "child",
+    "skin": "#b97b55",
+    "hair": "short",
+    "hairColor": "#2b1d14",
+    "top": "#d98c2b",
+    "pants": "#3b4a6b"
+   }
+  },
+  {
+   "id": "o-person-walking",
+   "type": "person-walking",
+   "name": "Marcheur",
+   "position": [
+    -4.699999999999999,
+    0,
+    -16
+   ],
+   "rotation": [
+    0,
+    1.9373154697137058,
+    0
+   ],
+   "props": {
+    "pose": "walking",
+    "height": 176,
+    "build": "man",
+    "skin": "#7d4f35",
+    "hair": "short",
+    "hairColor": "#2b1d14",
+    "top": "#5b6b3a",
+    "pants": "#2b2f36"
+   }
+  },
+  {
+   "id": "o-person-sitting",
+   "type": "person-sitting",
+   "name": "Assis",
+   "position": [
+    -1.5999999999999996,
+    0,
+    -16
+   ],
+   "rotation": [
+    0,
+    2.5830872929516078,
+    0
+   ],
+   "props": {
+    "pose": "sitting",
+    "height": 172,
+    "build": "woman",
+    "skin": "#e0aa83",
+    "hair": "long",
+    "hairColor": "#1e1612",
+    "top": "#2f6f73",
+    "pants": "#34302c"
+   }
+  },
+  {
+   "id": "o-person-lying",
+   "type": "person-lying",
+   "name": "Allongé",
+   "position": [
+    1.5,
+    0,
+    -16
+   ],
+   "rotation": [
+    0,
+    3.2288591161895095,
+    0
+   ],
+   "props": {
+    "pose": "lying",
+    "height": 178,
+    "build": "man",
+    "skin": "#f2cfb3",
+    "hair": "short",
+    "hairColor": "#8a6a3e",
+    "top": "#a33b2f",
+    "pants": "#2a2e35"
+   }
+  },
+  {
+   "id": "o-person-crossed",
+   "type": "person-crossed",
+   "name": "Bras croisés",
+   "position": [
+    4.600000000000001,
+    0,
+    -16
+   ],
+   "rotation": [
+    0,
+    3.8746309394274117,
+    0
+   ],
+   "props": {
+    "pose": "crossed",
+    "height": 182,
+    "build": "man",
+    "skin": "#4b2e21",
+    "hair": "bald",
+    "hairColor": "#2b1d14",
+    "top": "#26282c",
+    "pants": "#1f2125"
+   }
+  },
+  {
+   "id": "o-person-phone",
+   "type": "person-phone",
+   "name": "Au téléphone",
+   "position": [
+    7.699999999999999,
+    0,
+    -16
+   ],
+   "rotation": [
+    0,
+    4.520402762665314,
+    0
+   ],
+   "props": {
+    "pose": "phone",
+    "height": 168,
+    "build": "woman",
+    "skin": "#b97b55",
+    "hair": "long",
+    "hairColor": "#1a1310",
+    "top": "#c9b48a",
+    "pants": "#3a3f4a"
+   }
+  },
+  {
+   "id": "o-person-pointing",
+   "type": "person-pointing",
+   "name": "Montre",
+   "position": [
+    10.8,
+    0,
+    -16
+   ],
+   "rotation": [
+    0,
+    5.1661745859032155,
+    0
+   ],
+   "props": {
+    "pose": "pointing",
+    "height": 175,
+    "build": "man",
+    "skin": "#e0aa83",
+    "hair": "short",
+    "hairColor": "#2b1d14",
+    "top": "#7a7f88",
+    "pants": "#2a2e35"
+   }
+  },
+  {
+   "id": "o-person-handsup",
+   "type": "person-handsup",
+   "name": "Bras levés",
+   "position": [
+    13.900000000000002,
+    0,
+    -16
+   ],
+   "rotation": [
+    0,
+    5.811946409141117,
+    0
+   ],
+   "props": {
+    "pose": "handsup",
+    "height": 170,
+    "build": "woman",
+    "skin": "#f2cfb3",
+    "hair": "long",
+    "hairColor": "#c9a46a",
+    "top": "#e8e2d6",
+    "pants": "#4a5a7a"
+   }
+  },
+  {
+   "id": "o-dog",
+   "type": "dog",
+   "name": "Chien",
+   "position": [
+    -14,
+    0,
+    -19.4
+   ],
+   "rotation": [
+    0,
+    0.17453292519943295,
+    0
+   ],
+   "props": {
+    "color": "#c79a5f"
+   }
+  },
+  {
+   "id": "o-dog-small",
+   "type": "dog-small",
+   "name": "Petit chien",
+   "position": [
+    -10.9,
+    0,
+    -19.4
+   ],
+   "rotation": [
+    0,
+    0.8203047484373349,
+    0
+   ],
+   "props": {
+    "color": "#f1ece2"
+   }
+  },
+  {
+   "id": "o-cat",
+   "type": "cat",
+   "name": "Chat",
+   "position": [
+    -7.8,
+    0,
+    -19.4
+   ],
+   "rotation": [
+    0,
+    1.4660765716752369,
+    0
+   ],
+   "props": {
+    "color": "#6f6a66"
+   }
+  },
+  {
+   "id": "o-horse",
+   "type": "horse",
+   "name": "Cheval",
+   "position": [
+    -4.699999999999999,
+    0,
+    -19.4
+   ],
+   "rotation": [
+    0,
+    2.111848394913139,
+    0
+   ],
+   "props": {
+    "color": "#7a4a2a"
+   }
+  },
+  {
+   "id": "o-donkey",
+   "type": "donkey",
+   "name": "Âne",
+   "position": [
+    -1.5999999999999996,
+    0,
+    -19.4
+   ],
+   "rotation": [
+    0,
+    2.7576202181510405,
+    0
+   ],
+   "props": {
+    "color": "#8d8478"
+   }
+  },
+  {
+   "id": "o-cow",
+   "type": "cow",
+   "name": "Vache",
+   "position": [
+    1.5,
+    0,
+    -19.4
+   ],
+   "rotation": [
+    0,
+    3.4033920413889427,
+    0
+   ],
+   "props": {
+    "color": "#f2efe8"
+   }
+  },
+  {
+   "id": "o-sheep",
+   "type": "sheep",
+   "name": "Mouton",
+   "position": [
+    4.600000000000001,
+    0,
+    -19.4
+   ],
+   "rotation": [
+    0,
+    4.049163864626845,
+    0
+   ],
+   "props": {
+    "color": "#ece6d8"
+   }
+  },
+  {
+   "id": "o-goat",
+   "type": "goat",
+   "name": "Chèvre",
+   "position": [
+    7.699999999999999,
+    0,
+    -19.4
+   ],
+   "rotation": [
+    0,
+    4.694935687864747,
+    0
+   ],
+   "props": {
+    "color": "#d8cdb8"
+   }
+  },
+  {
+   "id": "o-pig",
+   "type": "pig",
+   "name": "Cochon",
+   "position": [
+    10.8,
+    0,
+    -19.4
+   ],
+   "rotation": [
+    0,
+    5.340707511102648,
+    0
+   ],
+   "props": {
+    "color": "#e8b4a6"
+   }
+  },
+  {
+   "id": "o-deer",
+   "type": "deer",
+   "name": "Cerf",
+   "position": [
+    13.900000000000002,
+    0,
+    -19.4
+   ],
+   "rotation": [
+    0,
+    5.98647933434055,
+    0
+   ],
+   "props": {
+    "color": "#8b5e3c"
+   }
+  },
+  {
+   "id": "o-chicken",
+   "type": "chicken",
+   "name": "Poule",
+   "position": [
+    -14,
+    0,
+    -22.8
+   ],
+   "rotation": [
+    0,
+    0.3490658503988659,
+    0
+   ],
+   "props": {
+    "color": "#a8643a"
+   }
+  },
+  {
+   "id": "o-duck",
+   "type": "duck",
+   "name": "Canard",
+   "position": [
+    -10.9,
+    0,
+    -22.8
+   ],
+   "rotation": [
+    0,
+    0.9948376736367679,
+    0
+   ],
+   "props": {
+    "color": "#e9e6dc"
+   }
+  },
+  {
+   "id": "o-pigeon",
+   "type": "pigeon",
+   "name": "Pigeon",
+   "position": [
+    -7.8,
+    0,
+    -22.8
+   ],
+   "rotation": [
+    0,
+    1.6406094968746698,
+    0
+   ],
+   "props": {
+    "color": "#7c8088"
+   }
+  },
+  {
+   "id": "o-car-city",
+   "type": "car-city",
+   "name": "Citadine",
+   "position": [
+    -4.699999999999999,
+    0,
+    -22.8
+   ],
+   "rotation": [
+    0,
+    2.2863813201125716,
+    0
+   ],
+   "props": {
+    "color": "#b8242c"
+   }
+  },
+  {
+   "id": "o-car-sedan",
+   "type": "car-sedan",
+   "name": "Berline",
+   "position": [
+    -1.5999999999999996,
+    0,
+    -22.8
+   ],
+   "rotation": [
+    0,
+    2.9321531433504737,
+    0
+   ],
+   "props": {
+    "color": "#2c3e5a"
+   }
+  },
+  {
+   "id": "o-car-suv",
+   "type": "car-suv",
+   "name": "SUV",
+   "position": [
+    1.5,
+    0,
+    -22.8
+   ],
+   "rotation": [
+    0,
+    3.5779249665883754,
+    0
+   ],
+   "props": {
+    "color": "#d8dadc"
+   }
+  },
+  {
+   "id": "o-car-pickup",
+   "type": "car-pickup",
+   "name": "Pick-up",
+   "position": [
+    4.600000000000001,
+    0,
+    -22.8
+   ],
+   "rotation": [
+    0,
+    4.223696789826278,
+    0
+   ],
+   "props": {
+    "color": "#3f4a3a"
+   }
+  },
+  {
+   "id": "o-van",
+   "type": "van",
+   "name": "Utilitaire",
+   "position": [
+    7.699999999999999,
+    0,
+    -22.8
+   ],
+   "rotation": [
+    0,
+    4.869468613064179,
+    0
+   ],
+   "props": {
+    "color": "#f4f4f2"
+   }
+  },
+  {
+   "id": "o-van-large",
+   "type": "van-large",
+   "name": "Fourgon",
+   "position": [
+    10.8,
+    0,
+    -22.8
+   ],
+   "rotation": [
+    0,
+    5.515240436302081,
+    0
+   ],
+   "props": {
+    "color": "#f4f4f2"
+   }
+  },
+  {
+   "id": "o-truck",
+   "type": "truck",
+   "name": "Camion",
+   "position": [
+    13.900000000000002,
+    0,
+    -22.8
+   ],
+   "rotation": [
+    0,
+    6.161012259539984,
+    0
+   ],
+   "props": {
+    "color": "#e9eaec"
+   }
+  },
+  {
+   "id": "o-generator",
+   "type": "generator",
+   "name": "Groupe",
+   "position": [
+    -14,
+    0,
+    -26.2
+   ],
+   "rotation": [
+    0,
+    0.5235987755982988,
+    0
+   ],
+   "props": {
+    "color": "#d9a21b"
+   }
+  },
+  {
+   "id": "o-caravan",
+   "type": "caravan",
+   "name": "Loge",
+   "position": [
+    -10.9,
+    0,
+    -26.2
+   ],
+   "rotation": [
+    0,
+    1.1693705988362009,
+    0
+   ],
+   "props": {
+    "color": "#efeeea"
+   }
+  },
+  {
+   "id": "o-motorbike",
+   "type": "motorbike",
+   "name": "Moto",
+   "position": [
+    -7.8,
+    0,
+    -26.2
+   ],
+   "rotation": [
+    0,
+    1.8151424220741028,
+    0
+   ],
+   "props": {
+    "color": "#1d1f24"
+   }
+  },
+  {
+   "id": "o-scooter",
+   "type": "scooter",
+   "name": "Scooter",
+   "position": [
+    -4.699999999999999,
+    0,
+    -26.2
+   ],
+   "rotation": [
+    0,
+    2.4609142453120048,
+    0
+   ],
+   "props": {
+    "color": "#8fb8c9"
+   }
+  },
+  {
+   "id": "o-bicycle",
+   "type": "bicycle",
+   "name": "Vélo",
+   "position": [
+    -1.5999999999999996,
+    0,
+    -26.2
+   ],
+   "rotation": [
+    0,
+    3.1066860685499065,
+    0
+   ],
+   "props": {
+    "color": "#2f6f4f"
+   }
+  },
+  {
+   "id": "o-chair",
+   "type": "chair",
+   "name": "Chaise",
+   "position": [
+    1.5,
+    0,
+    -26.2
+   ],
+   "rotation": [
+    0,
+    3.7524578917878086,
+    0
+   ],
+   "props": {
+    "color": "#9a6a3c"
+   }
+  },
+  {
+   "id": "o-stool",
+   "type": "stool",
+   "name": "Tabouret",
+   "position": [
+    4.600000000000001,
+    0,
+    -26.2
+   ],
+   "rotation": [
+    0,
+    4.39822971502571,
+    0
+   ],
+   "props": {
+    "color": "#a87a48"
+   }
+  },
+  {
+   "id": "o-bar-stool",
+   "type": "bar-stool",
+   "name": "Tabouret de bar",
+   "position": [
+    7.699999999999999,
+    0,
+    -26.2
+   ],
+   "rotation": [
+    0,
+    5.044001538263612,
+    0
+   ],
+   "props": {
+    "color": "#2b2b2e"
+   }
+  },
+  {
+   "id": "o-armchair",
+   "type": "armchair",
+   "name": "Fauteuil",
+   "position": [
+    10.8,
+    0,
+    -26.2
+   ],
+   "rotation": [
+    0,
+    5.689773361501515,
+    0
+   ],
+   "props": {
+    "color": "#6b4b3a"
+   }
+  },
+  {
+   "id": "o-sofa-2",
+   "type": "sofa-2",
+   "name": "Canapé",
+   "position": [
+    13.900000000000002,
+    0,
+    -26.2
+   ],
+   "rotation": [
+    0,
+    0.05235987755982989,
+    0
+   ],
+   "props": {
+    "color": "#4a5a6a"
+   }
+  },
+  {
+   "id": "o-sofa-3",
+   "type": "sofa-3",
+   "name": "Canapé",
+   "position": [
+    -14,
+    0,
+    -29.6
+   ],
+   "rotation": [
+    0,
+    0.6981317007977318,
+    0
+   ],
+   "props": {
+    "color": "#7a6a58"
+   }
+  },
+  {
+   "id": "o-table-rect",
+   "type": "table-rect",
+   "name": "Table",
+   "position": [
+    -10.9,
+    0,
+    -29.6
+   ],
+   "rotation": [
+    0,
+    1.3439035240356338,
+    0
+   ],
+   "props": {
+    "color": "#a5794b"
+   }
+  },
+  {
+   "id": "o-table-round",
+   "type": "table-round",
+   "name": "Table ronde",
+   "position": [
+    -7.8,
+    0,
+    -29.6
+   ],
+   "rotation": [
+    0,
+    1.9896753472735358,
+    0
+   ],
+   "props": {
+    "color": "#8a5c34"
+   }
+  },
+  {
+   "id": "o-coffee-table",
+   "type": "coffee-table",
+   "name": "Table basse",
+   "position": [
+    -4.699999999999999,
+    0,
+    -29.6
+   ],
+   "rotation": [
+    0,
+    2.6354471705114375,
+    0
+   ],
+   "props": {
+    "color": "#3b2c22"
+   }
+  },
+  {
+   "id": "o-desk",
+   "type": "desk",
+   "name": "Bureau",
+   "position": [
+    -1.5999999999999996,
+    0,
+    -29.6
+   ],
+   "rotation": [
+    0,
+    3.2812189937493397,
+    0
+   ],
+   "props": {
+    "color": "#d8d2c6"
+   }
+  },
+  {
+   "id": "o-bed-single",
+   "type": "bed-single",
+   "name": "Lit",
+   "position": [
+    1.5,
+    0,
+    -29.6
+   ],
+   "rotation": [
+    0,
+    3.9269908169872414,
+    0
+   ],
+   "props": {
+    "color": "#7a8fb0"
+   }
+  },
+  {
+   "id": "o-bed-double",
+   "type": "bed-double",
+   "name": "Lit double",
+   "position": [
+    4.600000000000001,
+    0,
+    -29.6
+   ],
+   "rotation": [
+    0,
+    4.572762640225143,
+    0
+   ],
+   "props": {
+    "color": "#c9b9a0"
+   }
+  },
+  {
+   "id": "o-nightstand",
+   "type": "nightstand",
+   "name": "Chevet",
+   "position": [
+    7.699999999999999,
+    0,
+    -29.6
+   ],
+   "rotation": [
+    0,
+    5.218534463463046,
+    0
+   ],
+   "props": {
+    "color": "#8a5c34"
+   }
+  },
+  {
+   "id": "o-wardrobe",
+   "type": "wardrobe",
+   "name": "Armoire",
+   "position": [
+    10.8,
+    0,
+    -29.6
+   ],
+   "rotation": [
+    0,
+    5.8643062867009474,
+    0
+   ],
+   "props": {
+    "color": "#c2a27a"
+   }
+  },
+  {
+   "id": "o-dresser",
+   "type": "dresser",
+   "name": "Commode",
+   "position": [
+    13.900000000000002,
+    0,
+    -29.6
+   ],
+   "rotation": [
+    0,
+    0.22689280275926285,
+    0
+   ],
+   "props": {
+    "color": "#6e4a2c"
+   }
+  },
+  {
+   "id": "o-bookcase",
+   "type": "bookcase",
+   "name": "Bibliothèque",
+   "position": [
+    -14,
+    0,
+    -33
+   ],
+   "rotation": [
+    0,
+    0.8726646259971648,
+    0
+   ],
+   "props": {
+    "color": "#5a3c25"
+   }
+  },
+  {
+   "id": "o-bar-counter",
+   "type": "bar-counter",
+   "name": "Comptoir",
+   "position": [
+    -10.9,
+    0,
+    -33
+   ],
+   "rotation": [
+    0,
+    1.5184364492350666,
+    0
+   ],
+   "props": {
+    "color": "#4a2f1f"
+   }
+  },
+  {
+   "id": "o-kitchen",
+   "type": "kitchen",
+   "name": "Cuisine",
+   "position": [
+    -7.8,
+    0,
+    -33
+   ],
+   "rotation": [
+    0,
+    2.1642082724729685,
+    0
+   ],
+   "props": {
+    "color": "#e9e6df"
+   }
+  },
+  {
+   "id": "o-fridge",
+   "type": "fridge",
+   "name": "Frigo",
+   "position": [
+    -4.699999999999999,
+    0,
+    -33
+   ],
+   "rotation": [
+    0,
+    2.8099800957108707,
+    0
+   ],
+   "props": {
+    "color": "#e6e7e8"
+   }
+  },
+  {
+   "id": "o-tv",
+   "type": "tv",
+   "name": "Télé",
+   "position": [
+    -1.5999999999999996,
+    0,
+    -33
+   ],
+   "rotation": [
+    0,
+    3.4557519189487724,
+    0
+   ],
+   "props": {
+    "color": "#2c2a28"
+   }
+  },
+  {
+   "id": "o-piano",
+   "type": "piano",
+   "name": "Piano",
+   "position": [
+    1.5,
+    0,
+    -33
+   ],
+   "rotation": [
+    0,
+    4.101523742186674,
+    0
+   ],
+   "props": {
+    "color": "#121214"
+   }
+  },
+  {
+   "id": "o-floor-lamp",
+   "type": "floor-lamp",
+   "name": "Lampadaire",
+   "position": [
+    4.600000000000001,
+    0,
+    -33
+   ],
+   "rotation": [
+    0,
+    4.747295565424577,
+    0
+   ],
+   "props": {
+    "color": "#efe6d2"
+   }
+  },
+  {
+   "id": "o-plant",
+   "type": "plant",
+   "name": "Plante",
+   "position": [
+    7.699999999999999,
+    0,
+    -33
+   ],
+   "rotation": [
+    0,
+    5.3930673886624785,
+    0
+   ],
+   "props": {
+    "color": "#b8603a"
+   }
+  },
+  {
+   "id": "o-rug",
+   "type": "rug",
+   "name": "Tapis",
+   "position": [
+    10.8,
+    0,
+    -33
+   ],
+   "rotation": [
+    0,
+    6.03883921190038,
+    0
+   ],
+   "props": {
+    "color": "#8a3b2f"
+   }
+  },
+  {
+   "id": "o-coat-rack",
+   "type": "coat-rack",
+   "name": "Porte-manteau",
+   "position": [
+    13.900000000000002,
+    0,
+    -33
+   ],
+   "rotation": [
+    0,
+    0.4014257279586958,
+    0
+   ],
+   "props": {
+    "color": "#5a3c25"
+   }
+  },
+  {
+   "id": "o-screen-divider",
+   "type": "screen-divider",
+   "name": "Paravent",
+   "position": [
+    -14,
+    0,
+    -36.4
+   ],
+   "rotation": [
+    0,
+    1.0471975511965976,
+    0
+   ],
+   "props": {
+    "color": "#d8cbb0"
+   }
+  },
+  {
+   "id": "o-wall-flat",
+   "type": "wall-flat",
+   "name": "Mur",
+   "position": [
+    -10.9,
+    0,
+    -36.4
+   ],
+   "rotation": [
+    0,
+    1.6929693744344996,
+    0
+   ],
+   "props": {
+    "width": 3.5,
+    "height": 2.6,
+    "color": "#c0b8a8"
+   }
+  },
+  {
+   "id": "o-wall-door",
+   "type": "wall-door",
+   "name": "Mur porte",
+   "position": [
+    -7.8,
+    0,
+    -36.4
+   ],
+   "rotation": [
+    0,
+    2.3387411976724017,
+    0
+   ],
+   "props": {
+    "width": 2.4,
+    "height": 2.6,
+    "color": "#cfd8d4"
+   }
+  },
+  {
+   "id": "o-wall-window",
+   "type": "wall-window",
+   "name": "Mur fenêtre",
+   "position": [
+    -4.699999999999999,
+    0,
+    -36.4
+   ],
+   "rotation": [
+    0,
+    2.9845130209103035,
+    0
+   ],
+   "props": {
+    "width": 2.4,
+    "height": 2.6,
+    "color": "#e0d6c4"
+   }
+  },
+  {
+   "id": "o-door",
+   "type": "door",
+   "name": "Porte",
+   "position": [
+    -1.5999999999999996,
+    0,
+    -36.4
+   ],
+   "rotation": [
+    0,
+    3.6302848441482056,
+    0
+   ],
+   "props": {
+    "color": "#f1efe9"
+   }
+  },
+  {
+   "id": "o-window",
+   "type": "window",
+   "name": "Fenêtre",
+   "position": [
+    1.5,
+    0,
+    -36.4
+   ],
+   "rotation": [
+    0,
+    4.276056667386108,
+    0
+   ],
+   "props": {
+    "color": "#f1efe9"
+   }
+  },
+  {
+   "id": "o-stairs",
+   "type": "stairs",
+   "name": "Escalier",
+   "position": [
+    4.600000000000001,
+    0,
+    -36.4
+   ],
+   "rotation": [
+    0,
+    4.9218284906240095,
+    0
+   ],
+   "props": {
+    "color": "#9a7650"
+   }
+  },
+  {
+   "id": "o-riser",
+   "type": "riser",
+   "name": "Praticable",
+   "position": [
+    7.699999999999999,
+    0,
+    -36.4
+   ],
+   "rotation": [
+    0,
+    5.567600313861911,
+    0
+   ],
+   "props": {
+    "height": 0.4,
+    "color": "#2a2a2c"
+   }
+  },
+  {
+   "id": "o-column",
+   "type": "column",
+   "name": "Colonne",
+   "position": [
+    10.8,
+    0,
+    -36.4
+   ],
+   "rotation": [
+    0,
+    6.213372137099813,
+    0
+   ],
+   "props": {
+    "height": 3,
+    "color": "#e8e4da"
+   }
+  },
+  {
+   "id": "o-drape",
+   "type": "drape",
+   "name": "Borniol",
+   "position": [
+    13.900000000000002,
+    0,
+    -36.4
+   ],
+   "rotation": [
+    0,
+    0.5759586531581288,
+    0
+   ],
+   "props": {
+    "width": 3,
+    "height": 3,
+    "color": "#141414"
+   }
+  },
+  {
+   "id": "o-tree",
+   "type": "tree",
+   "name": "Arbre",
+   "position": [
+    -14,
+    0,
+    -39.8
+   ],
+   "rotation": [
+    0,
+    1.2217304763960306,
+    0
+   ],
+   "props": {
+    "height": 8,
+    "color": "#3f6b2f"
+   }
+  },
+  {
+   "id": "o-pine",
+   "type": "pine",
+   "name": "Sapin",
+   "position": [
+    -10.9,
+    0,
+    -39.8
+   ],
+   "rotation": [
+    0,
+    1.8675022996339325,
+    0
+   ],
+   "props": {
+    "height": 4.5,
+    "color": "#2c4a2e"
+   }
+  },
+  {
+   "id": "o-palm",
+   "type": "palm",
+   "name": "Palmier",
+   "position": [
+    -7.8,
+    0,
+    -39.8
+   ],
+   "rotation": [
+    0,
+    2.5132741228718345,
+    0
+   ],
+   "props": {
+    "color": "#4f7a34"
+   }
+  },
+  {
+   "id": "o-bush",
+   "type": "bush",
+   "name": "Buisson",
+   "position": [
+    -4.699999999999999,
+    0,
+    -39.8
+   ],
+   "rotation": [
+    0,
+    3.1590459461097367,
+    0
+   ],
+   "props": {
+    "color": "#46703a"
+   }
+  },
+  {
+   "id": "o-rock",
+   "type": "rock",
+   "name": "Rocher",
+   "position": [
+    -1.5999999999999996,
+    0,
+    -39.8
+   ],
+   "rotation": [
+    0,
+    3.8048177693476384,
+    0
+   ],
+   "props": {
+    "color": "#7d7a74"
+   }
+  },
+  {
+   "id": "o-streetlamp",
+   "type": "streetlamp",
+   "name": "Réverbère",
+   "position": [
+    1.5,
+    0,
+    -39.8
+   ],
+   "rotation": [
+    0,
+    4.4505895925855405,
+    0
+   ],
+   "props": {
+    "color": "#2b2f33"
+   }
+  },
+  {
+   "id": "o-bench",
+   "type": "bench",
+   "name": "Banc",
+   "position": [
+    4.600000000000001,
+    0,
+    -39.8
+   ],
+   "rotation": [
+    0,
+    5.096361415823442,
+    0
+   ],
+   "props": {
+    "color": "#7a5232"
+   }
+  },
+  {
+   "id": "o-bin",
+   "type": "bin",
+   "name": "Poubelle",
+   "position": [
+    7.699999999999999,
+    0,
+    -39.8
+   ],
+   "rotation": [
+    0,
+    5.742133239061344,
+    0
+   ],
+   "props": {
+    "color": "#3c5a3c"
+   }
+  },
+  {
+   "id": "o-barrier",
+   "type": "barrier",
+   "name": "Barrière",
+   "position": [
+    10.8,
+    0,
+    -39.8
+   ],
+   "rotation": [
+    0,
+    0.10471975511965978,
+    0
+   ],
+   "props": {
+    "color": "#a9adb2"
+   }
+  },
+  {
+   "id": "o-traffic-cone",
+   "type": "traffic-cone",
+   "name": "Cône",
+   "position": [
+    13.900000000000002,
+    0,
+    -39.8
+   ],
+   "rotation": [
+    0,
+    0.7504915783575618,
+    0
+   ],
+   "props": {
+    "color": "#f26a1b"
+   }
+  },
+  {
+   "id": "o-road-sign",
+   "type": "road-sign",
+   "name": "Panneau",
+   "position": [
+    -14,
+    0,
+    -43.2
+   ],
+   "rotation": [
+    0,
+    1.3962634015954636,
+    0
+   ],
+   "props": {
+    "color": "#c8202a"
+   }
+  },
+  {
+   "id": "o-traffic-light",
+   "type": "traffic-light",
+   "name": "Feu",
+   "position": [
+    -10.9,
+    0,
+    -43.2
+   ],
+   "rotation": [
+    0,
+    2.0420352248333655,
+    0
+   ],
+   "props": {
+    "color": "#3a3e44"
+   }
+  },
+  {
+   "id": "o-suitcase",
+   "type": "suitcase",
+   "name": "Valise",
+   "position": [
+    -7.8,
+    0,
+    -43.2
+   ],
+   "rotation": [
+    0,
+    2.6878070480712677,
+    0
+   ],
+   "props": {
+    "color": "#2b4a6b"
+   }
+  },
+  {
+   "id": "o-cardboard",
+   "type": "cardboard",
+   "name": "Carton",
+   "position": [
+    -4.699999999999999,
+    0,
+    -43.2
+   ],
+   "rotation": [
+    0,
+    3.3335788713091694,
+    0
+   ],
+   "props": {
+    "color": "#b98d5a"
+   }
+  },
+  {
+   "id": "o-crate",
+   "type": "crate",
+   "name": "Caisse",
+   "position": [
+    -1.5999999999999996,
+    0,
+    -43.2
+   ],
+   "rotation": [
+    0,
+    3.9793506945470716,
+    0
+   ],
+   "props": {
+    "color": "#a77d4f"
+   }
+  },
+  {
+   "id": "o-flightcase",
+   "type": "flightcase",
+   "name": "Flight case",
+   "position": [
+    1.5,
+    0,
+    -43.2
+   ],
+   "rotation": [
+    0,
+    4.625122517784973,
+    0
+   ],
+   "props": {
+    "color": "#1b1c1f"
+   }
+  },
+  {
+   "id": "o-bottle",
+   "type": "bottle",
+   "name": "Bouteille",
+   "position": [
+    4.600000000000001,
+    0,
+    -43.2
+   ],
+   "rotation": [
+    0,
+    5.270894341022875,
+    0
+   ],
+   "props": {
+    "color": "#2f6b3a"
+   }
+  },
+  {
+   "id": "o-wine-glass",
+   "type": "wine-glass",
+   "name": "Verre",
+   "position": [
+    7.699999999999999,
+    0,
+    -43.2
+   ],
+   "rotation": [
+    0,
+    5.916666164260777,
+    0
+   ],
+   "props": {
+    "color": "#6b1426"
+   }
+  },
+  {
+   "id": "o-mug",
+   "type": "mug",
+   "name": "Tasse",
+   "position": [
+    10.8,
+    0,
+    -43.2
+   ],
+   "rotation": [
+    0,
+    0.2792526803190927,
+    0
+   ],
+   "props": {
+    "color": "#efeae0"
+   }
+  },
+  {
+   "id": "o-books",
+   "type": "books",
+   "name": "Livres",
+   "position": [
+    13.900000000000002,
+    0,
+    -43.2
+   ],
+   "rotation": [
+    0,
+    0.9250245035569946,
+    0
+   ],
+   "props": {
+    "color": "#7a2e2e"
+   }
+  },
+  {
+   "id": "o-laptop",
+   "type": "laptop",
+   "name": "Portable",
+   "position": [
+    -14,
+    0,
+    -46.599999999999994
+   ],
+   "rotation": [
+    0,
+    1.5707963267948966,
+    0
+   ],
+   "props": {
+    "color": "#b9bcc1"
+   }
+  },
+  {
+   "id": "o-guitar",
+   "type": "guitar",
+   "name": "Guitare",
+   "position": [
+    -10.9,
+    0,
+    -46.599999999999994
+   ],
+   "rotation": [
+    0,
+    2.2165681500327987,
+    0
+   ],
+   "props": {
+    "color": "#c8873a"
+   }
+  },
+  {
+   "id": "o-mic-stand",
+   "type": "mic-stand",
+   "name": "Micro",
+   "position": [
+    -7.8,
+    0,
+    -46.599999999999994
+   ],
+   "rotation": [
+    0,
+    2.8623399732707004,
+    0
+   ],
+   "props": {
+    "color": "#1d1e21"
+   }
+  },
+  {
+   "id": "o-camera-tripod",
+   "type": "camera-tripod",
+   "name": "Caméra",
+   "position": [
+    -4.699999999999999,
+    0,
+    -46.599999999999994
+   ],
+   "rotation": [
+    0,
+    3.5081117965086026,
+    0
+   ],
+   "props": {
+    "focal": 24,
+    "sensor": "ff",
+    "lens": 1.45,
+    "color": "#25272b"
+   }
+  },
+  {
+   "id": "o-camera-dolly",
+   "type": "camera-dolly",
+   "name": "Travelling",
+   "position": [
+    -1.5999999999999996,
+    0,
+    -46.599999999999994
+   ],
+   "rotation": [
+    0,
+    4.153883619746504,
+    0
+   ],
+   "props": {
+    "focal": 85,
+    "sensor": "m43",
+    "color": "#3a3d42"
+   }
+  },
+  {
+   "id": "o-director-chair",
+   "type": "director-chair",
+   "name": "Chaise réal",
+   "position": [
+    1.5,
+    0,
+    -46.599999999999994
+   ],
+   "rotation": [
+    0,
+    4.799655442984406,
+    0
+   ],
+   "props": {
+    "color": "#141414"
+   }
+  },
+  {
+   "id": "o-monitor-stand",
+   "type": "monitor-stand",
+   "name": "Moniteur",
+   "position": [
+    4.600000000000001,
+    0,
+    -46.599999999999994
+   ],
+   "rotation": [
+    0,
+    5.445427266222308,
+    0
+   ],
+   "props": {
+    "color": "#2b2d31"
+   }
+  },
+  {
+   "id": "o-boom-stand",
+   "type": "boom-stand",
+   "name": "Perche",
+   "position": [
+    7.699999999999999,
+    0,
+    -46.599999999999994
+   ],
+   "rotation": [
+    0,
+    6.09119908946021,
+    0
+   ],
+   "props": {
+    "color": "#6f6a62"
+   }
+  },
+  {
+   "id": "g-frame-6x6",
+   "type": "frame-6x6",
+   "name": "Cadre 6×6",
+   "position": [
+    -12,
+    0,
+    7
+   ],
+   "rotation": [
+    0,
+    0,
+    0
+   ],
+   "props": {
+    "cloth": "silk"
+   }
+  },
+  {
+   "id": "g-frame-8x8",
+   "type": "frame-8x8",
+   "name": "Cadre 8×8",
+   "position": [
+    -7,
+    0,
+    7
+   ],
+   "rotation": [
+    0,
+    0.35,
+    0
+   ],
+   "props": {
+    "cloth": "lee-216"
+   }
+  },
+  {
+   "id": "g-frame-12x12",
+   "type": "frame-12x12",
+   "name": "Cadre 12×12",
+   "position": [
+    -2,
+    0,
+    7
+   ],
+   "rotation": [
+    0,
+    0.7,
+    0
+   ],
+   "props": {
+    "cloth": "solid",
+    "stand": "long-john"
+   }
+  },
+  {
+   "id": "g-frame-20x20",
+   "type": "frame-20x20",
+   "name": "Cadre 20×20",
+   "position": [
+    3,
+    0,
+    7
+   ],
+   "rotation": [
+    0,
+    1.0499999999999998,
+    0
+   ],
+   "props": {
+    "cloth": "empty"
+   }
+  },
+  {
+   "id": "g-flag-18x24",
+   "type": "flag-18x24",
+   "name": "Drapeau 18×24",
+   "position": [
+    8,
+    0,
+    7
+   ],
+   "rotation": [
+    0,
+    1.4,
+    0
+   ],
+   "props": {
+    "cloth": "net-single"
+   }
+  },
+  {
+   "id": "g-flag-24x36",
+   "type": "flag-24x36",
+   "name": "Drapeau 24×36",
+   "position": [
+    13,
+    0,
+    7
+   ],
+   "rotation": [
+    0,
+    1.75,
+    0
+   ],
+   "props": {
+    "cloth": "solid"
+   }
+  },
+  {
+   "id": "g-floppy",
+   "type": "floppy",
+   "name": "Floppy",
+   "position": [
+    -12,
+    0,
+    12
+   ],
+   "rotation": [
+    0,
+    2.0999999999999996,
+    0
+   ],
+   "props": {
+    "cloth": "solid"
+   }
+  },
+  {
+   "id": "g-poly-4x8",
+   "type": "poly-4x8",
+   "name": "Polystyrène",
+   "position": [
+    -7,
+    0,
+    12
+   ],
+   "rotation": [
+    0,
+    2.4499999999999997,
+    0
+   ],
+   "props": {}
+  },
+  {
+   "id": "g-reflector-1m",
+   "type": "reflector-1m",
+   "name": "Réflecteur",
+   "position": [
+    -2,
+    0,
+    12
+   ],
+   "rotation": [
+    0,
+    2.8,
+    0
+   ],
+   "props": {}
+  },
+  {
+   "id": "g-applebox-full",
+   "type": "applebox-full",
+   "name": "Cube plein",
+   "position": [
+    3,
+    0,
+    12
+   ],
+   "rotation": [
+    0,
+    3.15,
+    0
+   ],
+   "props": {}
+  },
+  {
+   "id": "g-applebox-half",
+   "type": "applebox-half",
+   "name": "Demi-cube",
+   "position": [
+    8,
+    0,
+    12
+   ],
+   "rotation": [
+    0,
+    3.5,
+    0
+   ],
+   "props": {}
+  },
+  {
+   "id": "g-applebox-quarter",
+   "type": "applebox-quarter",
+   "name": "Quart de cube",
+   "position": [
+    13,
+    0,
+    12
+   ],
+   "rotation": [
+    0,
+    3.8499999999999996,
+    0
+   ],
+   "props": {}
+  },
+  {
+   "id": "g-applebox-pancake",
+   "type": "applebox-pancake",
+   "name": "Galette",
+   "position": [
+    -12,
+    0,
+    17
+   ],
+   "rotation": [
+    0,
+    4.199999999999999,
+    0
+   ],
+   "props": {}
+  },
+  {
+   "id": "g-sandbag",
+   "type": "sandbag",
+   "name": "Sac de sable",
+   "position": [
+    -7,
+    0,
+    17
+   ],
+   "rotation": [
+    0,
+    4.55,
+    0
+   ],
+   "props": {}
+  },
+  {
+   "id": "g-stand-1000",
+   "type": "stand-1000",
+   "name": "Pied 1000",
+   "position": [
+    -2,
+    0,
+    17
+   ],
+   "rotation": [
+    0,
+    4.8999999999999995,
+    0
+   ],
+   "props": {
+    "height": 2.2
+   }
+  },
+  {
+   "id": "g-stand-baby-5k",
+   "type": "stand-baby-5k",
+   "name": "Baby 5K",
+   "position": [
+    3,
+    0,
+    17
+   ],
+   "rotation": [
+    0,
+    5.25,
+    0
+   ],
+   "props": {
+    "height": 1.8
+   }
+  },
+  {
+   "id": "g-stand-junior",
+   "type": "stand-junior",
+   "name": "Pied junior",
+   "position": [
+    8,
+    0,
+    17
+   ],
+   "rotation": [
+    0,
+    5.6,
+    0
+   ],
+   "props": {
+    "height": 2.6
+   }
+  },
+  {
+   "id": "g-windup",
+   "type": "windup",
+   "name": "Wind-up",
+   "position": [
+    13,
+    0,
+    17
+   ],
+   "rotation": [
+    0,
+    5.949999999999999,
+    0
+   ],
+   "props": {
+    "height": 3.5
+   }
+  },
+  {
+   "id": "g-super-windup",
+   "type": "super-windup",
+   "name": "Super Wind-Up",
+   "position": [
+    -12,
+    0,
+    22
+   ],
+   "rotation": [
+    0,
+    6.3,
+    0
+   ],
+   "props": {
+    "height": 3
+   }
+  },
+  {
+   "id": "g-long-john",
+   "type": "long-john",
+   "name": "Long John",
+   "position": [
+    -7,
+    0,
+    22
+   ],
+   "rotation": [
+    0,
+    6.6499999999999995,
+    0
+   ],
+   "props": {
+    "height": 4
+   }
+  },
+  {
+   "id": "g-cstand",
+   "type": "cstand",
+   "name": "C-stand",
+   "position": [
+    -2,
+    0,
+    22
+   ],
+   "rotation": [
+    0,
+    7,
+    0
+   ],
+   "props": {
+    "height": 2
+   }
+  },
+  {
+   "id": "g-lowboy",
+   "type": "lowboy",
+   "name": "Low-boy",
+   "position": [
+    3,
+    0,
+    22
+   ],
+   "rotation": [
+    0,
+    7.35,
+    0
+   ],
+   "props": {
+    "height": 1
+   }
+  },
+  {
+   "id": "g-frame-8x8-b",
+   "type": "frame-8x8",
+   "name": "Cadre 8×8",
+   "position": [
+    9,
+    0,
+    2
+   ],
+   "rotation": [
+    0,
+    1.2,
+    0
+   ],
+   "props": {
+    "cloth": "ultrabounce"
+   }
+  },
+  {
+   "id": "g-frame-6x6-b",
+   "type": "frame-6x6",
+   "name": "Cadre 6×6",
+   "position": [
+    10,
+    0,
+    -3
+   ],
+   "rotation": [
+    0,
+    0,
+    0
+   ],
+   "props": {
+    "cloth": "lee-204",
+    "stand": "windup"
+   }
+  }
+ ],
+ "plot": {
+  "items": [
+   {
+    "id": "p-rect",
+    "kind": "rect",
+    "points": [
+     [
+      -9,
+      -6
+     ],
+     [
+      -5,
+      -3
+     ]
+    ],
+    "text": "Maison <A> & \"B\"",
+    "style": {
+     "stroke": "#3ddc84",
+     "fill": "#3ddc84",
+     "width": 2,
+     "dash": false,
+     "size": 14
+    },
+    "height": 2.5
+   },
+   {
+    "id": "p-ell",
+    "kind": "ellipse",
+    "points": [
+     [
+      6,
+      -6
+     ],
+     [
+      9,
+      -4
+     ]
+    ],
+    "text": "Kiosque",
+    "style": {
+     "stroke": "#5aa9ff",
+     "fill": "none",
+     "width": 3,
+     "dash": true,
+     "size": 14
+    }
+   },
+   {
+    "id": "p-poly",
+    "kind": "polygon",
+    "points": [
+     [
+      -2,
+      8
+     ],
+     [
+      1,
+      9.5
+     ],
+     [
+      2.5,
+      11
+     ],
+     [
+      -1.5,
+      12
+     ]
+    ],
+    "text": "Zone",
+    "style": {
+     "stroke": "#ffad3b",
+     "fill": "#ffad3b",
+     "width": 2,
+     "dash": false,
+     "size": 14
+    },
+    "height": 1.25
+   },
+   {
+    "id": "p-free",
+    "kind": "freehand",
+    "points": [
+     [
+      3,
+      8
+     ],
+     [
+      3.4,
+      8.3
+     ],
+     [
+      3.9,
+      8.2
+     ],
+     [
+      4.4,
+      8.9
+     ],
+     [
+      5.1,
+      9.4
+     ]
+    ],
+    "style": {
+     "stroke": "#c792ea",
+     "fill": "none",
+     "width": 5,
+     "dash": false,
+     "size": 14
+    }
+   },
+   {
+    "id": "p-line",
+    "kind": "line",
+    "points": [
+     [
+      -8,
+      2
+     ],
+     [
+      -4,
+      5
+     ]
+    ],
+    "text": "Câble",
+    "style": {
+     "stroke": "#ff5c5c",
+     "fill": "none",
+     "width": 1,
+     "dash": false,
+     "size": 14
+    }
+   },
+   {
+    "id": "p-arrow",
+    "kind": "arrow",
+    "points": [
+     [
+      8,
+      6
+     ],
+     [
+      5,
+      3
+     ]
+    ],
+    "style": {
+     "stroke": "#3ddc84",
+     "fill": "none",
+     "width": 8,
+     "dash": false,
+     "size": 14
+    }
+   },
+   {
+    "id": "p-measure",
+    "kind": "measure",
+    "points": [
+     [
+      -6,
+      -1
+     ],
+     [
+      -1.25,
+      -1
+     ]
+    ],
+    "text": "recul",
+    "style": {
+     "stroke": "#5aa9ff",
+     "fill": "none",
+     "width": 2,
+     "dash": false,
+     "size": 14
+    }
+   },
+   {
+    "id": "p-text",
+    "kind": "text",
+    "points": [
+     [
+      -10,
+      13
+     ]
+    ],
+    "text": "Régie & loges",
+    "style": {
+     "stroke": "#fdfdfd",
+     "size": 20
+    }
+   },
+   {
+    "id": "p-text2",
+    "kind": "text",
+    "points": [
+     [
+      4,
+      13
+     ]
+    ],
+    "style": {}
+   },
+   {
+    "id": "p-unknown",
+    "kind": "cloud",
+    "points": [
+     [
+      0,
+      0
+     ]
+    ],
+    "style": {}
+   }
+  ],
+  "underlay": {
+   "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+   "x": 2,
+   "z": -3,
+   "width": 14,
+   "aspect": 1.6,
+   "rotation": 12,
+   "opacity": 0.45,
+   "floor3d": false
+  },
+  "background": null,
+  "title": {
+   "production": "",
+   "author": "Camille Électro",
+   "notes": ""
+  }
+ },
+ "current": {
+  "seq": "s1",
+  "plan": "p2"
+ },
+ "sequences": [
+  {
+   "id": "s1",
+   "name": "Séq. 1 « nuit »",
+   "plans": [
+    {
+     "id": "p1",
+     "name": "Plan 1",
+     "scene": null
+    },
+    {
+     "id": "p2",
+     "name": "Plan 2 & fin",
+     "scene": null
+    }
+   ]
+  }
+ ]
+}

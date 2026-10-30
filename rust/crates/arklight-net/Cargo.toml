@@ -1,0 +1,17 @@
+[package]
+name = "arklight-net"
+description = "Réseau d'ARKLIGHT (PC et mobile) : réception Art-Net et sACN, fusion des sources DMX, RDM"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+# projecteurs et bibliothèque : le RDM annonce les projecteurs de la scène
+arklight-core.workspace = true
+serde_json.workspace = true
+# réutilisation des ports (une console ou un autre logiciel écoute souvent déjà Art-Net sur le même ordinateur)
+socket2 = { version = "0.6", features = ["all"] }

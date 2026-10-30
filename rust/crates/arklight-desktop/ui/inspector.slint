@@ -1,0 +1,482 @@
+// Inspecteur (panneau de droite, comme `.inspector` de la version JavaScript) : réglages de
+// l'élément choisi, en sections encadrées ; libellé à gauche, réglage à droite. La face avant du
+// projecteur (menus embarqués) est en tête. Les champs viennent de src/inspector.rs.
+import { ScrollView } from "std-widgets.slint";
+import { App, CtxItem, CtxSub, Field, FieldGroup, VoiceEdit } from "common.slint";
+import { Theme, Icon, Tip, PanelTitle, TextButton, FieldEdit, ThinSlider, Choice, Check } from "theme.slint";
+import { FrontPanel } from "front_panel.slint";
+
+/// Liste de choix rangée par familles (toiles, gélatines…) : même aspect que `Choice`, sous-menus.
+component GroupChoice inherits Rectangle {
+    in property <[string]> options;
+    in property <int> current-index;
+    in property <[CtxItem]> items;
+    in property <[CtxSub]> subs;
+    callback selected(int);
+    min-width: 60px;
+    height: 26px;
+    border-radius: 4px;
+    background: group-touch.has-hover ? #14181d : Theme.field;
+    border-width: 1px;
+    border-color: group-touch.has-hover ? #48505e : Theme.line-2;
+    group-menu := ContextMenuArea {
+        enabled: false;
+        Menu {
+            for it in root.items: MenuItem {
+                title: it.title;
+                checkable: true;
+                checked: it.checked;
+                activated => {
+                    root.selected(it.index);
+                }
+            }
+            for sm in root.subs: Menu {
+                title: sm.title;
+                for it in sm.items: MenuItem {
+                    title: it.title;
+                    checkable: true;
+                    checked: it.checked;
+                    activated => {
+                        root.selected(it.index);
+                    }
+                }
+            }
+        }
+    }
+    group-touch := TouchArea {
+        clicked => {
+            group-menu.show({ x: 0, y: root.height + 2px });
+        }
+    }
+    HorizontalLayout {
+        padding-left: 7px;
+        padding-right: 6px;
+        spacing: 4px;
+        Text {
+            text: root.current-index >= 0 && root.current-index < root.options.length ? root.options[root.current-index] : "—";
+            color: Theme.text;
+            font-size: Theme.font;
+            vertical-alignment: center;
+            overflow: elide;
+            horizontal-stretch: 1;
+        }
+        VerticalLayout {
+            alignment: center;
+            Icon {
+                width: 12px;
+                height: 12px;
+                name: "chevron-down";
+                tint: Theme.muted;
+            }
+        }
+    }
+}
+
+/// Libellé d'une ligne (colonne de gauche).
+component RowLabel inherits Text {
+    width: 92px;
+    color: Theme.muted;
+    font-size: Theme.font;
+    vertical-alignment: center;
+    overflow: elide;
+}
+
+/// Petit bouton carré à icône (dupliquer, supprimer, grouper), avec sa bulle d'aide.
+component HeadButton inherits Rectangle {
+    in property <string> icon;
+    in property <string> tip;
+    callback clicked();
+    width: 28px;
+    height: 28px;
+    border-radius: Theme.radius;
+    background: head-touch.has-hover ? Theme.hover : Theme.panel-2;
+    border-width: 1px;
+    border-color: head-touch.has-hover ? #48505e : Theme.line-2;
+    property <bool> hovering: head-touch.has-hover;
+    changed hovering => {
+        if (self.hovering) {
+            Tip.text = root.tip;
+            Tip.x = self.absolute-position.x - 120px;
+            Tip.y = self.absolute-position.y + self.height + 4px;
+            Tip.visible = true;
+        } else if (Tip.text == root.tip) {
+            Tip.visible = false;
+        }
+    }
+    head-touch := TouchArea {
+        clicked => {
+            Tip.visible = false;
+            root.clicked();
+        }
+    }
+    Icon {
+        width: 15px;
+        height: 15px;
+        name: root.icon;
+        tint: Theme.text;
+    }
+}
+
+/// Une ligne de réglage.
+component FieldLine inherits VerticalLayout {
+    in property <Field> field;
+    // en-tête : nom modifiable, dupliquer, supprimer (et grouper, sélection multiple)
+    if field.kind == "head" || field.kind == "head-title": HorizontalLayout {
+        spacing: 6px;
+        if field.kind == "head": VoiceEdit {
+            horizontal-stretch: 1;
+            field: "field:name";
+            apply: true;
+            text: field.text;
+            accepted(t) => {
+                App.field-text("name", t);
+                App.refocus += 1;
+            }
+        }
+        if field.kind == "head-title": Text {
+            horizontal-stretch: 1;
+            text: field.text;
+            color: Theme.text;
+            font-size: 14px;
+            font-weight: 600;
+            vertical-alignment: center;
+            overflow: elide;
+        }
+        for k[i] in field.keys: VerticalLayout {
+            alignment: center;
+            HeadButton {
+                icon: k == "dup" ? "copy" : k == "del" ? "trash" : "grid";
+                tip: field.options[i];
+                clicked => {
+                    App.field-button(k);
+                }
+            }
+        }
+    }
+    if field.kind == "sub": Text {
+        text: field.text;
+        color: Theme.muted;
+        font-size: Theme.small;
+        wrap: word-wrap;
+    }
+    if field.kind == "panel": FrontPanel { }
+    if field.kind == "info": Text {
+        text: field.text;
+        color: Theme.muted;
+        font-size: Theme.small;
+        wrap: word-wrap;
+    }
+    if field.kind == "mono": Text {
+        text: field.text;
+        color: Theme.muted;
+        font-family: Theme.mono;
+        font-size: Theme.tiny;
+        wrap: word-wrap;
+    }
+    if field.kind == "warn": Text {
+        text: field.text;
+        color: Theme.warn;
+        font-size: Theme.small;
+        wrap: word-wrap;
+    }
+    if field.kind == "link": HorizontalLayout {
+        alignment: start;
+        link-text := Text {
+            text: field.label + " ↗";
+            color: Theme.accent;
+            font-size: Theme.small;
+            TouchArea {
+                mouse-cursor: pointer;
+                clicked => {
+                    App.open-url(field.text);
+                }
+            }
+        }
+    }
+    if field.kind == "text": HorizontalLayout {
+        spacing: 6px;
+        RowLabel {
+            text: field.label;
+        }
+        VoiceEdit {
+            horizontal-stretch: 1;
+            field: "field:" + field.key;
+            apply: true;
+            text: field.text;
+            accepted(t) => {
+                App.field-text(field.key, t);
+                App.refocus += 1;
+            }
+        }
+    }
+    if field.kind == "number": HorizontalLayout {
+        spacing: 6px;
+        RowLabel {
+            text: field.label;
+        }
+        FieldEdit {
+            horizontal-stretch: 1;
+            mono: true;
+            text: field.text;
+            accepted(t) => {
+                App.field-text(field.key, t);
+            }
+            edited(t) => {
+                // adressage à la suite : la valeur saisie sert au bouton, sans attendre Entrée
+                if (field.key == "m.universe" || field.key == "m.address") {
+                    App.field-text(field.key, t);
+                }
+            }
+        }
+    }
+    if field.kind == "xyz": HorizontalLayout {
+        spacing: 4px;
+        RowLabel {
+            width: 88px;
+            text: field.label;
+        }
+        for i in 3: FieldEdit {
+            horizontal-stretch: 1;
+            mono: true;
+            text: field.options[i];
+            accepted(t) => {
+                App.field-text(field.key + "." + i, t);
+            }
+        }
+    }
+    if field.kind == "slider": HorizontalLayout {
+        spacing: 6px;
+        RowLabel {
+            text: field.label;
+        }
+        ThinSlider {
+            horizontal-stretch: 1;
+            minimum: field.min;
+            maximum: field.max;
+            step: field.step;
+            value: field.value;
+            changed(v) => {
+                App.field-value(field.key, v);
+            }
+        }
+        Text {
+            min-width: 46px;
+            text: field.text;
+            color: Theme.muted;
+            font-family: Theme.mono;
+            font-size: Theme.tiny;
+            horizontal-alignment: right;
+            vertical-alignment: center;
+        }
+    }
+    if field.kind == "combo" && field.menu-subs.length > 0: HorizontalLayout {
+        spacing: 6px;
+        RowLabel {
+            text: field.label;
+        }
+        GroupChoice {
+            horizontal-stretch: 1;
+            options: field.options;
+            current-index: field.index;
+            items: field.menu-items;
+            subs: field.menu-subs;
+            selected(i) => {
+                App.field-index(field.key, i);
+                App.refocus += 1;
+            }
+        }
+    }
+    if field.kind == "combo" && field.menu-subs.length == 0: HorizontalLayout {
+        spacing: 6px;
+        RowLabel {
+            text: field.label;
+        }
+        Choice {
+            horizontal-stretch: 1;
+            model: field.options;
+            current-index: field.index;
+            selected(i) => {
+                App.field-index(field.key, i);
+                App.refocus += 1;
+            }
+        }
+    }
+    if field.kind == "toggle": HorizontalLayout {
+        spacing: 6px;
+        RowLabel {
+            text: field.label;
+        }
+        Check {
+            checked: field.on;
+            toggled(on) => {
+                App.field-toggle(field.key, on);
+                App.refocus += 1;
+            }
+        }
+        Rectangle { }
+    }
+    // libellé à gauche, un bouton à droite (CRMX)
+    if field.kind == "action": HorizontalLayout {
+        spacing: 6px;
+        RowLabel {
+            text: field.label;
+        }
+        TextButton {
+            horizontal-stretch: 1;
+            text: field.text;
+            clicked => {
+                App.field-button(field.key);
+                App.refocus += 1;
+            }
+        }
+    }
+    // rangée de boutons (`.btn-row`) : modes CCT / HSI / RVB / Canaux, Viser, Poser au sol…
+    if field.kind == "buttons": HorizontalLayout {
+        spacing: 6px;
+        alignment: start;
+        for label[i] in field.options: Rectangle {
+            property <bool> active: i == field.index;
+            property <bool> primary: field.on && i == 0;
+            height: 26px;
+            width: btn-label.preferred-width + 18px;
+            border-radius: Theme.radius;
+            background: self.primary ? Theme.accent : self.active ? Theme.active : btn-touch.has-hover ? Theme.hover : Theme.panel-2;
+            border-width: 1px;
+            border-color: self.primary ? Theme.accent : self.active ? Theme.active-line : btn-touch.has-hover ? #48505e : Theme.line-2;
+            btn-touch := TouchArea {
+                clicked => {
+                    App.field-button(field.keys[i]);
+                    App.refocus += 1;
+                }
+            }
+            btn-label := Text {
+                text: label;
+                color: parent.primary ? Theme.accent-ink : parent.active ? #ffffff : Theme.text;
+                font-size: Theme.small;
+                font-weight: parent.primary ? 600 : 400;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+        }
+    }
+    // un projecteur de la sélection multiple : un clic n'affiche que lui
+    if field.kind == "item": Rectangle {
+        height: 26px;
+        border-radius: 4px;
+        background: item-touch.has-hover ? #1f242b : transparent;
+        item-touch := TouchArea {
+            pointer-event(e) => {
+                if (e.kind == PointerEventKind.down && e.button == PointerEventButton.left) {
+                    if (e.modifiers.control) {
+                        App.select-row(field.key, true);
+                    } else {
+                        App.field-button("select:" + field.key);
+                    }
+                }
+            }
+        }
+        HorizontalLayout {
+            padding-left: 6px;
+            padding-right: 6px;
+            spacing: 8px;
+            Text {
+                horizontal-stretch: 1;
+                text: field.label;
+                color: Theme.text;
+                vertical-alignment: center;
+                overflow: elide;
+            }
+            Text {
+                text: field.text;
+                color: field.on ? Theme.warn : Theme.muted;
+                font-family: Theme.mono;
+                font-size: Theme.tiny;
+                vertical-alignment: center;
+            }
+        }
+    }
+    // couleur du décor : pastille et code « #rrggbb »
+    if field.kind == "color": HorizontalLayout {
+        spacing: 6px;
+        RowLabel {
+            text: field.label;
+        }
+        VerticalLayout {
+            alignment: center;
+            Rectangle {
+                width: 22px;
+                height: 22px;
+                border-radius: 4px;
+                background: field.swatch;
+                border-width: 1px;
+                border-color: Theme.line-2;
+            }
+        }
+        FieldEdit {
+            horizontal-stretch: 1;
+            mono: true;
+            text: field.text;
+            accepted(t) => {
+                App.field-text(field.key, t);
+            }
+        }
+    }
+}
+
+export component InspectorPanel inherits Rectangle {
+    background: Theme.panel;
+    VerticalLayout {
+        padding: 10px;
+        spacing: 10px;
+        PanelTitle {
+            text: @tr("INSPECTEUR");
+        }
+        insp-scroll := ScrollView {
+            vertical-stretch: 1;
+            // hauteur du contenu, plus une marge : Slint sous-estime celle des textes sur plusieurs
+            // lignes mesurés avant le dernier redimensionnement de la fenêtre (face avant, notes) ;
+            // sans elle, la dernière section était coupée en bas
+            content-height: max(self.visible-height, insp-body.preferred-height + 160px);
+            // essais : défile jusqu'en bas (App.inspector-end)
+            property <int> to-end: App.inspector-end;
+            changed to-end => {
+                self.content-y = min(0px, self.visible-height - self.content-height);
+            }
+            insp-body := VerticalLayout {
+                width: insp-scroll.visible-width - 10px;
+                spacing: 12px;
+                alignment: start;
+                for g in App.field-groups: VerticalLayout {
+                    // sans titre : en tête de l'inspecteur, hors cadre
+                    if g.title == "": VerticalLayout {
+                        spacing: 8px;
+                        for f in g.fields: FieldLine {
+                            field: f;
+                        }
+                    }
+                    // section encadrée (`.group` et son titre `h4`)
+                    if g.title != "": Rectangle {
+                        border-radius: Theme.radius;
+                        border-width: 1px;
+                        border-color: Theme.line;
+                        background: #121519;
+                        VerticalLayout {
+                            padding: 8px;
+                            spacing: 6px;
+                            Text {
+                                text: g.title;
+                                color: Theme.muted;
+                                font-size: Theme.tiny;
+                                font-weight: 700;
+                                letter-spacing: 0.9px;
+                            }
+                            for f in g.fields: FieldLine {
+                                field: f;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

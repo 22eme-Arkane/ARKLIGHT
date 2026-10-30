@@ -2,7 +2,9 @@
 // dans la vue 3D (volumes extrudés, image de fond posée au sol).
 // Effet sur la lumière (voir light-grip.js) : chaque surface décrit son comportement optique.
 import * as THREE from 'three';
-import { CLOTHS } from '/shared/grip.js';
+import { CLOTHS, gripStands } from '/shared/grip.js';
+import { SUPPORTS } from '/shared/fixtures/supports.js';
+import { filterOptics, getFilter } from '/shared/filters.js';
 import { StandModel } from './stands.js';
 
 /**
@@ -12,19 +14,20 @@ import { StandModel } from './stands.js';
  *   diffuse  part réémise en lumière douce de l'autre côté (soie, grid cloth)
  *   solid    surface opaque : elle fait une ombre nette
  */
-const CLOTH_OPTICS = {
-  solid: { t: 0, reflect: 0.03, solid: true },
-  ultrabounce: { t: 0, reflect: 0.85, solid: true },
-  silk: { t: 0.12, diffuse: 0.4 },
-  grid: { t: 0.08, diffuse: 0.3 },
-  'net-single': { t: 0.5 },
-  'net-double': { t: 0.25 },
-  empty: null,
-};
+function clothOptics(id) {
+  const c = CLOTHS[id];
+  return c && c.opacity > 0 ? { t: c.t, reflect: c.reflect, diffuse: c.diffuse, solid: c.solid } : null;
+}
 
 const frameMat = () => new THREE.MeshStandardMaterial({ color: 0x9ea3a9, metalness: 0.8, roughness: 0.35 });
 
 function clothMat(id) {
+  const f = !CLOTHS[id] && getFilter(id);
+  if (f) {
+    // filtre du nuancier tendu sur le cadre : diffusion blanche translucide ou gélatine colorée
+    const diffusion = f.group === 'diffusion';
+    return new THREE.MeshStandardMaterial({ color: f.color, roughness: diffusion ? 0.9 : 0.25, transparent: true, opacity: diffusion ? 0.55 + f.scatter * 0.35 : 0.45, side: THREE.DoubleSide, depthWrite: false });
+  }
   const c = CLOTHS[id] || CLOTHS.silk;
   return new THREE.MeshStandardMaterial({
     color: c.color,
@@ -110,7 +113,8 @@ export class GripModel {
     }
     this.mats = mats;
     // Effet sur la lumière : surfaces planes (cadres, drapeaux, réflecteurs)
-    const optics = t.family === 'bounce' ? { t: 0, reflect: t.round ? 0.85 : 0.8, solid: true } : t.family === 'frame' || t.family === 'flag' ? CLOTH_OPTICS[props.cloth] : null;
+    const filter = !CLOTHS[props.cloth] && getFilter(props.cloth);
+    const optics = t.family === 'bounce' ? { t: 0, reflect: t.round ? 0.85 : 0.8, solid: true } : t.family === 'frame' || t.family === 'flag' ? (filter ? filterOptics(filter) : clothOptics(props.cloth)) : null;
     this.optics = optics ? { w: t.w, h: t.h, ...optics } : null;
     for (const m of this.pickables) {
       m.receiveShadow = true;
@@ -118,11 +122,11 @@ export class GripModel {
       const plane = m.geometry?.type === 'PlaneGeometry' || m.geometry?.type === 'CircleGeometry';
       m.castShadow = ((this.optics?.solid && (plane || t.family === 'bounce')) || t.family === 'box' || t.family === 'bag') && t.family !== 'stand';
     }
-    // Pieds sous les cadres, drapeaux et réflecteurs (recalés dans place())
-    const holder = t.stands?.id;
-    if (holder && t.family !== 'stand') {
-      const look = holder === 'cstand' ? 'cstand' : holder === 'stand-1000' ? 'baby' : 'combo';
-      for (let i = 0; i < (t.stands.count || 1); i++) {
+    // Pieds sous les cadres, drapeaux et réflecteurs (recalés dans place()) : ceux choisis, sinon ceux du type
+    const holder = gripStands(t, props);
+    if (holder) {
+      const look = SUPPORTS[holder.id]?.look || 'combo';
+      for (let i = 0; i < holder.count; i++) {
         const s = new StandModel(look);
         this.supports.add(s.group);
         this.stands.push(s);
@@ -185,7 +189,7 @@ export class GripModel {
 
   /** Change de toile ou de hauteur : reconstruit le modèle. */
   update(props) {
-    if (props.cloth === this.props.cloth && props.height === this.props.height) return;
+    if (props.cloth === this.props.cloth && props.height === this.props.height && props.stand === this.props.stand) return;
     const pos = this.body.position.toArray();
     const rot = [this.body.rotation.x, this.body.rotation.y, this.body.rotation.z];
     const selected = this.selection.visible;

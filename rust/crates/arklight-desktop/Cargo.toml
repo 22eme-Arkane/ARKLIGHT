@@ -1,0 +1,43 @@
+[package]
+name = "arklight-desktop"
+description = "ARKLIGHT pour PC : simulateur lumière (version Rust, Slint + wgpu)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "arklight"
+path = "src/main.rs"
+
+[dependencies]
+arklight-core.workspace = true
+arklight-render.workspace = true
+arklight-net.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+slint.workspace = true
+rfd.workspace = true
+sys-locale = "0.3"
+png = "0.18"
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+regex = { version = "1", default-features = false, features = ["std", "unicode-perl", "unicode-case"] }
+arklight-midi.workspace = true
+arklight-plot.workspace = true
+arklight-onboard.workspace = true
+arklight-ai.workspace = true
+arklight-ble.workspace = true
+# images importées (plan dessiné, photo pour l'assistant, image de fond) : tous formats → PNG/JPEG
+image = { version = "0.25.10", default-features = false, features = ["png", "jpeg", "gif", "bmp", "ico", "tiff", "webp", "tga", "pnm", "qoi", "dds", "hdr"] }
+# photos HEIC/HEIF (iPhone) : décodeur en Rust, sans les extensions payantes de Windows
+zune-heic = "0.5"
+
+[target.'cfg(windows)'.dependencies]
+# autres formats (AVIF, JPEG XL, RAW) : décodeurs d'images de Windows (WIC)
+windows = { version = "0.62.2", features = ["Win32_Foundation", "Win32_Graphics_Imaging", "Win32_System_Com", "Win32_System_Com_StructuredStorage", "Win32_System_Variant"] }
+
+[build-dependencies]
+slint-build.workspace = true

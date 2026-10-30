@@ -3,6 +3,7 @@ import { ASTERA_FIXTURES } from './astera.js';
 import { OFL_FIXTURES } from './data/ofl-fixtures.js';
 import { TRADITIONAL_FIXTURES } from './traditional.js';
 import { footprintOf } from '../engine/dmx.js';
+import { accessoryEffect } from '../modifiers.js';
 
 export const FIXTURE_TYPES = [...ASTERA_FIXTURES, ...OFL_FIXTURES, ...TRADITIONAL_FIXTURES];
 
@@ -34,7 +35,8 @@ export function defaultSettings(type) {
     whitePoint: 5600,
     dimmingCurve: 'linear',
     support: 'auto', // pied : voir supports.js
-    ...(type.defaults?.settings || {}),
+    // copie profonde : chaque projecteur a ses propres objets (standalone…), pas ceux de la bibliothèque
+    ...structuredClone(type.defaults?.settings || {}),
   };
 }
 
@@ -45,15 +47,28 @@ export function defaultState(type) {
     battery: 100,
     charging: false,
     manual: { mode: 'cct', intensity: 0.6, cct: 5600, tint: 0, hue: 0, sat: 1 },
-    ...(type.defaults?.state || {}),
+    ...structuredClone(type.defaults?.state || {}),
   };
 }
 
 /**
- * Type « effectif » d'un projecteur selon ses réglages mécaniques (zoom) :
- * angle de faisceau et éclairement à 1 m interpolés entre les mesures du fabricant.
+ * Type « effectif » d'un projecteur selon ses réglages mécaniques (zoom) et ses accessoires
+ * (boîte à lumière, dôme, louver, gélatine) : angle de faisceau et éclairement à 1 m.
  */
 export function effectiveType(type, fixture) {
+  const t = zoomedType(type, fixture);
+  const s = fixture?.settings || {};
+  if (!s.modifier && !s.grid && !s.gel) return t;
+  const e = accessoryEffect(type, s, t.beamAngle);
+  if (!e.modifier && !e.grid && !e.gel) return t;
+  const output = { ...t.output };
+  if (output.luxAt1m) output.luxAt1m = Math.max(1, Math.round(output.luxAt1m * e.lux));
+  if (output.lumens) output.lumens = Math.round(output.lumens * e.transmission);
+  return { ...t, beamAngle: e.angle, output, accessories: e };
+}
+
+/** Zoom mécanique (SolaBulb, Pluto, Leo…) : éclairement interpolé entre les mesures du fabricant. */
+function zoomedType(type, fixture) {
   if (!type.zoom) return type;
   const z = Math.min(type.zoom.max, Math.max(type.zoom.min, Number(fixture.settings.zoom ?? type.beamAngle)));
   const pts = type.zoom.luxAt1m;

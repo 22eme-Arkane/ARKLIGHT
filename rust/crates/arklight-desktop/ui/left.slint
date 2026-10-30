@@ -1,0 +1,777 @@
+// Panneau de gauche (comme `.panel.left` de la version JavaScript) : la bibliothèque en haut
+// (recherche, tri, onglets Lumières / Pieds / Grip / Décor, marques repliables, « + » ou glisser
+// dans la vue), la liste Scène en dessous (recherche, tri, groupes, projecteurs, objets).
+import { ListView } from "std-widgets.slint";
+import { App, LibRow, SceneRow, VoiceEdit } from "common.slint";
+import { Theme, Icon, LibIcon, ToolButton, PanelTitle } from "theme.slint";
+
+/// Bouton de tri : icône, choix actuel en abrégé ; menu des tris (case cochée).
+component SortButton inherits Rectangle {
+    in property <[string]> labels;
+    in property <[string]> shorts;
+    in property <int> current;
+    in property <string> tip;
+    callback chosen(int);
+    width: sort-button.natural-width;
+    height: 28px;
+    sort-menu := ContextMenuArea {
+        enabled: false;
+        Menu {
+            for l[i] in root.labels: MenuItem {
+                title: l;
+                checkable: true;
+                checked: i == root.current;
+                activated => {
+                    root.chosen(i);
+                }
+            }
+        }
+    }
+    sort-button := ToolButton {
+        width: parent.width;
+        height: parent.height;
+        icon: "sort";
+        text: root.shorts[root.current];
+        tip: root.tip;
+        clicked => {
+            sort-menu.show({ x: 0, y: self.height + 2px });
+        }
+    }
+}
+
+/// Une ligne de la bibliothèque : en-tête de marque, sous-titre, note ou élément à ajouter.
+component LibLine inherits Rectangle {
+    // la barre de défilement de la liste passe à droite
+    in property <LibRow> line;
+    property <bool> addable: line.kind == "fixture" || line.kind == "grip" || line.kind == "prop";
+    property <length> press-x;
+    property <length> press-y;
+    property <bool> dragging;
+    height: line.kind == "brand" ? 28px : line.kind == "cat" ? 26px : line.kind == "note" ? 50px : line.kind == "empty" ? 32px : 28px;
+
+    if line.kind == "brand": Rectangle {
+        y: 4px;
+        height: parent.height - 6px;
+        border-radius: 4px;
+        background: brand-touch.has-hover ? #1f242b : transparent;
+        brand-touch := TouchArea {
+            clicked => {
+                App.lib-action("fold", line.id);
+            }
+        }
+        HorizontalLayout {
+            padding-left: 4px;
+            padding-right: 12px;
+            spacing: 6px;
+            VerticalLayout {
+                alignment: center;
+                Icon {
+                    width: 12px;
+                    height: 12px;
+                    name: line.folded ? "chevron-right" : "chevron-down";
+                    tint: Theme.muted;
+                }
+            }
+            Text {
+                text: line.label;
+                color: Theme.text;
+                font-weight: 700;
+                vertical-alignment: center;
+                overflow: elide;
+                horizontal-stretch: 1;
+            }
+            Text {
+                text: line.count;
+                color: Theme.dim;
+                font-family: Theme.mono;
+                font-size: Theme.tiny;
+                vertical-alignment: center;
+            }
+        }
+    }
+    if line.kind == "cat": Text {
+        x: 2px;
+        y: 8px;
+        height: parent.height - 10px;
+        text: line.label;
+        color: Theme.dim;
+        font-size: Theme.tiny;
+        letter-spacing: 0.9px;
+        vertical-alignment: center;
+    }
+    if line.kind == "note" || line.kind == "empty": Text {
+        x: 4px;
+        width: parent.width - 8px;
+        text: line.label;
+        color: Theme.dim;
+        font-size: Theme.tiny;
+        font-italic: line.kind == "empty";
+        wrap: word-wrap;
+        vertical-alignment: center;
+    }
+    if addable: Rectangle {
+        border-radius: 4px;
+        background: item-touch.has-hover || root.dragging ? #1f242b : transparent;
+        // double-clic : ajouter ; glisser vers la vue : placer à cet endroit
+        item-touch := TouchArea {
+            mouse-cursor: root.dragging ? MouseCursor.grabbing : MouseCursor.grab;
+            pointer-event(e) => {
+                if (e.kind == PointerEventKind.down && e.button == PointerEventButton.left) {
+                    root.press-x = self.mouse-x;
+                    root.press-y = self.mouse-y;
+                }
+                if (e.kind == PointerEventKind.up && root.dragging) {
+                    root.dragging = false;
+                    App.drag-label = "";
+                    App.drop-item(line.kind, line.id, self.absolute-position.x + self.mouse-x, self.absolute-position.y + self.mouse-y);
+                }
+            }
+            moved => {
+                if (self.pressed && !root.dragging && abs(self.mouse-x - root.press-x) + abs(self.mouse-y - root.press-y) > 6px) {
+                    root.dragging = true;
+                    App.drag-label = line.label;
+                }
+                if (root.dragging) {
+                    App.drag-x = self.absolute-position.x + self.mouse-x;
+                    App.drag-y = self.absolute-position.y + self.mouse-y;
+                }
+            }
+            double-clicked => {
+                App.add-item(line.kind, line.id);
+            }
+        }
+        HorizontalLayout {
+            padding-left: 6px;
+            padding-right: 12px;
+            spacing: 8px;
+            VerticalLayout {
+                alignment: center;
+                LibIcon {
+                    name: line.icon;
+                }
+            }
+            HorizontalLayout {
+                horizontal-stretch: 1;
+                spacing: 5px;
+                Text {
+                    text: line.label;
+                    color: Theme.text;
+                    vertical-alignment: center;
+                    overflow: elide;
+                    min-width: 40px;
+                }
+                if line.sub != "": Text {
+                    text: line.sub;
+                    color: Theme.dim;
+                    font-size: Theme.tiny;
+                    vertical-alignment: center;
+                    overflow: elide;
+                    horizontal-stretch: 1;
+                }
+                if line.sub == "": Rectangle {
+                    horizontal-stretch: 1;
+                }
+            }
+            if line.badge != "": VerticalLayout {
+                alignment: center;
+                Rectangle {
+                    height: 15px;
+                    width: badge-text.preferred-width + 10px;
+                    border-radius: 3px;
+                    background: line.badge == "HMI" ? #16293a : #3a2f16;
+                    badge-text := Text {
+                        text: line.badge;
+                        color: line.badge == "HMI" ? #8fc3ff : Theme.warn;
+                        font-size: 10px;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+            // « + » : ajouter à une place proposée
+            VerticalLayout {
+                alignment: center;
+                Rectangle {
+                    width: 24px;
+                    height: 22px;
+                    border-radius: 4px;
+                    background: add-touch.has-hover ? Theme.hover : Theme.panel-2;
+                    border-width: 1px;
+                    border-color: add-touch.has-hover ? #48505e : Theme.line-2;
+                    opacity: item-touch.has-hover || add-touch.has-hover ? 1 : 0.35;
+                    add-touch := TouchArea {
+                        clicked => {
+                            App.add-item(line.kind, line.id);
+                        }
+                    }
+                    Text {
+                        text: "+";
+                        color: Theme.text;
+                        font-weight: 700;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// Une ligne de la liste Scène : section, groupe, projecteur, objet.
+component SceneLine inherits Rectangle {
+    in property <SceneRow> line;
+    height: line.kind == "section" ? 24px : line.kind == "fold" ? 28px : line.kind == "empty" ? 44px : line.kind == "fixture" && line.sub != "" ? 38px : 30px;
+
+    if line.kind == "section": Text {
+        x: 2px;
+        y: 6px;
+        height: parent.height - 6px;
+        text: line.name;
+        color: Theme.dim;
+        font-size: 10px;
+        letter-spacing: 0.8px;
+        vertical-alignment: center;
+    }
+    if line.kind == "empty": Text {
+        x: 6px;
+        width: parent.width - 12px;
+        text: line.name;
+        color: Theme.dim;
+        font-italic: true;
+        wrap: word-wrap;
+        vertical-alignment: center;
+    }
+    if line.kind == "fold": Rectangle {
+        y: 4px;
+        height: parent.height - 4px;
+        border-radius: 4px;
+        background: fold-touch.has-hover ? #1f242b : transparent;
+        fold-touch := TouchArea {
+            clicked => {
+                App.scene-action("fold", "");
+            }
+        }
+        HorizontalLayout {
+            padding-left: 2px;
+            spacing: 6px;
+            VerticalLayout {
+                alignment: center;
+                Icon {
+                    width: 12px;
+                    height: 12px;
+                    name: line.folded ? "chevron-right" : "chevron-down";
+                    tint: Theme.dim;
+                }
+            }
+            Text {
+                text: line.name;
+                color: Theme.dim;
+                font-size: Theme.tiny;
+                letter-spacing: 0.6px;
+                vertical-alignment: center;
+            }
+        }
+    }
+    if line.kind == "group": Rectangle {
+        y: 1px;
+        height: parent.height - 2px;
+        border-radius: 4px;
+        background: line.selected ? #1d2a44 : group-touch.has-hover ? #1f242b : transparent;
+        border-width: line.selected || line.partial ? 1px : 0;
+        border-color: line.partial ? #34548f99 : #34548f;
+        group-menu := ContextMenuArea {
+            Menu {
+                MenuItem {
+                    title: @tr("Sélectionner le groupe");
+                    enabled: line.count > 0;
+                    activated => {
+                        App.action("group-select:" + line.id);
+                    }
+                }
+                MenuItem {
+                    title: @tr("Ajouter à la sélection");
+                    enabled: line.count > 0;
+                    activated => {
+                        App.action("group-select-add:" + line.id);
+                    }
+                }
+                MenuSeparator { }
+                MenuItem {
+                    title: @tr("Ajouter la sélection au groupe");
+                    enabled: App.selected-fixtures > 0 && !line.selected;
+                    activated => {
+                        App.action("group-add:" + line.id);
+                    }
+                }
+                MenuItem {
+                    title: @tr("Retirer la sélection du groupe");
+                    enabled: line.selected || line.partial;
+                    activated => {
+                        App.action("group-remove:" + line.id);
+                    }
+                }
+                MenuSeparator { }
+                MenuItem {
+                    title: @tr("Allumer / éteindre le groupe");
+                    enabled: line.count > 0;
+                    activated => {
+                        App.action("group-power:" + line.id);
+                    }
+                }
+                Menu {
+                    title: @tr("Liaison CRMX");
+                    enabled: line.count > 0;
+                    MenuItem {
+                        title: @tr("Lier le groupe (touche LINK)");
+                        activated => {
+                            App.action("group-crmx-link:" + line.id);
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Délier le groupe");
+                        activated => {
+                            App.action("group-crmx-unlink:" + line.id);
+                        }
+                    }
+                }
+                MenuItem {
+                    title: @tr("Adresser le groupe à la suite…");
+                    enabled: line.count > 0;
+                    activated => {
+                        App.action("group-readdress:" + line.id);
+                    }
+                }
+                MenuSeparator { }
+                MenuItem {
+                    title: @tr("Renommer…");
+                    activated => {
+                        App.action("group-rename:" + line.id);
+                    }
+                }
+                MenuItem {
+                    title: @tr("Supprimer le groupe (les projecteurs restent)");
+                    activated => {
+                        App.action("group-delete:" + line.id);
+                    }
+                }
+            }
+        }
+        group-touch := TouchArea {
+            pointer-event(e) => {
+                if (e.kind == PointerEventKind.down && e.button == PointerEventButton.left) {
+                    App.action((e.modifiers.control || e.modifiers.shift ? "group-select-add:" : "group-select:") + line.id);
+                    App.refocus += 1;
+                }
+            }
+            double-clicked => {
+                App.action("group-rename:" + line.id);
+            }
+        }
+        HorizontalLayout {
+            padding-left: 6px;
+            padding-right: 12px;
+            spacing: 8px;
+            VerticalLayout {
+                alignment: center;
+                Icon {
+                    width: 14px;
+                    height: 14px;
+                    name: "grid";
+                    tint: Theme.accent;
+                }
+            }
+            Text {
+                text: line.name;
+                color: Theme.text;
+                font-weight: 600;
+                overflow: elide;
+                vertical-alignment: center;
+                horizontal-stretch: 1;
+            }
+            VerticalLayout {
+                alignment: center;
+                Rectangle {
+                    height: 16px;
+                    width: max(22px, group-count.preferred-width + 12px);
+                    border-radius: 8px;
+                    background: #20252c;
+                    group-count := Text {
+                        text: line.count > 0 ? line.count : @tr("vide");
+                        color: Theme.muted;
+                        font-family: Theme.mono;
+                        font-size: Theme.tiny;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+        }
+    }
+    if line.kind == "fixture" || line.kind == "object": Rectangle {
+        y: 1px;
+        height: parent.height - 2px;
+        border-radius: 4px;
+        background: line.selected ? #1d2a44 : item-touch.has-hover ? #1f242b : transparent;
+        border-width: line.selected ? 1px : 0;
+        border-color: line.primary ? Theme.accent : #34548f;
+        item-menu := ContextMenuArea {
+            enabled: line.kind == "fixture";
+            Menu {
+                MenuItem {
+                    title: @tr("Cadrer");
+                    activated => {
+                        App.action("frame");
+                    }
+                }
+                MenuItem {
+                    title: App.selection-off ? @tr("Allumer") : @tr("Éteindre");
+                    activated => {
+                        App.action("power");
+                    }
+                }
+                MenuItem {
+                    title: @tr("Viser le personnage");
+                    enabled: App.selection-aimable;
+                    activated => {
+                        App.action("aim");
+                    }
+                }
+                MenuItem {
+                    title: @tr("Poser au sol");
+                    activated => {
+                        App.action("drop");
+                    }
+                }
+                for m in App.ctx-menus: Menu {
+                    title: m.title;
+                    for it in m.items: MenuItem {
+                        title: it.title;
+                        checkable: true;
+                        checked: it.checked;
+                        activated => {
+                            App.action(it.action);
+                        }
+                    }
+                    for s in m.subs: Menu {
+                        title: s.title;
+                        for it in s.items: MenuItem {
+                            title: it.title;
+                            checkable: true;
+                            checked: it.checked;
+                            activated => {
+                                App.action(it.action);
+                            }
+                        }
+                    }
+                }
+                Menu {
+                    title: @tr("Liaison CRMX");
+                    enabled: App.selection-v5;
+                    MenuItem {
+                        title: @tr("Lier (touche LINK)");
+                        activated => {
+                            App.action("crmx-link");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Délier");
+                        activated => {
+                            App.action("crmx-unlink");
+                        }
+                    }
+                }
+                MenuSeparator { }
+                MenuItem {
+                    title: App.selected-fixtures > 1 ? @tr("Grouper la sélection") : @tr("Créer un groupe");
+                    activated => {
+                        App.action("group");
+                    }
+                }
+                MenuItem {
+                    title: App.selected-fixtures > 1 ? @tr("Adresser la sélection à la suite…") : @tr("Ré-adresser…");
+                    activated => {
+                        App.action("readdress-selection");
+                    }
+                }
+                MenuItem {
+                    title: App.selected-fixtures > 1 ? @tr("Numéroter les fixtures à la suite…") : @tr("Numéro de fixture…");
+                    activated => {
+                        App.action("number");
+                    }
+                }
+                MenuItem {
+                    title: App.same-label;
+                    activated => {
+                        App.action("select-same");
+                    }
+                }
+                MenuSeparator { }
+                MenuItem {
+                    title: App.selected-count > 1 ? @tr("Dupliquer la sélection") : @tr("Dupliquer");
+                    activated => {
+                        App.duplicate();
+                    }
+                }
+                MenuItem {
+                    title: @tr("Supprimer");
+                    activated => {
+                        App.delete-selection();
+                    }
+                }
+            }
+        }
+        // objet (grip, décor) : son menu, comme dans la vue 3D
+        object-row-menu := ContextMenuArea {
+            enabled: line.kind == "object";
+            Menu {
+                for m in App.ctx-menus: Menu {
+                    title: m.title;
+                    for it in m.items: MenuItem {
+                        title: it.title;
+                        checkable: true;
+                        checked: it.checked;
+                        activated => {
+                            App.action(it.action);
+                        }
+                    }
+                    for s in m.subs: Menu {
+                        title: s.title;
+                        for it in s.items: MenuItem {
+                            title: it.title;
+                            checkable: true;
+                            checked: it.checked;
+                            activated => {
+                                App.action(it.action);
+                            }
+                        }
+                    }
+                }
+                if App.ctx-camera != "": MenuItem {
+                    title: @tr("Voir par cette caméra");
+                    activated => {
+                        App.action("camera:" + App.ctx-camera);
+                    }
+                }
+                MenuItem {
+                    title: @tr("Cadrer");
+                    activated => {
+                        App.action("frame");
+                    }
+                }
+                MenuItem {
+                    title: @tr("Dupliquer");
+                    activated => {
+                        App.duplicate();
+                    }
+                }
+                MenuItem {
+                    title: @tr("Poser au sol");
+                    activated => {
+                        App.action("drop");
+                    }
+                }
+                MenuItem {
+                    title: @tr("Tourner de 90°");
+                    activated => {
+                        App.action("rot90");
+                    }
+                }
+                MenuSeparator { }
+                MenuItem {
+                    title: @tr("Supprimer");
+                    activated => {
+                        App.delete-selection();
+                    }
+                }
+            }
+        }
+        item-touch := TouchArea {
+            pointer-event(e) => {
+                if (e.kind == PointerEventKind.down && (e.button == PointerEventButton.left || (e.button == PointerEventButton.right && !line.selected))) {
+                    App.select-row(line.id, e.button == PointerEventButton.left && (e.modifiers.control || e.modifiers.shift));
+                    App.refocus += 1;
+                }
+            }
+            double-clicked => {
+                App.action("frame");
+            }
+        }
+        HorizontalLayout {
+            padding-left: 6px;
+            padding-right: 12px;
+            spacing: 8px;
+            // pastille : couleur actuelle du projecteur (cerclée d'orange : piloté par la console)
+            if line.kind == "fixture": VerticalLayout {
+                alignment: center;
+                Rectangle {
+                    width: 12px;
+                    height: 12px;
+                    border-radius: 3px;
+                    background: line.lit ? line.swatch : #222222;
+                    border-width: line.held ? 2px : 1px;
+                    border-color: line.held ? Theme.accent : #333333;
+                }
+            }
+            if line.kind == "object" && line.icon != "": VerticalLayout {
+                alignment: center;
+                LibIcon {
+                    width: 22px;
+                    height: 15px;
+                    name: line.icon;
+                }
+            }
+            VerticalLayout {
+                alignment: center;
+                horizontal-stretch: 1;
+                Text {
+                    text: line.name;
+                    color: line.off ? Theme.dim : Theme.text;
+                    overflow: elide;
+                }
+                if line.kind == "fixture" && line.sub != "": Text {
+                    text: line.sub;
+                    color: Theme.dim;
+                    font-size: 10px;
+                    overflow: elide;
+                }
+            }
+            Text {
+                text: line.kind == "fixture" ? line.patch : line.sub;
+                color: line.warn ? Theme.warn : line.kind == "fixture" ? Theme.muted : Theme.dim;
+                font-family: line.kind == "fixture" ? Theme.mono : "Segoe UI";
+                font-size: Theme.tiny;
+                vertical-alignment: center;
+            }
+        }
+    }
+}
+
+export component LeftPanel inherits Rectangle {
+    background: Theme.panel;
+    // Ctrl+F : la main dans la recherche de la bibliothèque
+    property <int> focus-search: App.focus-search;
+    changed focus-search => {
+        lib-search.focus-edit();
+    }
+    VerticalLayout {
+        // ---- bibliothèque (un peu moins de la moitié de la hauteur)
+        VerticalLayout {
+            padding: 10px;
+            spacing: 8px;
+            vertical-stretch: 0.75;
+            PanelTitle {
+                text: @tr("BIBLIOTHÈQUE");
+            }
+            HorizontalLayout {
+                spacing: 6px;
+                lib-search := VoiceEdit {
+                    horizontal-stretch: 1;
+                    field: "search";
+                    icon: "search";
+                    placeholder-text: App.lib-tab == 0 ? @tr("Rechercher un projecteur…") : App.lib-tab == 1 ? @tr("Rechercher un pied…") : App.lib-tab == 2 ? @tr("Rechercher dans le grip…") : @tr("Personnage, chien, voiture, canapé…");
+                    text: App.search;
+                    edited(t) => {
+                        App.search = t;
+                        App.search-changed(t);
+                    }
+                }
+                if App.lib-tab == 0: SortButton {
+                    labels: [@tr("Par marque"), @tr("Par type (panneaux, fresnels, tubes…)"), @tr("Par nom (A → Z)"), @tr("Par puissance (lux à 1 m)")];
+                    shorts: [@tr("Marque"), @tr("Type"), @tr("Nom"), @tr("Puissance")];
+                    current: App.lib-sort;
+                    tip: @tr("Trier les projecteurs");
+                    chosen(i) => {
+                        App.lib-action("sort", i);
+                    }
+                }
+            }
+            // onglets : Lumières, Pieds, Grip, Décor (nombre d'éléments)
+            HorizontalLayout {
+                spacing: 3px;
+                for t[i] in [@tr("Lumières"), @tr("Pieds"), @tr("Grip"), @tr("Décor")]: tab-btn := Rectangle {
+                    property <bool> active: App.lib-tab == i;
+                    horizontal-stretch: 1;
+                    height: 26px;
+                    border-radius: Theme.radius;
+                    background: self.active ? Theme.active : tab-touch.has-hover ? Theme.hover : Theme.panel-2;
+                    border-width: 1px;
+                    border-color: self.active ? Theme.active-line : tab-touch.has-hover ? #48505e : Theme.line-2;
+                    tab-touch := TouchArea {
+                        clicked => {
+                            App.lib-action("tab", i);
+                            App.refocus += 1;
+                        }
+                    }
+                    HorizontalLayout {
+                        alignment: center;
+                        spacing: 3px;
+                        Text {
+                            text: t;
+                            color: tab-btn.active ? #ffffff : Theme.text;
+                            font-size: 11.5px;
+                            vertical-alignment: center;
+                            overflow: elide;
+                        }
+                        Text {
+                            text: App.lib-counts[i];
+                            color: tab-btn.active ? #ffffff : Theme.dim;
+                            font-size: 10px;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
+            }
+            ListView {
+                min-height: 120px;
+                vertical-stretch: 1;
+                for line in App.library: LibLine {
+                    line: line;
+                }
+            }
+        }
+        Rectangle {
+            height: 1px;
+            background: Theme.line;
+        }
+
+        // ---- scène
+        VerticalLayout {
+            padding: 10px;
+            spacing: 8px;
+            vertical-stretch: 1;
+            PanelTitle {
+                text: @tr("SCÈNE");
+                count: App.scene-count;
+            }
+            HorizontalLayout {
+                spacing: 6px;
+                VoiceEdit {
+                    horizontal-stretch: 1;
+                    field: "scene-search";
+                    icon: "search";
+                    placeholder-text: @tr("Rechercher dans la scène…");
+                    text: App.scene-search;
+                    edited(t) => {
+                        App.scene-search = t;
+                        App.scene-action("search", t);
+                    }
+                }
+                SortButton {
+                    labels: [@tr("Ordre d’ajout"), @tr("Nom (A → Z)"), @tr("Adresse DMX (univers, adresse)"), @tr("Modèle"), @tr("Numéro de fixture (Fix)")];
+                    shorts: [@tr("Ajout"), @tr("Nom"), @tr("DMX"), @tr("Modèle"), @tr("Fix")];
+                    current: App.scene-sort;
+                    tip: @tr("Trier les projecteurs");
+                    chosen(i) => {
+                        App.scene-action("sort", i);
+                    }
+                }
+            }
+            ListView {
+                vertical-stretch: 1;
+                for line in App.scene-rows: SceneLine {
+                    line: line;
+                }
+            }
+        }
+    }
+}

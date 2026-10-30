@@ -1,4 +1,6 @@
 // Annuler / rétablir : un instantané de la scène avant chaque modification (100 étapes au plus).
+import { getObjectType, isProp } from '../shared/objects.js';
+
 // Un geste continu (glisser une poignée, un curseur, une forme du plan) ne fait qu'une étape :
 // les messages de même nature sur les mêmes éléments, à moins de MERGE_MS d'intervalle, sont fusionnés.
 
@@ -21,7 +23,7 @@ export function historyKey(msg) {
       return `${msg.t}|${items.map((i) => i.id).join(',')}|${[...new Set(items.map((i) => keys(i.changes)))].join(';')}`;
     }
     case 'plot.meta':
-      return `${msg.t}|${keys({ underlay: msg.underlay ?? undefined, title: msg.title ?? undefined })}`;
+      return `${msg.t}|${keys({ underlay: msg.underlay ?? undefined, title: msg.title ?? undefined, background: msg.background === undefined ? undefined : 1 })}`;
     case 'group.update':
       return typeof msg.name === 'string' ? `${msg.t}|${msg.id}|name` : null;
     default:
@@ -55,14 +57,14 @@ export function historyLabel(msg) {
     case 'fixtures.update':
       return fixtureChange((msg.items || []).map((i) => i.changes));
     case 'object.add':
-      return 'l’ajout du grip';
+      return isProp(getObjectType(msg.type)) ? 'l’ajout de l’objet' : 'l’ajout du grip';
     case 'object.update': {
       const kinds = changeKinds(msg.changes);
       if (kinds.every((k) => k === 'position' || k === 'rotation')) return 'le déplacement';
-      return kinds.length === 1 && kinds[0] === 'name' ? 'le changement de nom' : 'le réglage du grip';
+      return kinds.length === 1 && kinds[0] === 'name' ? 'le changement de nom' : 'le réglage de l’objet';
     }
     case 'object.remove':
-      return 'la suppression du grip';
+      return 'la suppression de l’objet';
     case 'plot.add':
       return 'l’ajout au plan de feu';
     case 'plot.update':
@@ -70,13 +72,15 @@ export function historyLabel(msg) {
     case 'plot.remove':
       return 'la suppression dans le plan de feu';
     case 'plot.meta':
-      return msg.title ? 'le cartouche du plan' : 'l’image de fond du plan';
+      return msg.title ? 'le cartouche du plan' : msg.background !== undefined ? 'la couleur du fond du plan' : 'l’image de fond du plan';
     case 'group.create':
       return 'la création du groupe';
     case 'group.update':
       return 'la modification du groupe';
     case 'group.delete':
       return 'la suppression du groupe';
+    case 'ai.action':
+      return 'l’action de l’assistant';
     default:
       return 'la modification';
   }

@@ -42,6 +42,19 @@ export class UniverseStore {
     this._merge(uni);
   }
 
+  /**
+   * Oublie le dernier état d'un univers que plus aucune source n'envoie (« reprendre la main ») :
+   * les projecteurs en mode auto reviennent à leurs réglages. Renvoie false si une source émet encore.
+   */
+  forget(universe) {
+    const uni = this.universes.get(universe);
+    if (!uni) return true;
+    const now = Date.now();
+    for (const s of uni.sources.values()) if (now - s.last <= SOURCE_TIMEOUT_MS) return false;
+    this.universes.delete(universe);
+    return true;
+  }
+
   terminate(universe, key) {
     const uni = this.universes.get(universe);
     if (uni && uni.sources.delete(key)) this._merge(uni);

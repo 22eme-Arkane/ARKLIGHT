@@ -1,0 +1,1262 @@
+// Menus de la barre du haut (comme la version JavaScript : dans la barre, pas dans la fenêtre).
+import { ListView, ScrollView, LineEdit, Slider, ComboBox, Switch, Button, CheckBox } from "std-widgets.slint";
+import { App, Dictation, LibRow, SceneRow, Field, ConsoleFader, MonitorCell, GroupRow, MoveRow, FaceItem, FaceRow, AiLine, BleLine, MidiRow, Label3D, ProjectCard, ProjectRow, ShortcutRow, Pill, Tab, Toggle, EnvSlider, FormRow, MicButton, VoiceEdit } from "common.slint";
+import { Theme, Icon, ToolButton, TextButton, ToolSep, StatusPill, PanelTitle, TabButton, ToolSlider } from "theme.slint";
+
+export component MenuRow inherits HorizontalLayout {
+    spacing: 1px;
+    // F10 : le menu Fichier s'ouvre (puis flèches du clavier)
+    property <int> menu-key: App.menu-key;
+    changed menu-key => {
+        m0-menu.show({ x: 0, y: 30px });
+    }
+        // ---- @tr("Fichier")
+        Rectangle {
+            height: 28px;
+            width: m0-label.preferred-width + 18px;
+            border-radius: 4px;
+            background: m0-touch.has-hover ? Theme.panel-2 : transparent;
+            m0-menu := ContextMenuArea {
+                enabled: false;
+                width: parent.width;
+                height: parent.height;
+                Menu {
+                    MenuItem {
+                        title: @tr("Écran des projets…") + App.menu-shortcut("projects.open", App.keys-rev);
+                        activated => {
+                            App.projects("open", 0);
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Nouveau projet") + App.menu-shortcut("scene.new", App.keys-rev);
+                        activated => {
+                            App.new-project();
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Ouvrir un projet…") + App.menu-shortcut("scene.open", App.keys-rev);
+                        activated => {
+                            App.open-project();
+                        }
+                    }
+                    Menu {
+                        title: @tr("Projets récents");
+                        for path[i] in App.recent: MenuItem {
+                            title: path;
+                            activated => {
+                                App.open-recent(i);
+                            }
+                        }
+                    }
+                    Menu {
+                        title: @tr("Projets d'exemple");
+                        MenuItem {
+                            title: @tr("Tournage de nuit (rue, terrasse de café)");
+                            activated => {
+                                App.open-demo("night");
+                            }
+                        }
+                        MenuItem {
+                            title: @tr("Clip (studio, cyclo)");
+                            activated => {
+                                App.open-demo("clip");
+                            }
+                        }
+                    }
+                    MenuSeparator { }
+                    Menu {
+                        title: @tr("Séquences et plans");
+                        MenuItem {
+                            title: @tr("Séquences et plans…") + App.menu-shortcut("plans.open", App.keys-rev);
+                            activated => {
+                                App.plans-action("show", "", "");
+                            }
+                        }
+                        MenuSeparator { }
+                        MenuItem {
+                            title: @tr("Nouveau plan (copie du plan actuel)") + App.menu-shortcut("plan.new", App.keys-rev);
+                            activated => {
+                                App.new-plan("copy");
+                            }
+                        }
+                        MenuItem {
+                            title: @tr("Nouveau plan (même décor, sans lumière)");
+                            activated => {
+                                App.new-plan("decor");
+                            }
+                        }
+                        MenuItem {
+                            title: @tr("Nouvelle séquence") + App.menu-shortcut("sequence.new", App.keys-rev);
+                            activated => {
+                                App.new-sequence();
+                            }
+                        }
+                        MenuSeparator { }
+                        MenuItem {
+                            title: @tr("Plan suivant") + App.menu-shortcut("plan.next", App.keys-rev);
+                            activated => {
+                                App.step-plan(true);
+                            }
+                        }
+                        MenuItem {
+                            title: @tr("Plan précédent") + App.menu-shortcut("plan.prev", App.keys-rev);
+                            activated => {
+                                App.step-plan(false);
+                            }
+                        }
+                        MenuSeparator { }
+                        MenuItem {
+                            title: @tr("Supprimer le plan");
+                            activated => {
+                                App.remove-plan();
+                            }
+                        }
+                    }
+                    MenuSeparator { }
+                    MenuItem {
+                        title: @tr("Enregistrer") + App.menu-shortcut("scene.save", App.keys-rev);
+                        activated => {
+                            App.save-project();
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Enregistrer sous…") + App.menu-shortcut("scene.saveAs", App.keys-rev);
+                        activated => {
+                            App.save-project-as();
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Revenir à la version enregistrée") + App.menu-shortcut("scene.revert", App.keys-rev);
+                        enabled: App.dirty;
+                        activated => {
+                            App.action("revert");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Renommer le projet") + App.menu-shortcut("scene.rename", App.keys-rev);
+                        activated => {
+                            App.focus-name += 1;
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Dossier des projets…") + App.menu-shortcut("projects.folder", App.keys-rev);
+                        activated => {
+                            App.projects("folder", 0);
+                        }
+                    }
+                    MenuSeparator { }
+                    MenuItem {
+                        title: @tr("Quitter") + App.menu-shortcut("app.quit", App.keys-rev);
+                        activated => {
+                            App.quit();
+                        }
+                    }
+                }
+            }
+            m0-touch := TouchArea {
+                clicked => {
+                    m0-menu.show({ x: 0, y: parent.height + 2px });
+                }
+            }
+            m0-label := Text {
+                text: @tr("Fichier");
+                color: m0-touch.has-hover ? Theme.text : Theme.muted;
+                font-size: Theme.font;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+        }
+        // ---- @tr("Édition")
+        Rectangle {
+            height: 28px;
+            width: m1-label.preferred-width + 18px;
+            border-radius: 4px;
+            background: m1-touch.has-hover ? Theme.panel-2 : transparent;
+            m1-menu := ContextMenuArea {
+                enabled: false;
+                width: parent.width;
+                height: parent.height;
+                Menu {
+                    MenuItem {
+                        title: (App.undo-label == "" ? @tr("Annuler") : @tr("Annuler {}", App.undo-label)) + App.menu-shortcut("edit.undo", App.keys-rev);
+                        enabled: App.undo-label != "";
+                        activated => {
+                            App.undo();
+                        }
+                    }
+                    MenuItem {
+                        title: (App.redo-label == "" ? @tr("Rétablir") : @tr("Rétablir {}", App.redo-label)) + App.menu-shortcut("edit.redo", App.keys-rev);
+                        enabled: App.redo-label != "";
+                        activated => {
+                            App.redo();
+                        }
+                    }
+                    MenuSeparator { }
+                    MenuItem {
+                        title: @tr("Couper") + App.menu-shortcut("edit.cut", App.keys-rev);
+                        enabled: App.selected-count > 0;
+                        activated => {
+                            App.action("cut");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Copier") + App.menu-shortcut("edit.copy", App.keys-rev);
+                        enabled: App.selected-count > 0;
+                        activated => {
+                            App.action("copy");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Coller") + App.menu-shortcut("edit.paste", App.keys-rev);
+                        activated => {
+                            App.action("paste");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Dupliquer") + App.menu-shortcut("edit.duplicate", App.keys-rev);
+                        activated => {
+                            App.duplicate();
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Supprimer") + App.menu-shortcut("edit.delete", App.keys-rev);
+                        activated => {
+                            App.delete-selection();
+                        }
+                    }
+                    MenuSeparator { }
+                    MenuItem {
+                        title: @tr("Tout sélectionner") + App.menu-shortcut("select.all", App.keys-rev);
+                        activated => {
+                            App.select-all();
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Désélectionner") + App.menu-shortcut("select.none", App.keys-rev);
+                        activated => {
+                            App.select-none();
+                        }
+                    }
+                    MenuSeparator { }
+                    MenuItem {
+                        title: @tr("Raccourcis clavier…") + App.menu-shortcut("shortcuts.open", App.keys-rev);
+                        activated => {
+                            App.action("shortcuts");
+                        }
+                    }
+                }
+            }
+            m1-touch := TouchArea {
+                clicked => {
+                    m1-menu.show({ x: 0, y: parent.height + 2px });
+                }
+            }
+            m1-label := Text {
+                text: @tr("Édition");
+                color: m1-touch.has-hover ? Theme.text : Theme.muted;
+                font-size: Theme.font;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+        }
+        // ---- @tr("Sélection")
+        Rectangle {
+            height: 28px;
+            width: m2-label.preferred-width + 18px;
+            border-radius: 4px;
+            background: m2-touch.has-hover ? Theme.panel-2 : transparent;
+            m2-menu := ContextMenuArea {
+                enabled: false;
+                width: parent.width;
+                height: parent.height;
+                Menu {
+                    MenuItem {
+                        title: @tr("Cadrer") + App.menu-shortcut("view.frame", App.keys-rev);
+                        enabled: App.selected-count > 0;
+                        activated => {
+                            App.action("frame");
+                        }
+                    }
+                    MenuItem {
+                        title: App.selected-count > 1 ? @tr("Dupliquer la sélection") : @tr("Dupliquer");
+                        enabled: App.selected-count > 0;
+                        activated => {
+                            App.duplicate();
+                        }
+                    }
+                    MenuItem {
+                        title: App.selection-off ? @tr("Allumer") : @tr("Éteindre");
+                        enabled: App.selected-fixtures > 0;
+                        activated => {
+                            App.action("power");
+                        }
+                    }
+                    Menu {
+                        title: @tr("Viser");
+                        enabled: App.selected-fixtures > 0 && App.selection-aimable;
+                        MenuItem {
+                            title: @tr("Le personnage (ou le centre du plateau)");
+                            activated => {
+                                App.action("aim");
+                            }
+                        }
+                        if App.aim-targets.length > 1: MenuSeparator { }
+                        for t[i] in App.aim-targets: MenuItem {
+                            title: t;
+                            activated => {
+                                App.action("aim:" + i);
+                            }
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Poser au sol") + App.menu-shortcut("fixture.drop", App.keys-rev);
+                        enabled: App.selected-count > 0;
+                        activated => {
+                            App.action("drop");
+                        }
+                    }
+                    // pied et accessoires de la sélection (comme le menu Édition de la version JavaScript)
+                    for m in App.ctx-menus: Menu {
+                        title: m.title;
+                        for it in m.items: MenuItem {
+                            title: it.title;
+                            checkable: true;
+                            checked: it.checked;
+                            activated => {
+                                App.action(it.action);
+                            }
+                        }
+                        for sm in m.subs: Menu {
+                            title: sm.title;
+                            for it in sm.items: MenuItem {
+                                title: it.title;
+                                checkable: true;
+                                checked: it.checked;
+                                activated => {
+                                    App.action(it.action);
+                                }
+                            }
+                        }
+                    }
+                    Menu {
+                        title: @tr("Liaison CRMX");
+                        enabled: App.selection-v5;
+                        MenuItem {
+                            title: @tr("Lier (touche LINK)");
+                            activated => {
+                                App.action("crmx-link");
+                            }
+                        }
+                        MenuItem {
+                            title: @tr("Délier");
+                            activated => {
+                                App.action("crmx-unlink");
+                            }
+                        }
+                    }
+                    MenuSeparator { }
+                    MenuItem {
+                        title: App.selected-fixtures > 1 ? @tr("Grouper la sélection") : @tr("Créer un groupe");
+                        enabled: App.selected-fixtures > 0;
+                        activated => {
+                            App.action("group");
+                        }
+                    }
+                    Menu {
+                        title: @tr("Ajouter au groupe");
+                        enabled: App.selected-fixtures > 0 && App.groups.length > 0;
+                        for g in App.groups: MenuItem {
+                            title: g.name;
+                            checkable: true;
+                            checked: g.all;
+                            activated => {
+                                App.action("group-add:" + g.id);
+                            }
+                        }
+                    }
+                    Menu {
+                        title: @tr("Retirer du groupe");
+                        enabled: App.selected-fixtures > 0 && App.groups.length > 0;
+                        for g in App.groups: MenuItem {
+                            title: g.name;
+                            enabled: g.some;
+                            activated => {
+                                App.action("group-remove:" + g.id);
+                            }
+                        }
+                    }
+                    MenuSeparator { }
+                    MenuItem {
+                        title: App.selected-fixtures > 1 ? @tr("Adresser la sélection à la suite…") : @tr("Ré-adresser…");
+                        enabled: App.selected-fixtures > 0;
+                        activated => {
+                            App.action("readdress-selection");
+                        }
+                    }
+                    MenuItem {
+                        title: App.selected-fixtures > 1 ? @tr("Numéroter les fixtures à la suite…") : @tr("Numéro de fixture…");
+                        enabled: App.selected-fixtures > 0;
+                        activated => {
+                            App.action("number");
+                        }
+                    }
+                    MenuSeparator { }
+                    MenuItem {
+                        title: App.same-label;
+                        enabled: App.selected-fixtures > 0;
+                        activated => {
+                            App.action("select-same");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Tout sélectionner") + App.menu-shortcut("select.all", App.keys-rev);
+                        activated => {
+                            App.select-all();
+                        }
+                    }
+                    Menu {
+                        title: @tr("Sélectionner un groupe");
+                        enabled: App.groups.length > 0;
+                        for g in App.groups: MenuItem {
+                            title: g.name + " (" + g.count + ")";
+                            enabled: g.count > 0;
+                            activated => {
+                                App.action("group-select:" + g.id);
+                            }
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Inverser la sélection") + App.menu-shortcut("select.invert", App.keys-rev);
+                        activated => {
+                            App.action("invert");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Désélectionner") + App.menu-shortcut("select.none", App.keys-rev);
+                        enabled: App.selected-count > 0;
+                        activated => {
+                            App.select-none();
+                        }
+                    }
+                    MenuSeparator { }
+                    MenuItem {
+                        title: @tr("Supprimer") + App.menu-shortcut("edit.delete", App.keys-rev);
+                        enabled: App.selected-count > 0;
+                        activated => {
+                            App.delete-selection();
+                        }
+                    }
+                }
+            }
+            m2-touch := TouchArea {
+                clicked => {
+                    m2-menu.show({ x: 0, y: parent.height + 2px });
+                }
+            }
+            m2-label := Text {
+                text: @tr("Sélection");
+                color: m2-touch.has-hover ? Theme.text : Theme.muted;
+                font-size: Theme.font;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+        }
+        // ---- @tr("Plan")
+        Rectangle {
+            height: 28px;
+            width: m3-label.preferred-width + 18px;
+            border-radius: 4px;
+            background: m3-touch.has-hover ? Theme.panel-2 : transparent;
+            m3-menu := ContextMenuArea {
+                enabled: false;
+                width: parent.width;
+                height: parent.height;
+                Menu {
+                    MenuItem {
+                        title: App.plot-mode ? @tr("Revenir à la vue 3D") : @tr("Plan de feu 2D");
+                        activated => {
+                            App.action("toggle-plot");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Tout voir");
+                        enabled: App.plot-mode;
+                        activated => {
+                            App.action("plot-fit");
+                        }
+                    }
+                    MenuSeparator { }
+                    MenuItem {
+                        title: @tr("Matériel seulement");
+                        activated => {
+                            App.plot-option("equipment");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Tout montrer");
+                        activated => {
+                            App.plot-option("all");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Noms");
+                        checkable: true;
+                        checked: App.plot-flags[0];
+                        activated => {
+                            App.plot-option("names");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Numéros de fixture (Fix)");
+                        checkable: true;
+                        checked: App.plot-flags[1];
+                        activated => {
+                            App.plot-option("fixtures");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Adresses DMX");
+                        checkable: true;
+                        checked: App.plot-flags[2];
+                        activated => {
+                            App.plot-option("addresses");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Pieds, hauteurs et accessoires");
+                        checkable: true;
+                        checked: App.plot-flags[3];
+                        activated => {
+                            App.plot-option("supports");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Faisceaux");
+                        checkable: true;
+                        checked: App.plot-flags[4];
+                        activated => {
+                            App.plot-option("beams");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Grille");
+                        checkable: true;
+                        checked: App.plot-flags[5];
+                        activated => {
+                            App.plot-option("grid");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Image de fond");
+                        checkable: true;
+                        checked: App.plot-flags[6];
+                        activated => {
+                            App.plot-option("underlay");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Pieds seuls");
+                        checkable: true;
+                        checked: App.plot-flags[7];
+                        activated => {
+                            App.plot-option("stands");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Grip");
+                        checkable: true;
+                        checked: App.plot-flags[8];
+                        activated => {
+                            App.plot-option("grip");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Sacs de sable");
+                        checkable: true;
+                        checked: App.plot-flags[9];
+                        activated => {
+                            App.plot-option("sandbags");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Cyclo");
+                        checkable: true;
+                        checked: App.plot-flags[10];
+                        activated => {
+                            App.plot-option("studio");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Formes, textes, flèches");
+                        checkable: true;
+                        checked: App.plot-flags[11];
+                        activated => {
+                            App.plot-option("annotations");
+                        }
+                    }
+                    Menu {
+                        title: @tr("Décor");
+                        MenuItem {
+                            title: @tr("Personnages");
+                            checkable: true;
+                            checked: App.plot-flags[12];
+                            activated => {
+                                App.plot-option("people");
+                            }
+                        }
+                        MenuItem {
+                            title: @tr("Animaux");
+                            checkable: true;
+                            checked: App.plot-flags[13];
+                            activated => {
+                                App.plot-option("animals");
+                            }
+                        }
+                        MenuItem {
+                            title: @tr("Véhicules");
+                            checkable: true;
+                            checked: App.plot-flags[14];
+                            activated => {
+                                App.plot-option("vehicles");
+                            }
+                        }
+                        MenuItem {
+                            title: @tr("Mobilier");
+                            checkable: true;
+                            checked: App.plot-flags[15];
+                            activated => {
+                                App.plot-option("furniture");
+                            }
+                        }
+                        MenuItem {
+                            title: @tr("Décor et architecture");
+                            checkable: true;
+                            checked: App.plot-flags[16];
+                            activated => {
+                                App.plot-option("set");
+                            }
+                        }
+                        MenuItem {
+                            title: @tr("Extérieur et nature");
+                            checkable: true;
+                            checked: App.plot-flags[17];
+                            activated => {
+                                App.plot-option("outdoor");
+                            }
+                        }
+                        MenuItem {
+                            title: @tr("Accessoires");
+                            checkable: true;
+                            checked: App.plot-flags[18];
+                            activated => {
+                                App.plot-option("props");
+                            }
+                        }
+                        MenuItem {
+                            title: @tr("Plateau (caméra, son…)");
+                            checkable: true;
+                            checked: App.plot-flags[19];
+                            activated => {
+                                App.plot-option("filmset");
+                            }
+                        }
+                    }
+                    MenuSeparator { }
+                    MenuItem {
+                        title: @tr("Importer un plan dessiné…") + App.menu-shortcut("ai.drawing", App.keys-rev);
+                        activated => {
+                            App.ai("drawing", "");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Fond et cartouche…");
+                        activated => {
+                            App.action("plot-panel");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Image de fond (photo ou plan)…");
+                        activated => {
+                            App.plot-option("underlay-import");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Caler l’image de fond (deux points)…");
+                        activated => {
+                            App.plot-option("underlay-calibrate");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Retirer l’image de fond");
+                        activated => {
+                            App.plot-option("underlay-remove");
+                        }
+                    }
+                    MenuSeparator { }
+                    MenuItem {
+                        title: @tr("Imprimer / PDF (plan + liste + patch)") + App.menu-shortcut("plot.print", App.keys-rev);
+                        activated => {
+                            App.plot-export("print");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Exporter le plan en SVG…") + App.menu-shortcut("plot.svg", App.keys-rev);
+                        activated => {
+                            App.plot-export("svg");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Exporter le plan en PDF…");
+                        activated => {
+                            App.plot-export("pdf");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Exporter le plan en PNG…") + App.menu-shortcut("plot.png", App.keys-rev);
+                        activated => {
+                            App.plot-export("png");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Liste du matériel (CSV)…") + App.menu-shortcut("plot.equipment", App.keys-rev);
+                        activated => {
+                            App.plot-export("equipment");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Patch DMX (CSV)…") + App.menu-shortcut("plot.patch", App.keys-rev);
+                        activated => {
+                            App.plot-export("patch");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Export MVR (Blackout, consoles)…") + App.menu-shortcut("plot.mvr", App.keys-rev);
+                        activated => {
+                            App.plot-export("mvr");
+                        }
+                    }
+                }
+            }
+            m3-touch := TouchArea {
+                clicked => {
+                    m3-menu.show({ x: 0, y: parent.height + 2px });
+                }
+            }
+            m3-label := Text {
+                text: @tr("Plan");
+                color: m3-touch.has-hover ? Theme.text : Theme.muted;
+                font-size: Theme.font;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+        }
+        // ---- @tr("Patch")
+        Rectangle {
+            height: 28px;
+            width: m4-label.preferred-width + 18px;
+            border-radius: 4px;
+            background: m4-touch.has-hover ? Theme.panel-2 : transparent;
+            m4-menu := ContextMenuArea {
+                enabled: false;
+                width: parent.width;
+                height: parent.height;
+                Menu {
+                    MenuItem {
+                        title: @tr("Ré-adressage automatique…") + App.menu-shortcut("dmx.readdress", App.keys-rev);
+                        activated => {
+                            App.action("readdress");
+                        }
+                    }
+                }
+            }
+            m4-touch := TouchArea {
+                clicked => {
+                    m4-menu.show({ x: 0, y: parent.height + 2px });
+                }
+            }
+            m4-label := Text {
+                text: @tr("Patch");
+                color: m4-touch.has-hover ? Theme.text : Theme.muted;
+                font-size: Theme.font;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+        }
+        // ---- @tr("Affichage")
+        Rectangle {
+            height: 28px;
+            width: m5-label.preferred-width + 18px;
+            border-radius: 4px;
+            background: m5-touch.has-hover ? Theme.panel-2 : transparent;
+            m5-menu := ContextMenuArea {
+                enabled: false;
+                width: parent.width;
+                height: parent.height;
+                Menu {
+                    MenuItem {
+                        title: @tr("Vue 3D (perspective)") + App.menu-shortcut("view.persp", App.keys-rev);
+                        activated => {
+                            App.action("view:persp");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Vue de face") + App.menu-shortcut("view.front", App.keys-rev);
+                        activated => {
+                            App.action("view:front");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Vue de dessus") + App.menu-shortcut("view.top", App.keys-rev);
+                        activated => {
+                            App.action("view:top");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Vue de côté") + App.menu-shortcut("view.side", App.keys-rev);
+                        activated => {
+                            App.action("view:side");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Plan de feu 2D") + App.menu-shortcut("view.plot", App.keys-rev);
+                        checkable: true;
+                        checked: App.plot-mode;
+                        activated => {
+                            App.action("toggle-plot");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Cadrer la sélection") + App.menu-shortcut("view.frame", App.keys-rev);
+                        enabled: App.selected-count > 0;
+                        activated => {
+                            App.action("frame");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Voir par la caméra") + App.menu-shortcut("view.camera", App.keys-rev);
+                        checkable: true;
+                        checked: App.look-label != "";
+                        activated => {
+                            App.action("camera");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Revenir à la vue de départ") + App.menu-shortcut("view.reset", App.keys-rev);
+                        activated => {
+                            App.reset-view();
+                        }
+                    }
+                    MenuSeparator { }
+                    MenuItem {
+                        title: @tr("Surbrillance (voir tout dans le noir)") + App.menu-shortcut("view.highlight", App.keys-rev);
+                        checkable: true;
+                        checked: App.highlight;
+                        activated => {
+                            App.set-flag("highlight", !App.highlight);
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Noms des projecteurs") + App.menu-shortcut("labels.toggle", App.keys-rev);
+                        checkable: true;
+                        checked: App.show-labels;
+                        activated => {
+                            App.set-flag("labels", !App.show-labels);
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Adresses DMX") + App.menu-shortcut("labels.patch", App.keys-rev);
+                        checkable: true;
+                        checked: App.show-patch;
+                        activated => {
+                            App.set-flag("labelPatch", !App.show-patch);
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Halo des sources lumineuses") + App.menu-shortcut("view.bloom", App.keys-rev);
+                        checkable: true;
+                        checked: App.show-bloom;
+                        activated => {
+                            App.set-flag("bloom", !App.show-bloom);
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Aide en bas de la vue") + App.menu-shortcut("view.help", App.keys-rev);
+                        checkable: true;
+                        checked: App.show-help;
+                        activated => {
+                            App.show-help = !App.show-help;
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Images par seconde (i/s)") + App.menu-shortcut("view.fps", App.keys-rev);
+                        checkable: true;
+                        checked: App.show-fps;
+                        activated => {
+                            App.show-fps = !App.show-fps;
+                        }
+                    }
+                    Menu {
+                        title: @tr("Studio");
+                        MenuItem {
+                            title: @tr("Sol") + App.menu-shortcut("env.floor", App.keys-rev);
+                            checkable: true;
+                            checked: App.show-floor;
+                            activated => {
+                                App.set-flag("floor", !App.show-floor);
+                            }
+                        }
+                        MenuItem {
+                            title: @tr("Cyclo") + App.menu-shortcut("env.cyc", App.keys-rev);
+                            checkable: true;
+                            checked: App.show-cyc;
+                            activated => {
+                                App.set-flag("cyc", !App.show-cyc);
+                            }
+                        }
+                        MenuItem {
+                            title: @tr("Pieds de projecteur") + App.menu-shortcut("env.stands", App.keys-rev);
+                            checkable: true;
+                            checked: App.show-stands;
+                            activated => {
+                                App.set-flag("stands", !App.show-stands);
+                            }
+                        }
+                    }
+                    MenuSeparator { }
+                    MenuItem {
+                        title: @tr("Bibliothèque") + App.menu-shortcut("panel.left", App.keys-rev);
+                        checkable: true;
+                        checked: App.show-left;
+                        activated => {
+                            App.show-left = !App.show-left;
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Inspecteur") + App.menu-shortcut("panel.right", App.keys-rev);
+                        checkable: true;
+                        checked: App.show-right;
+                        activated => {
+                            App.show-right = !App.show-right;
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Panneau du bas") + App.menu-shortcut("panel.bottom", App.keys-rev);
+                        checkable: true;
+                        checked: App.show-console;
+                        activated => {
+                            App.show-console = !App.show-console;
+                        }
+                    }
+                    MenuSeparator { }
+                    MenuItem {
+                        title: @tr("Plein écran") + App.menu-shortcut("view.fullscreen", App.keys-rev);
+                        checkable: true;
+                        checked: App.fullscreen;
+                        activated => {
+                            App.action("fullscreen");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Vue 3D / plan en plein écran") + App.menu-shortcut("view.fullview", App.keys-rev);
+                        checkable: true;
+                        checked: App.full-view;
+                        activated => {
+                            App.full-view = !App.full-view;
+                        }
+                    }
+                }
+            }
+            m5-touch := TouchArea {
+                clicked => {
+                    m5-menu.show({ x: 0, y: parent.height + 2px });
+                }
+            }
+            m5-label := Text {
+                text: @tr("Affichage");
+                color: m5-touch.has-hover ? Theme.text : Theme.muted;
+                font-size: Theme.font;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+        }
+        // ---- @tr("Outils")
+        Rectangle {
+            height: 28px;
+            width: m8-label.preferred-width + 18px;
+            border-radius: 4px;
+            background: m8-touch.has-hover ? Theme.panel-2 : transparent;
+            m8-menu := ContextMenuArea {
+                enabled: false;
+                width: parent.width;
+                height: parent.height;
+                Menu {
+                    MenuItem {
+                        title: @tr("Déplacer (poignée)") + App.menu-shortcut("tool.translate", App.keys-rev);
+                        checkable: true;
+                        checked: App.tool == 0;
+                        activated => {
+                            App.tool = 0;
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Pivoter (poignée)") + App.menu-shortcut("tool.rotate", App.keys-rev);
+                        checkable: true;
+                        checked: App.tool == 1;
+                        activated => {
+                            App.tool = 1;
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Aimant (10 cm / 5°)") + App.menu-shortcut("snap.toggle", App.keys-rev);
+                        checkable: true;
+                        checked: App.snap;
+                        activated => {
+                            App.snap = !App.snap;
+                        }
+                    }
+                    MenuSeparator { }
+                    MenuItem {
+                        title: @tr("Rechercher dans la bibliothèque") + App.menu-shortcut("library.search", App.keys-rev);
+                        activated => {
+                            App.show-left = true;
+                            App.focus-search += 1;
+                        }
+                    }
+                    Menu {
+                        title: @tr("Bibliothèque");
+                        for t[i] in [@tr("Lumières"), @tr("Pieds"), @tr("Grip"), @tr("Décor (personnages, véhicules, mobilier…)")]: MenuItem {
+                            title: t;
+                            checkable: true;
+                            checked: App.lib-tab == i;
+                            activated => {
+                                App.show-left = true;
+                                App.lib-action("tab", i);
+                            }
+                        }
+                    }
+                    MenuSeparator { }
+                    MenuItem {
+                        title: @tr("Télécommande infrarouge") + App.menu-shortcut("remote.toggle", App.keys-rev);
+                        checkable: true;
+                        checked: App.remote-open;
+                        activated => {
+                            App.remote-open = !App.remote-open;
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Contrôleur MIDI…") + App.menu-shortcut("midi.open", App.keys-rev);
+                        activated => {
+                            App.show-console = true;
+                            App.bottom-tab = 2;
+                            App.midi("show", "");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Blackout (tout dans le noir)") + App.menu-shortcut("view.blackout", App.keys-rev);
+                        checkable: true;
+                        checked: App.blackout;
+                        activated => {
+                            App.action("blackout");
+                        }
+                    }
+                    MenuSeparator { }
+                    for t in [
+                        { id: 0, label: @tr("Console") },
+                        { id: 1, label: @tr("Moniteur DMX") },
+                        { id: 6, label: @tr("Journal") },
+                        { id: 7, label: @tr("Réseau (Art-Net, sACN)") },
+                        { id: 5, label: @tr("Bluetooth (fausse AsteraBox)") },
+                    ]: MenuItem {
+                        title: t.label;
+                        checkable: true;
+                        checked: App.show-console && App.bottom-tab == t.id;
+                        activated => {
+                            App.show-console = true;
+                            App.bottom-tab = t.id;
+                            if (t.id == 5) {
+                                App.ble("show", "");
+                            }
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Console : plein feu sur la sélection") + App.menu-shortcut("console.full", App.keys-rev);
+                        enabled: App.selected-fixtures > 0;
+                        activated => {
+                            App.console-action("full");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Console : noir sur la sélection") + App.menu-shortcut("console.black", App.keys-rev);
+                        enabled: App.selected-fixtures > 0;
+                        activated => {
+                            App.console-action("black");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Console : relâcher la sélection") + App.menu-shortcut("console.release", App.keys-rev);
+                        enabled: App.selected-fixtures > 0;
+                        activated => {
+                            App.console-action("release");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Console : tout relâcher") + App.menu-shortcut("console.releaseAll", App.keys-rev);
+                        activated => {
+                            App.console-action("release-all");
+                        }
+                    }
+                    MenuSeparator { }
+                    MenuItem {
+                        title: @tr("Assistant IA") + App.menu-shortcut("drawer.assistant", App.keys-rev);
+                        checkable: true;
+                        checked: App.show-console && App.bottom-tab == 4;
+                        activated => {
+                            App.show-console = true;
+                            App.bottom-tab = 4;
+                            App.ai("show", "");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Réinterpréter un plan dessiné…") + App.menu-shortcut("ai.drawing", App.keys-rev);
+                        activated => {
+                            App.ai("drawing", "");
+                        }
+                    }
+                }
+            }
+            m8-touch := TouchArea {
+                clicked => {
+                    m8-menu.show({ x: 0, y: parent.height + 2px });
+                }
+            }
+            m8-label := Text {
+                text: @tr("Outils");
+                color: m8-touch.has-hover ? Theme.text : Theme.muted;
+                font-size: Theme.font;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+        }
+        // ---- @tr("Langue")
+        Rectangle {
+            height: 28px;
+            width: m6-label.preferred-width + 18px;
+            border-radius: 4px;
+            background: m6-touch.has-hover ? Theme.panel-2 : transparent;
+            m6-menu := ContextMenuArea {
+                enabled: false;
+                width: parent.width;
+                height: parent.height;
+                Menu {
+                    MenuItem {
+                        title: @tr("Automatique — langue de l’ordinateur");
+                        checkable: true;
+                        checked: App.language == "auto";
+                        activated => {
+                            App.set-language("auto");
+                        }
+                    }
+                    MenuSeparator { }
+                    MenuItem {
+                        title: "Français";
+                        checkable: true;
+                        checked: App.language == "fr";
+                        activated => {
+                            App.set-language("fr");
+                        }
+                    }
+                    MenuItem {
+                        title: "English";
+                        checkable: true;
+                        checked: App.language == "en";
+                        activated => {
+                            App.set-language("en");
+                        }
+                    }
+                }
+            }
+            m6-touch := TouchArea {
+                clicked => {
+                    m6-menu.show({ x: 0, y: parent.height + 2px });
+                }
+            }
+            m6-label := Text {
+                text: @tr("Langue");
+                color: m6-touch.has-hover ? Theme.text : Theme.muted;
+                font-size: Theme.font;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+        }
+        // ---- @tr("Aide")
+        Rectangle {
+            height: 28px;
+            width: m7-label.preferred-width + 18px;
+            border-radius: 4px;
+            background: m7-touch.has-hover ? Theme.panel-2 : transparent;
+            m7-menu := ContextMenuArea {
+                enabled: false;
+                width: parent.width;
+                height: parent.height;
+                Menu {
+                    MenuItem {
+                        title: @tr("Raccourcis clavier…") + App.menu-shortcut("shortcuts.open", App.keys-rev);
+                        activated => {
+                            App.action("shortcuts");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Nouveautés d’ARKLIGHT…") + App.menu-shortcut("app.news", App.keys-rev);
+                        activated => {
+                            App.update-action("news");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Rechercher une mise à jour…") + App.menu-shortcut("app.update", App.keys-rev);
+                        activated => {
+                            App.about-open = true;
+                            App.about-check();
+                        }
+                    }
+                    MenuSeparator { }
+                    MenuItem {
+                        title: @tr("Faire un don…") + App.menu-shortcut("app.support", App.keys-rev);
+                        activated => {
+                            App.support-open = true;
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Code source (GitHub)") + App.menu-shortcut("app.source", App.keys-rev);
+                        activated => {
+                            App.open-url("https://github.com/22eme-Arkane/ARKLIGHT");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Signaler un problème") + App.menu-shortcut("app.issue", App.keys-rev);
+                        activated => {
+                            App.open-url("https://github.com/22eme-Arkane/ARKLIGHT/issues");
+                        }
+                    }
+                    MenuSeparator { }
+                    MenuItem {
+                        title: @tr("À propos d’ARKLIGHT…") + App.menu-shortcut("app.about", App.keys-rev);
+                        activated => {
+                            App.about-open = true;
+                        }
+                    }
+                }
+            }
+            m7-touch := TouchArea {
+                clicked => {
+                    m7-menu.show({ x: 0, y: parent.height + 2px });
+                }
+            }
+            m7-label := Text {
+                text: @tr("Aide");
+                color: m7-touch.has-hover ? Theme.text : Theme.muted;
+                font-size: Theme.font;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+        }
+}

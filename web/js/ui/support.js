@@ -78,7 +78,7 @@ export function openSupport() {
 
 /**
  * Fenêtre de fermeture (application de bureau), comme dans PANDORA.
- * dirty : la scène a des modifications non enregistrées.
+ * dirty : le projet a des modifications non enregistrées.
  * @returns {Promise<0|1|2>} 0 : annuler · 1 : enregistrer et quitter · 2 : quitter sans enregistrer
  */
 export function confirmQuit(sceneName, dirty = true) {
@@ -96,8 +96,8 @@ export function confirmQuit(sceneName, dirty = true) {
         'p',
         { class: 'note' },
         dirty
-          ? `La scène « ${sceneName} » a des modifications non enregistrées. Elle est gardée automatiquement et sera rouverte au prochain lancement ; « Enregistrer et quitter » la range aussi dans tes scènes.`
-          : `La scène « ${sceneName} » est enregistrée. Elle sera rouverte au prochain lancement.`,
+          ? `Le projet « ${sceneName} » a des modifications non enregistrées. Il est gardé automatiquement et sera rouvert au prochain lancement ; « Enregistrer et quitter » l’enregistre aussi dans ton dossier de projets.`
+          : `Le projet « ${sceneName} » est enregistré. Il sera rouvert au prochain lancement.`,
       ),
       h(
         'div',
@@ -117,6 +117,13 @@ export function confirmQuit(sceneName, dirty = true) {
     );
     d.showModal();
   });
+}
+
+/** « Copyright © 2026 22eme ARKANE » (2026–année en cours les années suivantes). */
+export function copyright() {
+  const first = 2026;
+  const now = new Date().getFullYear();
+  return `Copyright © ${now > first ? `${first}–${now}` : first} 22eme ARKANE`;
 }
 
 /** Fenêtre « À propos » : version, licence, mises à jour, soutien. check : vérifier tout de suite. */
@@ -142,7 +149,8 @@ export function openAbout({ store, net, repo, check = false }) {
   d.append(
     h('div', { class: 'sup-head' }, h('img', { src: '/img/ark-light-logo.png', alt: '' }), h('div', {}, h('h3', {}, `ARKLIGHT ${store.version || ''}`), h('div', { class: 'note' }, 'Version alpha : des choses bougent et cassent encore.'))),
     h('p', {}, 'Simulateur d’entraînement pour l’électro et la lumière : projecteurs et leurs menus, DMX (Art-Net, sACN), plan de feu, liste du matériel.'),
-    h('p', { class: 'note' }, 'Logiciel libre sous licence GPL-3.0, par 22eme ARKANE. Profils DMX des autres marques : Open Fixture Library (MIT). Non affilié aux fabricants cités.'),
+    h('p', { class: 'note' }, 'Logiciel libre sous licence Apache-2.0, par 22eme ARKANE. Profils DMX des autres marques : Open Fixture Library (MIT). Non affilié aux fabricants cités.'),
+    h('p', { class: 'note copyright' }, copyright()),
     status,
     h(
       'div',

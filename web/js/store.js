@@ -15,6 +15,14 @@ export class Store extends EventTarget {
     this.config = {};
     this.logs = [];
     this.history = { canUndo: false, canRedo: false, undoLabel: '', redoLabel: '', dirty: false, savedName: null };
+    this.plans = { current: {}, sequences: [] }; // séquences et plans du projet (shared/plans.js)
+  }
+
+  /** Séquences et plans du projet (envoyés par le serveur). */
+  setPlans(plans) {
+    if (!plans) return;
+    this.plans = plans;
+    this.emit('plans', plans);
   }
 
   /** Annuler / rétablir et état « enregistrée » de la scène (envoyés par le serveur). */
@@ -112,9 +120,10 @@ export class Store extends EventTarget {
     this.emit('plot', this.scene.plot);
   }
 
-  setPlotMeta({ underlay, title }) {
+  setPlotMeta({ underlay, title, background }) {
     this.scene.plot.underlay = underlay;
     this.scene.plot.title = title;
+    if (background !== undefined) this.scene.plot.background = background;
     this.emit('plot', this.scene.plot);
   }
 
@@ -182,9 +191,8 @@ export class Store extends EventTarget {
     } else this.setSelection([...this.selection, id], id);
   }
 
-  /** Maj+clic : plage depuis le dernier projecteur cliqué, dans l'ordre de la scène. */
-  selectRange(id) {
-    const order = this.scene.fixtures.map((f) => f.id);
+  /** Maj+clic : plage depuis le dernier projecteur cliqué, dans l'ordre affiché (par défaut, celui de la scène). */
+  selectRange(id, order = this.scene.fixtures.map((f) => f.id)) {
     const a = order.indexOf(this.anchorId ?? this.selectedId);
     const b = order.indexOf(id);
     if (a < 0 || b < 0) return this.select(id);
@@ -223,6 +231,12 @@ export class Store extends EventTarget {
     }
     buf.set(data);
     this.emit('dmx', universe);
+  }
+
+  /** Univers dont on oublie le dernier état reçu : les projecteurs en auto reviennent à leurs réglages. */
+  forgetDmx(universes) {
+    for (const u of universes) if (this.dmx.delete(u)) this.emit('dmx', u);
+    this.emit('status', this.status);
   }
 
   setStatus(status) {

@@ -1,0 +1,1208 @@
+// Vue 3D (image du moteur wgpu) ou plan de feu 2D, gestes de la souris, menus et surimpressions.
+import { ListView, ScrollView, LineEdit, Slider, ComboBox, Switch, Button, CheckBox } from "std-widgets.slint";
+import { App, Dictation, LibRow, SceneRow, Field, ConsoleFader, MonitorCell, GroupRow, MoveRow, FaceItem, FaceRow, AiLine, BleLine, MidiRow, Label3D, ProjectCard, ProjectRow, ShortcutRow, Pill, Tab, Toggle, EnvSlider, FormRow, MicButton, VoiceEdit } from "common.slint";
+import { Theme, Icon, ToolButton, TextButton, ToolSep, StatusPill, PanelTitle, TabButton, ToolSlider, Check, Choice, FieldEdit, ThinSlider } from "theme.slint";
+
+export component ViewPanel inherits Rectangle {
+    // taille de la vue (Rust y dessine à cette taille)
+    out property <length> view-width: view-area.width;
+    out property <length> view-height: view-area.height;
+    view-area := Rectangle {
+        background: #050607;
+        Image {
+            width: parent.width;
+            height: parent.height;
+            source: App.plot-mode ? App.plot-image : App.view;
+            image-fit: fill;
+        }
+        if (App.show-labels || App.show-patch) && !App.plot-mode: Rectangle {
+            for l in App.labels: Rectangle {
+                x: l.x - self.width / 2;
+                y: l.y - self.height - 4px;
+                width: label-box.preferred-width;
+                height: label-box.preferred-height;
+                border-radius: 4px;
+                opacity: l.off ? 0.55 : 1;
+                background: l.selected ? #281e0ad8 : #0a0c0fb8;
+                border-width: 1px;
+                border-color: l.selected ? Theme.accent : #ffffff1f;
+                label-box := VerticalLayout {
+                    padding-left: 5px;
+                    padding-right: 5px;
+                    padding-top: 1px;
+                    padding-bottom: 1px;
+                    if App.show-labels: Text {
+                        text: l.name;
+                        color: #e8ecf1;
+                        font-size: 11px;
+                        horizontal-alignment: center;
+                    }
+                    if App.show-patch && l.sub != "": Text {
+                        text: l.sub;
+                        color: Theme.accent;
+                        font-family: Theme.mono;
+                        font-size: 10px;
+                        horizontal-alignment: center;
+                    }
+                }
+            }
+        }
+        TouchArea {
+            mouse-cursor: self.pressed ? move : default;
+            pointer-event(e) => {
+                if (e.kind == PointerEventKind.down) {
+                    App.refocus += 1;
+                }
+                if (e.kind == PointerEventKind.down || e.kind == PointerEventKind.up) {
+                    if (App.view-pointer(
+                            e.kind == PointerEventKind.down ? 1 : 2,
+                            e.button == PointerEventButton.right ? 2 : e.button == PointerEventButton.middle ? 1 : 0,
+                            self.mouse-x / 1px,
+                            self.mouse-y / 1px,
+                            e.modifiers.control,
+                            e.modifiers.shift)) {
+                        if (App.ctx-object) {
+                            object-menu.show({ x: self.mouse-x, y: self.mouse-y });
+                        } else {
+                            view-menu.show({ x: self.mouse-x, y: self.mouse-y });
+                        }
+                    }
+                }
+            }
+            moved => {
+                App.view-moved(self.mouse-x / 1px, self.mouse-y / 1px);
+            }
+            double-clicked => {
+                App.view-double();
+            }
+            scroll-event(e) => {
+                App.view-wheel(e.delta-y / 1px, self.mouse-x / 1px, self.mouse-y / 1px);
+                accept
+            }
+        }
+        // barre d'axes de la sélection (outil Déplacer) : glisser une boule = le long de son axe,
+        // le carré du centre = au sol ; aimant : pas de 10 cm
+        // (liste fixe : si elle suivait la position des poignées, la poignée tenue serait refaite
+        // au premier déplacement et le geste s'arrêterait après un cran)
+        if !App.plot-mode && App.gizmo.on && !App.gizmo.rotate: Rectangle {
+            for a[i] in [
+                { id: "x", col: #ff4d6a, label: "X" },
+                { id: "y", col: #8ae234, label: "Y" },
+                { id: "z", col: #3d8bff, label: "Z" },
+            ]: axis := Rectangle {
+                property <length> ex: i == 0 ? App.gizmo.xx : i == 1 ? App.gizmo.yx : App.gizmo.zx;
+                property <length> ey: i == 0 ? App.gizmo.xy : i == 1 ? App.gizmo.yy : App.gizmo.zy;
+                Path {
+                    width: parent.width;
+                    height: parent.height;
+                    viewbox-width: self.width / 1px;
+                    viewbox-height: self.height / 1px;
+                    commands: "M " + App.gizmo.cx / 1px + " " + App.gizmo.cy / 1px + " L " + axis.ex / 1px + " " + axis.ey / 1px;
+                    stroke: a.col;
+                    stroke-width: 3px;
+                }
+                handle := Rectangle {
+                    x: axis.ex - 11px;
+                    y: axis.ey - 11px;
+                    width: 22px;
+                    height: 22px;
+                    border-radius: 11px;
+                    background: handle-touch.has-hover || handle-touch.pressed ? #ffffff : a.col;
+                    border-width: 2px;
+                    border-color: Theme.bg;
+                    handle-touch := TouchArea {
+                        mouse-cursor: MouseCursor.move;
+                        pointer-event(e) => {
+                            if (e.button == PointerEventButton.left && e.kind == PointerEventKind.down) {
+                                App.gizmo-drag(1, a.id, handle.x + self.mouse-x, handle.y + self.mouse-y);
+                            }
+                            if (e.button == PointerEventButton.left && e.kind == PointerEventKind.up) {
+                                App.gizmo-drag(2, a.id, handle.x + self.mouse-x, handle.y + self.mouse-y);
+                                App.refocus += 1;
+                            }
+                        }
+                        moved => {
+                            if (self.pressed) {
+                                App.gizmo-drag(0, a.id, handle.x + self.mouse-x, handle.y + self.mouse-y);
+                            }
+                        }
+                    }
+                    Text {
+                        text: a.label;
+                        color: Theme.bg;
+                        font-size: 11px;
+                        font-weight: 800;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+            hub := Rectangle {
+                x: App.gizmo.cx - 8px;
+                y: App.gizmo.cy - 8px;
+                width: 16px;
+                height: 16px;
+                border-radius: 3px;
+                background: hub-touch.has-hover || hub-touch.pressed ? #ffffff : #ffad3bd0;
+                border-width: 2px;
+                border-color: Theme.bg;
+                hub-touch := TouchArea {
+                    mouse-cursor: MouseCursor.move;
+                    pointer-event(e) => {
+                        if (e.button == PointerEventButton.left && e.kind == PointerEventKind.down) {
+                            App.gizmo-drag(1, "xz", hub.x + self.mouse-x, hub.y + self.mouse-y);
+                        }
+                        if (e.button == PointerEventButton.left && e.kind == PointerEventKind.up) {
+                            App.gizmo-drag(2, "xz", hub.x + self.mouse-x, hub.y + self.mouse-y);
+                            App.refocus += 1;
+                        }
+                    }
+                    moved => {
+                        if (self.pressed) {
+                            App.gizmo-drag(0, "xz", hub.x + self.mouse-x, hub.y + self.mouse-y);
+                        }
+                    }
+                }
+            }
+        }
+
+        // anneaux de l'outil Pivoter : glisser un anneau tourne la sélection autour de cet axe
+        // (axes du monde, autour du centre de la sélection) ; aimant : pas de 5°
+        if !App.plot-mode && App.gizmo.on && App.gizmo.rotate: Rectangle {
+            for r in [
+                { id: "rx", front: App.gizmo.xf, back: App.gizmo.xb, col: #ff4d6a },
+                { id: "ry", front: App.gizmo.yf, back: App.gizmo.yb, col: #8ae234 },
+                { id: "rz", front: App.gizmo.zf, back: App.gizmo.zb, col: #3d8bff },
+            ]: Rectangle {
+                property <bool> hot: App.gizmo-hot == r.id;
+                Path {
+                    width: parent.width;
+                    height: parent.height;
+                    viewbox-width: self.width / 1px;
+                    viewbox-height: self.height / 1px;
+                    commands: r.back;
+                    stroke: hot ? #ffffff80 : r.col.with-alpha(0.35);
+                    stroke-width: 2px;
+                }
+                Path {
+                    width: parent.width;
+                    height: parent.height;
+                    viewbox-width: self.width / 1px;
+                    viewbox-height: self.height / 1px;
+                    commands: r.front;
+                    stroke: hot ? #ffffff : r.col;
+                    stroke-width: hot ? 4px : 3px;
+                }
+            }
+            for d in App.gizmo-dots: dot := Rectangle {
+                x: d.x - 8px;
+                y: d.y - 8px;
+                width: 16px;
+                height: 16px;
+                dot-touch := TouchArea {
+                    mouse-cursor: MouseCursor.grab;
+                    pointer-event(e) => {
+                        if (e.button == PointerEventButton.left && e.kind == PointerEventKind.down) {
+                            App.gizmo-hot = d.axis;
+                            App.gizmo-drag(1, d.axis, dot.x + self.mouse-x, dot.y + self.mouse-y);
+                        }
+                        if (e.button == PointerEventButton.left && e.kind == PointerEventKind.up) {
+                            App.gizmo-drag(2, d.axis, dot.x + self.mouse-x, dot.y + self.mouse-y);
+                            App.gizmo-hot = self.has-hover ? d.axis : "";
+                            App.refocus += 1;
+                        }
+                    }
+                    moved => {
+                        if (self.pressed) {
+                            App.gizmo-drag(0, d.axis, dot.x + self.mouse-x, dot.y + self.mouse-y);
+                        }
+                    }
+                }
+                property <bool> hovering: dot-touch.has-hover;
+                changed hovering => {
+                    if (self.hovering) {
+                        App.gizmo-hot = d.axis;
+                    } else if (App.gizmo-hot == d.axis && !dot-touch.pressed) {
+                        App.gizmo-hot = "";
+                    }
+                }
+            }
+            if App.gizmo.angle != "": Rectangle {
+                x: App.gizmo.cx - self.width / 2;
+                y: App.gizmo.cy - self.height - 14px;
+                width: angle-text.preferred-width + 12px;
+                height: 20px;
+                border-radius: 4px;
+                background: #000000c0;
+                angle-text := Text {
+                    text: App.gizmo.angle;
+                    color: #ffffff;
+                    font-family: Theme.mono;
+                    font-size: 11px;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+            }
+        }
+
+        // pied de la vue : aide (masquable) et images par seconde, comme `.view-foot`
+        if App.show-help && !App.plot-mode: Rectangle {
+            x: 8px;
+            y: parent.height - 22px;
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            background: help-close.has-hover ? #ffffff1a : transparent;
+            help-close := TouchArea {
+                clicked => {
+                    App.show-help = false;
+                    App.refocus += 1;
+                }
+            }
+            Text {
+                text: "×";
+                color: help-close.has-hover ? Theme.text : Theme.dim;
+                font-size: 13px;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+        }
+        if App.show-help: Text {
+            x: App.plot-mode ? 10px : 28px;
+            y: App.plot-mode ? 8px : parent.height - self.height - 6px;
+            width: parent.width - 240px;
+            text: App.plot-mode ? App.plot-hint : App.tool == 1 ? @tr("Tourner : glisser un anneau (axe X, Y ou Z) ou l’élément lui-même — horizontalement le pan, verticalement le tilt (par 5°, Maj : libre) · W : déplacer") : @tr("Clic : choisir · glisser un élément ou ses axes : le déplacer (Maj : en hauteur) · glisser ailleurs : tourner · clic droit glissé : décaler · molette : zoom");
+            color: Theme.dim;
+            font-size: Theme.tiny;
+            wrap: word-wrap;
+        }
+        if App.show-fps && App.frame-ms > 0: Text {
+            x: parent.width - self.width - 10px;
+            y: parent.height - self.height - 6px;
+            text: round(1000 / max(1, App.frame-ms)) + @tr(" i/s") + " · " + round(App.frame-ms * 10) / 10 + " ms · " + App.gpu;
+            color: Theme.dim;
+            font-family: Theme.mono;
+            font-size: Theme.tiny;
+        }
+        // voir par la caméra : cadre de l'image (16/9 selon le capteur), le reste assombri
+        if App.look-label != "" && !App.plot-mode: Rectangle {
+            property <length> fw: parent.width * App.look-w;
+            property <length> fh: parent.height * App.look-h;
+            property <length> fx: (parent.width - self.fw) / 2;
+            property <length> fy: (parent.height - self.fh) / 2;
+            Rectangle {
+                x: 0;
+                y: 0;
+                height: parent.fy;
+                background: #00000099;
+            }
+            Rectangle {
+                x: 0;
+                y: parent.fy + parent.fh;
+                height: parent.height - parent.fy - parent.fh;
+                background: #00000099;
+            }
+            Rectangle {
+                x: 0;
+                y: parent.fy;
+                width: parent.fx;
+                height: parent.fh;
+                background: #00000099;
+            }
+            Rectangle {
+                x: parent.fx + parent.fw;
+                y: parent.fy;
+                width: parent.width - parent.fx - parent.fw;
+                height: parent.fh;
+                background: #00000099;
+            }
+            Rectangle {
+                x: parent.fx;
+                y: parent.fy;
+                width: parent.fw;
+                height: parent.fh;
+                border-width: 1px;
+                border-color: #ffffff59;
+                Text {
+                    x: 10px;
+                    y: parent.height - self.height - 8px;
+                    text: App.look-label;
+                    color: #f2f4f7;
+                    font-size: 11px;
+                    font-weight: 600;
+                }
+            }
+        }
+        // télécommande infrarouge (`.remote-panel`) : en bas à gauche de la vue
+        if App.remote-open && !App.plot-mode: Rectangle {
+            x: 10px;
+            y: parent.height - self.height - 30px;
+            width: 230px;
+            height: remote-col.preferred-height;
+            border-radius: 10px;
+            background: #14171cf2;
+            border-width: 1px;
+            border-color: Theme.line-2;
+            drop-shadow-blur: 24px;
+            drop-shadow-color: #00000080;
+            TouchArea { }
+            remote-col := VerticalLayout {
+                padding: 8px;
+                spacing: 6px;
+                HorizontalLayout {
+                    spacing: 4px;
+                    for m[i] in ["ARC1 (FX)", "ARC3 (White)"]: Rectangle {
+                        height: 24px;
+                        width: m-text.preferred-width + 14px;
+                        border-radius: Theme.radius;
+                        background: App.remote-model == i ? Theme.active : m-touch.has-hover ? Theme.hover : Theme.panel-2;
+                        border-width: 1px;
+                        border-color: App.remote-model == i ? Theme.active-line : Theme.line-2;
+                        m-touch := TouchArea {
+                            clicked => {
+                                App.remote("model", i);
+                            }
+                        }
+                        m-text := Text {
+                            text: m;
+                            color: App.remote-model == i ? #ffffff : Theme.text;
+                            font-size: Theme.tiny;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
+                    }
+                    Rectangle {
+                        horizontal-stretch: 1;
+                    }
+                    Rectangle {
+                        width: 24px;
+                        height: 24px;
+                        border-radius: Theme.radius;
+                        background: close-touch.has-hover ? Theme.hover : Theme.panel-2;
+                        border-width: 1px;
+                        border-color: Theme.line-2;
+                        close-touch := TouchArea {
+                            clicked => {
+                                App.remote-open = false;
+                                App.refocus += 1;
+                            }
+                        }
+                        Icon {
+                            width: 12px;
+                            height: 12px;
+                            name: "close";
+                            tint: Theme.text;
+                        }
+                    }
+                }
+                Choice {
+                    model: [@tr("Vise : projecteurs sélectionnés"), @tr("Vise : tous les projecteurs Astera")];
+                    current-index: App.remote-target;
+                    selected(idx) => {
+                        App.remote-target = idx;
+                    }
+                }
+                Rectangle {
+                    height: 7 * 44px + 30px;
+                    border-top-left-radius: 14px;
+                    border-top-right-radius: 14px;
+                    border-bottom-left-radius: 10px;
+                    border-bottom-right-radius: 10px;
+                    background: App.remote-model == 1 ? #f3f4f5 : #111214;
+                    border-width: 1px;
+                    border-color: App.remote-model == 1 ? #c9cdd2 : #2a2d31;
+                    property <length> kw: (self.width - 20px - 3 * 6px) / 4;
+                    for k[i] in App.remote-keys: Rectangle {
+                        x: 10px + mod(i, 4) * (parent.kw + 6px) + (parent.kw - self.width) / 2;
+                        y: 10px + floor(i / 4) * 44px;
+                        width: 38px;
+                        height: 38px;
+                        border-radius: 19px;
+                        visible: !k.empty;
+                        background: key-touch.pressed ? k.ring : k.fill;
+                        border-width: App.remote-model == 1 ? 1px : 2px;
+                        border-color: k.ring;
+                        key-touch := TouchArea {
+                            enabled: !k.empty;
+                            clicked => {
+                                App.remote("key", k.id);
+                            }
+                        }
+                        Text {
+                            width: parent.width - 4px;
+                            x: 2px;
+                            text: k.label;
+                            color: k.ink;
+                            font-size: 7.5px;
+                            font-weight: 700;
+                            wrap: word-wrap;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
+                    }
+                    HorizontalLayout {
+                        y: parent.height - 22px;
+                        height: 16px;
+                        padding-left: 12px;
+                        padding-right: 12px;
+                        Text {
+                            text: "▲ ASTERA";
+                            color: App.remote-model == 1 ? #555b62 : #c9ccd1;
+                            font-size: 10px;
+                            font-weight: 700;
+                        }
+                        Rectangle { }
+                        Text {
+                            text: App.remote-model == 1 ? "ARC3" : "ARC1";
+                            color: App.remote-model == 1 ? #555b62 : #c9ccd1;
+                            font-size: 10px;
+                            font-italic: true;
+                        }
+                    }
+                }
+                if App.remote-feedback != "": Text {
+                    text: App.remote-feedback;
+                    color: Theme.muted;
+                    font-size: Theme.tiny;
+                    wrap: word-wrap;
+                }
+            }
+        }
+        if App.toast != "": Rectangle {
+            y: parent.height - self.height - 16px;
+            x: (parent.width - self.width) / 2;
+            width: toast-text.preferred-width + 28px;
+            height: 32px;
+            border-radius: 16px;
+            background: #1d2128e8;
+            border-width: 1px;
+            border-color: #343a44;
+            toast-text := Text {
+                text: App.toast;
+                color: Theme.text;
+                vertical-alignment: center;
+                horizontal-alignment: center;
+            }
+        }
+        if App.update-version != "": Rectangle {
+            x: (parent.width - self.width) / 2;
+            y: 10px;
+            // largeur fixe (la largeur préférée de la rangée ne compte pas ses boutons conditionnels) ;
+            // vue étroite : le texte se raccourcit, les boutons restent
+            width: min(parent.width - 20px, 860px);
+            height: 36px;
+            border-radius: 8px;
+            background: #1d2a44f0;
+            border-width: 1px;
+            border-color: #3e6db5;
+            update-row := HorizontalLayout {
+                padding-left: 12px;
+                padding-right: 6px;
+                spacing: 10px;
+                Text {
+                    text: @tr("ARKLIGHT {} est disponible (tu as {}).", App.update-version, App.version);
+                    color: #dce7fb;
+                    vertical-alignment: center;
+                    overflow: elide;
+                    min-width: 80px;
+                    horizontal-stretch: 1;
+                }
+                // téléchargé par ARKLIGHT : barre d'avancement, puis « Installer maintenant »
+                if App.update-file == "" && App.update-progress < 0: TextButton {
+                    primary: true;
+                    text: @tr("Télécharger et installer");
+                    clicked => {
+                        App.update-action("download");
+                    }
+                }
+                if App.update-file == "" && App.update-progress >= 0: HorizontalLayout {
+                    spacing: 8px;
+                    VerticalLayout {
+                        alignment: center;
+                        Rectangle {
+                            width: 120px;
+                            height: 6px;
+                            border-radius: 3px;
+                            background: #0f1a2c;
+                            Rectangle {
+                                x: 0;
+                                width: parent.width * App.update-progress;
+                                border-radius: 3px;
+                                background: Theme.accent;
+                            }
+                        }
+                    }
+                    Text {
+                        text: round(App.update-progress * 100) + " %";
+                        color: #dce7fb;
+                        font-family: Theme.mono;
+                        vertical-alignment: center;
+                    }
+                    TextButton {
+                        text: @tr("bouton" => "Annuler");
+                        clicked => {
+                            App.update-action("cancel");
+                        }
+                    }
+                }
+                if App.update-file != "": TextButton {
+                    primary: true;
+                    text: @tr("Installer maintenant");
+                    clicked => {
+                        App.update-action("install");
+                    }
+                }
+                if App.update-url != "": TextButton {
+                    text: @tr("Nouveautés");
+                    clicked => {
+                        App.open-url(App.update-url);
+                    }
+                }
+                TextButton {
+                    text: "×";
+                    clicked => {
+                        App.update-version = "";
+                    }
+                }
+            }
+        }
+                // élément du plan choisi : texte, couleur, remplissage
+        if App.plot-mode && App.plot-item-kind != "": Rectangle {
+            x: 10px;
+            y: parent.height - self.height - 34px;
+            width: min(parent.width - 20px, item-bar.preferred-width + 20px);
+            height: 40px;
+            border-radius: 6px;
+            background: #171a20f0;
+            border-width: 1px;
+            border-color: Theme.line-2;
+            item-bar := HorizontalLayout {
+                padding-left: 10px;
+                padding-right: 10px;
+                spacing: 8px;
+                alignment: start;
+                Text {
+                    text: App.plot-item-kind;
+                    color: Theme.accent;
+                    font-weight: 600;
+                    vertical-alignment: center;
+                }
+                VerticalLayout {
+                    alignment: center;
+                    VoiceEdit {
+                        width: 140px;
+                        field: "plot-text";
+                        apply: true;
+                        text: App.plot-item-text;
+                        placeholder-text: @tr("texte");
+                        accepted(t) => {
+                            App.plot-item("text", t);
+                        }
+                    }
+                }
+                HorizontalLayout {
+                    spacing: 5px;
+                    for c in [{ col: #ffad3b, hex: "#ffad3b" }, { col: #ffffff, hex: "#ffffff" }, { col: #ff5c5c, hex: "#ff5c5c" }, { col: #4d8dff, hex: "#4d8dff" }, { col: #43c25b, hex: "#43c25b" }, { col: #b06bff, hex: "#b06bff" }]: VerticalLayout {
+                        alignment: center;
+                        Rectangle {
+                            width: 18px;
+                            height: 18px;
+                            border-radius: 9px;
+                            background: c.col;
+                            border-width: 1px;
+                            border-color: #00000080;
+                            TouchArea {
+                                clicked => {
+                                    App.plot-item("color", c.hex);
+                                }
+                            }
+                        }
+                    }
+                }
+                if App.plot-item-closed: VerticalLayout {
+                    alignment: center;
+                    Check {
+                        text: @tr("Rempli");
+                        checked: App.plot-item-filled;
+                        toggled(on) => {
+                            App.plot-item("filled", on ? "1" : "0");
+                        }
+                    }
+                }
+                if !App.plot-item-is-text: VerticalLayout {
+                    alignment: center;
+                    Check {
+                        text: @tr("Pointillés");
+                        checked: App.plot-item-dash;
+                        toggled(on) => {
+                            App.plot-item("dash", on ? "1" : "0");
+                        }
+                    }
+                }
+                Text {
+                    text: App.plot-item-is-text ? @tr("Taille") : @tr("Trait");
+                    color: Theme.muted;
+                    vertical-alignment: center;
+                }
+                if !App.plot-item-is-text: VerticalLayout {
+                    alignment: center;
+                    Choice {
+                        width: 56px;
+                        model: ["1", "2", "3", "5", "8"];
+                        current-index: App.plot-item-width;
+                        selected(i) => {
+                            App.plot-item("width", ["1", "2", "3", "5", "8"][i]);
+                        }
+                    }
+                }
+                if App.plot-item-is-text: VerticalLayout {
+                    alignment: center;
+                    Choice {
+                        width: 62px;
+                        model: ["12", "16", "20", "28", "40", "60"];
+                        current-index: App.plot-item-size;
+                        selected(i) => {
+                            App.plot-item("size", ["12", "16", "20", "28", "40", "60"][i]);
+                        }
+                    }
+                }
+                if App.plot-item-closed: Text {
+                    text: @tr("Hauteur 3D (m)");
+                    color: Theme.muted;
+                    vertical-alignment: center;
+                }
+                if App.plot-item-closed: VerticalLayout {
+                    alignment: center;
+                    FieldEdit {
+                        width: 52px;
+                        mono: true;
+                        text: App.plot-item-height;
+                        accepted(t) => {
+                            App.plot-item("height", t);
+                        }
+                    }
+                }
+                VerticalLayout {
+                    alignment: center;
+                    ToolButton {
+                        icon: "copy";
+                        tip: @tr("Dupliquer");
+                        clicked => {
+                            App.plot-item("duplicate", "");
+                        }
+                    }
+                }
+                VerticalLayout {
+                    alignment: center;
+                    ToolButton {
+                        icon: "trash";
+                        tip: @tr("Supprimer (Suppr)");
+                        clicked => {
+                            App.plot-item("delete", "");
+                        }
+                    }
+                }
+            }
+        }
+        // plan : fenêtre « Fond et cartouche » (couleur du fond, image de fond, cartouche)
+        if App.plot-mode && App.plot-panel-open: Rectangle {
+            x: parent.width - self.width - 10px;
+            y: 10px;
+            width: 300px;
+            height: panel-col.preferred-height;
+            border-radius: 8px;
+            background: #171a20f4;
+            border-width: 1px;
+            border-color: Theme.line-2;
+            TouchArea { }
+            panel-col := VerticalLayout {
+                padding: 12px;
+                spacing: 8px;
+                HorizontalLayout {
+                    Text {
+                        text: @tr("FOND ET CARTOUCHE");
+                        color: Theme.muted;
+                        font-size: Theme.small;
+                        font-weight: 700;
+                        letter-spacing: 1px;
+                        vertical-alignment: center;
+                        horizontal-stretch: 1;
+                    }
+                    Rectangle {
+                        width: 22px;
+                        height: 22px;
+                        border-radius: 4px;
+                        background: panel-close.has-hover ? Theme.panel-2 : transparent;
+                        panel-close := TouchArea {
+                            clicked => {
+                                App.plot-panel-open = false;
+                            }
+                        }
+                        Text {
+                            text: "×";
+                            color: Theme.muted;
+                            font-size: 16px;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
+                Text {
+                    text: @tr("Couleur du fond");
+                    color: Theme.text;
+                    font-weight: 600;
+                }
+                HorizontalLayout {
+                    spacing: 6px;
+                    for b in [
+                        { value: "", label: @tr("Auto"), col: #0f1216 },
+                        { value: "#000000", label: @tr("Noir"), col: #000000 },
+                        { value: "#2b2f36", label: @tr("Gris foncé"), col: #2b2f36 },
+                        { value: "#c9ccd1", label: @tr("Gris clair"), col: #c9ccd1 },
+                        { value: "#ffffff", label: @tr("Blanc"), col: #ffffff },
+                    ]: Rectangle {
+                        height: 44px;
+                        border-radius: 5px;
+                        border-width: 1px;
+                        border-color: App.plot-bg == b.value ? Theme.accent : bg-touch.has-hover ? Theme.line-2 : Theme.line;
+                        background: App.plot-bg == b.value ? #ffad3b1a : transparent;
+                        bg-touch := TouchArea {
+                            clicked => {
+                                App.plot-meta("bg", b.value);
+                            }
+                        }
+                        VerticalLayout {
+                            padding: 4px;
+                            spacing: 3px;
+                            alignment: center;
+                            HorizontalLayout {
+                                alignment: center;
+                                Rectangle {
+                                    width: 18px;
+                                    height: 18px;
+                                    border-radius: 9px;
+                                    background: b.col;
+                                    border-width: 1px;
+                                    border-color: #ffffff40;
+                                    clip: true;
+                                    // auto : moitié sombre (écran), moitié blanche (export)
+                                    if b.value == "": Path {
+                                        width: 18px;
+                                        height: 18px;
+                                        viewbox-width: 18;
+                                        viewbox-height: 18;
+                                        commands: "M 18 0 L 18 18 L 0 18 Z";
+                                        fill: #ffffff;
+                                    }
+                                }
+                            }
+                            Text {
+                                text: b.label;
+                                color: Theme.muted;
+                                font-size: 9px;
+                                horizontal-alignment: center;
+                                overflow: elide;
+                            }
+                        }
+                    }
+                }
+                Text {
+                    text: @tr("Auto : sombre à l’écran, blanc à l’export. Une couleur choisie sert aussi à l’export.");
+                    color: Theme.dim;
+                    font-size: Theme.small;
+                    wrap: word-wrap;
+                }
+                Rectangle {
+                    height: 1px;
+                    background: Theme.line;
+                }
+                Text {
+                    text: @tr("Image de fond");
+                    color: Theme.text;
+                    font-weight: 600;
+                }
+                Text {
+                    text: @tr("Photo ou plan vu de dessus. Cale-le à l’échelle avec deux points dont tu connais la distance.");
+                    color: Theme.dim;
+                    font-size: Theme.small;
+                    wrap: word-wrap;
+                }
+                HorizontalLayout {
+                    spacing: 6px;
+                    alignment: start;
+                    TextButton {
+                        text: App.plot-underlay ? @tr("Changer d’image…") : @tr("Importer une image…");
+                        clicked => {
+                            App.plot-option("underlay-import");
+                        }
+                    }
+                    if App.plot-underlay: TextButton {
+                        primary: true;
+                        text: @tr("Caler l’échelle");
+                        clicked => {
+                            App.plot-option("underlay-calibrate");
+                        }
+                    }
+                }
+                if App.plot-underlay: GridLayout {
+                    spacing: 6px;
+                    Row {
+                        Text {
+                            text: @tr("Largeur (m)");
+                            color: Theme.muted;
+                            vertical-alignment: center;
+                        }
+                        FieldEdit {
+                            mono: true;
+                            text: App.plot-u-width;
+                            accepted(t) => {
+                                App.plot-meta("u-width", t);
+                            }
+                        }
+                    }
+                    Row {
+                        Text {
+                            text: @tr("Rotation (°)");
+                            color: Theme.muted;
+                            vertical-alignment: center;
+                        }
+                        FieldEdit {
+                            mono: true;
+                            text: App.plot-u-rotation;
+                            accepted(t) => {
+                                App.plot-meta("u-rotation", t);
+                            }
+                        }
+                    }
+                    Row {
+                        Text {
+                            text: @tr("Opacité");
+                            color: Theme.muted;
+                            vertical-alignment: center;
+                        }
+                        ThinSlider {
+                            minimum: 0.05;
+                            maximum: 1;
+                            step: 0.05;
+                            value: App.plot-u-opacity;
+                            changed(v) => {
+                                App.plot-meta("u-opacity", v);
+                            }
+                        }
+                    }
+                }
+                if App.plot-underlay: Check {
+                    text: @tr("Afficher au sol dans la vue 3D");
+                    checked: App.plot-u-floor;
+                    toggled(on) => {
+                        App.plot-meta("u-floor", on ? "1" : "0");
+                    }
+                }
+                if App.plot-underlay: HorizontalLayout {
+                    spacing: 6px;
+                    alignment: start;
+                    TextButton {
+                        text: @tr("Centrer sur la vue");
+                        clicked => {
+                            App.plot-meta("u-center", "");
+                        }
+                    }
+                    TextButton {
+                        text: @tr("Retirer l’image");
+                        clicked => {
+                            App.plot-option("underlay-remove");
+                        }
+                    }
+                }
+                Rectangle {
+                    height: 1px;
+                    background: Theme.line;
+                }
+                Text {
+                    text: @tr("Cartouche (impression, PDF)");
+                    color: Theme.text;
+                    font-weight: 600;
+                }
+                GridLayout {
+                    spacing: 6px;
+                    Row {
+                        Text {
+                            text: @tr("Production");
+                            color: Theme.muted;
+                            vertical-alignment: center;
+                        }
+                        FieldEdit {
+                            text: App.plot-production;
+                            accepted(t) => {
+                                App.plot-meta("production", t);
+                            }
+                        }
+                    }
+                    Row {
+                        Text {
+                            text: @tr("Chef électro");
+                            color: Theme.muted;
+                            vertical-alignment: center;
+                        }
+                        FieldEdit {
+                            text: App.plot-author;
+                            accepted(t) => {
+                                App.plot-meta("author", t);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        // clic droit sur un objet (grip, décor) : son menu (`objectMenu`)
+        object-menu := ContextMenuArea {
+            enabled: false;
+            width: parent.width;
+            height: parent.height;
+            Menu {
+                for m in App.ctx-menus: Menu {
+                    title: m.title;
+                    for it in m.items: MenuItem {
+                        title: it.title;
+                        checkable: true;
+                        checked: it.checked;
+                        activated => {
+                            App.action(it.action);
+                        }
+                    }
+                    for s in m.subs: Menu {
+                        title: s.title;
+                        for it in s.items: MenuItem {
+                            title: it.title;
+                            checkable: true;
+                            checked: it.checked;
+                            activated => {
+                                App.action(it.action);
+                            }
+                        }
+                    }
+                }
+                if App.ctx-camera != "": MenuItem {
+                    title: @tr("Voir par cette caméra") + "    C";
+                    activated => {
+                        App.action("camera:" + App.ctx-camera);
+                    }
+                }
+                MenuItem {
+                    title: @tr("Cadrer");
+                    activated => {
+                        App.action("frame");
+                    }
+                }
+                MenuItem {
+                    title: @tr("Dupliquer");
+                    activated => {
+                        App.duplicate();
+                    }
+                }
+                MenuItem {
+                    title: @tr("Poser au sol");
+                    activated => {
+                        App.action("drop");
+                    }
+                }
+                MenuItem {
+                    title: @tr("Tourner de 90°");
+                    activated => {
+                        App.action("rot90");
+                    }
+                }
+                MenuSeparator { }
+                MenuItem {
+                    title: @tr("Supprimer");
+                    activated => {
+                        App.delete-selection();
+                    }
+                }
+            }
+        }
+        // clic droit sans glisser : menu de la sélection (ouvert par Rust, après le choix)
+        view-menu := ContextMenuArea {
+            enabled: false;
+            width: parent.width;
+            height: parent.height;
+            Menu {
+                MenuItem {
+                    title: @tr("Cadrer");
+                    enabled: App.selected-count > 0;
+                    activated => {
+                        App.action("frame");
+                    }
+                }
+                MenuItem {
+                    title: App.selected-count > 1 ? @tr("Dupliquer la sélection") : @tr("Dupliquer");
+                    enabled: App.selected-count > 0;
+                    activated => {
+                        App.duplicate();
+                    }
+                }
+                MenuItem {
+                    title: App.selection-off ? @tr("Allumer") : @tr("Éteindre");
+                    enabled: App.selected-fixtures > 0;
+                    activated => {
+                        App.action("power");
+                    }
+                }
+                Menu {
+                    title: @tr("Viser");
+                    enabled: App.selected-fixtures > 0 && App.selection-aimable;
+                    MenuItem {
+                        title: @tr("Le personnage (ou le centre du plateau)");
+                        activated => {
+                            App.action("aim");
+                        }
+                    }
+                    if App.aim-targets.length > 1: MenuSeparator { }
+                    for t[i] in App.aim-targets: MenuItem {
+                        title: t;
+                        activated => {
+                            App.action("aim:" + i);
+                        }
+                    }
+                }
+                MenuItem {
+                    title: @tr("Poser au sol");
+                    enabled: App.selected-count > 0;
+                    activated => {
+                        App.action("drop");
+                    }
+                }
+                for m in App.ctx-menus: Menu {
+                    title: m.title;
+                    for it in m.items: MenuItem {
+                        title: it.title;
+                        checkable: true;
+                        checked: it.checked;
+                        activated => {
+                            App.action(it.action);
+                        }
+                    }
+                    for s in m.subs: Menu {
+                        title: s.title;
+                        for it in s.items: MenuItem {
+                            title: it.title;
+                            checkable: true;
+                            checked: it.checked;
+                            activated => {
+                                App.action(it.action);
+                            }
+                        }
+                    }
+                }
+                Menu {
+                    title: @tr("Liaison CRMX");
+                    enabled: App.selection-v5;
+                    MenuItem {
+                        title: @tr("Lier (touche LINK)");
+                        activated => {
+                            App.action("crmx-link");
+                        }
+                    }
+                    MenuItem {
+                        title: @tr("Délier");
+                        activated => {
+                            App.action("crmx-unlink");
+                        }
+                    }
+                }
+                MenuSeparator { }
+                MenuItem {
+                    title: App.selected-fixtures > 1 ? @tr("Grouper la sélection") : @tr("Créer un groupe");
+                    enabled: App.selected-fixtures > 0;
+                    activated => {
+                        App.action("group");
+                    }
+                }
+                Menu {
+                    title: @tr("Ajouter au groupe");
+                    enabled: App.selected-fixtures > 0 && App.groups.length > 0;
+                    for g in App.groups: MenuItem {
+                        title: g.name;
+                        checkable: true;
+                        checked: g.all;
+                        activated => {
+                            App.action("group-add:" + g.id);
+                        }
+                    }
+                }
+                Menu {
+                    title: @tr("Retirer du groupe");
+                    enabled: App.selected-fixtures > 0 && App.groups.length > 0;
+                    for g in App.groups: MenuItem {
+                        title: g.name;
+                        enabled: g.some;
+                        activated => {
+                            App.action("group-remove:" + g.id);
+                        }
+                    }
+                }
+                MenuSeparator { }
+                MenuItem {
+                    title: App.selected-fixtures > 1 ? @tr("Adresser la sélection à la suite…") : @tr("Ré-adresser…");
+                    enabled: App.selected-fixtures > 0;
+                    activated => {
+                        App.action("readdress-selection");
+                    }
+                }
+                MenuItem {
+                    title: App.selected-fixtures > 1 ? @tr("Numéroter les fixtures à la suite…") : @tr("Numéro de fixture…");
+                    enabled: App.selected-fixtures > 0;
+                    activated => {
+                        App.action("number");
+                    }
+                }
+                MenuSeparator { }
+                MenuItem {
+                    title: App.same-label;
+                    enabled: App.selected-fixtures > 0;
+                    activated => {
+                        App.action("select-same");
+                    }
+                }
+                MenuItem {
+                    title: @tr("Tout sélectionner");
+                    activated => {
+                        App.select-all();
+                    }
+                }
+                Menu {
+                    title: @tr("Sélectionner un groupe");
+                    enabled: App.groups.length > 0;
+                    for g in App.groups: MenuItem {
+                        title: g.name + " (" + g.count + ")";
+                        enabled: g.count > 0;
+                        activated => {
+                            App.action("group-select:" + g.id);
+                        }
+                    }
+                }
+                MenuItem {
+                    title: @tr("Inverser la sélection");
+                    activated => {
+                        App.action("invert");
+                    }
+                }
+                MenuItem {
+                    title: @tr("Désélectionner");
+                    enabled: App.selected-count > 0;
+                    activated => {
+                        App.select-none();
+                    }
+                }
+                MenuSeparator { }
+                MenuItem {
+                    title: @tr("Supprimer");
+                    enabled: App.selected-count > 0;
+                    activated => {
+                        App.delete-selection();
+                    }
+                }
+            }
+        }
+    }
+}

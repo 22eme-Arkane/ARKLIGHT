@@ -10,4 +10,16 @@ contextBridge.exposeInMainWorld('arkDesktop', {
   quit: () => ipcRenderer.send('ark:quit'),
   /** Ouvre une adresse https dans le navigateur. */
   openExternal: (url) => ipcRenderer.send('ark:open-external', url),
+  /** Projets : choisir le dossier des projets, ouvrir un fichier, enregistrer sous (fenêtres de Windows). */
+  chooseProjectsFolder: () => ipcRenderer.invoke('ark:projects-folder'),
+  openProjectFile: () => ipcRenderer.invoke('ark:project-open'),
+  saveProjectAs: (thumbnail) => ipcRenderer.invoke('ark:project-save-as', thumbnail),
+  /** Montre le fichier d'un projet dans l'Explorateur. */
+  revealProject: (path) => ipcRenderer.invoke('ark:project-reveal', path),
+  /** Langue de l'interface (titres des fenêtres de Windows). */
+  setLanguage: (lang) => ipcRenderer.send('ark:language', lang),
+  /** Langues choisies dans Windows, par ordre de préférence (langue « Automatique »). */
+  systemLanguages: (process.argv.find((a) => a.startsWith('--ark-system-languages=')) || '').split('=')[1]?.split(',').filter(Boolean) || [],
+  /** Ouvre le dossier des projets dans l'Explorateur. */
+  showProjectsFolder: () => ipcRenderer.invoke('ark:projects-folder-show'),
 });

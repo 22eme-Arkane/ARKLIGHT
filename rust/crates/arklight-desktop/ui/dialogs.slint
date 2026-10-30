@@ -1,0 +1,411 @@
+// Fenêtres de la version JavaScript (web/js/ui/support.js, dialogs.js), dessinées dans ARKLIGHT
+// (pas de boîte Windows qui pourrait passer derrière la fenêtre) : « Voulez-vous vraiment quitter
+// ARKLIGHT ? » avec l'encart de soutien, « Enregistrer les modifications ? » avant d'ouvrir un autre
+// projet, et « Faire un don » (PayPal, cryptomonnaie).
+import { App } from "common.slint";
+import { Theme, TextButton } from "theme.slint";
+
+/// Bouton rouge (« Quitter sans enregistrer », « Ne pas enregistrer »).
+component DangerButton inherits Rectangle {
+    in property <string> text;
+    callback clicked();
+    // même hauteur que les autres boutons (TextButton)
+    height: 28px;
+    width: danger-label.preferred-width + 24px;
+    border-radius: Theme.radius;
+    background: danger-touch.has-hover ? #ff5d5d1f : Theme.panel-2;
+    border-width: 1px;
+    border-color: danger-touch.has-hover ? Theme.err : #ff5d5d73;
+    danger-touch := TouchArea {
+        clicked => {
+            root.clicked();
+        }
+    }
+    danger-label := Text {
+        text: root.text;
+        color: Theme.err;
+        font-size: Theme.font;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+}
+
+/// Bouton rose « Faire un don ».
+component DonateButton inherits Rectangle {
+    in property <string> text;
+    callback clicked();
+    height: 30px;
+    width: donate-label.preferred-width + 24px;
+    border-radius: Theme.radius;
+    border-width: 1px;
+    border-color: donate-touch.has-hover ? #ff6ea0b3 : #ff6ea073;
+    background: donate-touch.has-hover ? #ff5a8c2e : #ff5a8c14;
+    donate-touch := TouchArea {
+        mouse-cursor: pointer;
+        clicked => {
+            root.clicked();
+        }
+    }
+    donate-label := Text {
+        text: root.text;
+        color: #ff8fb1;
+        font-weight: 600;
+        font-size: Theme.font;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+}
+
+/// Fond assombri et fenêtre centrée (`.dialog`).
+component DialogFrame inherits Rectangle {
+    in property <length> dialog-width: 560px;
+    background: #00000099;
+    TouchArea { }
+    Rectangle {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        width: min(root.dialog-width, parent.width - 32px);
+        height: frame-content.preferred-height;
+        background: Theme.panel;
+        border-radius: 8px;
+        border-width: 1px;
+        border-color: Theme.line-2;
+        frame-content := VerticalLayout {
+            padding: 20px;
+            spacing: 12px;
+            @children
+        }
+    }
+}
+
+/// « Voulez-vous vraiment quitter ARKLIGHT ? » ou « Enregistrer les modifications ? »
+export component AskDialog inherits DialogFrame {
+    dialog-width: 560px;
+    Text {
+        text: App.ask-confirm ? App.ask-title : App.ask-quit ? @tr("Voulez-vous vraiment quitter ARKLIGHT ?") : @tr("Enregistrer les modifications de « {} » ?", App.project-name);
+        color: Theme.text;
+        font-size: 16px;
+        font-weight: 600;
+        wrap: word-wrap;
+    }
+    Text {
+        text: App.ask-confirm ? App.ask-note
+            : !App.ask-quit ? @tr("Elles seront perdues si tu ne les enregistres pas avant de continuer.")
+            : App.ask-dirty ? @tr("Le projet « {} » a des modifications non enregistrées. Il est gardé automatiquement et sera rouvert au prochain lancement ; « Enregistrer et quitter » l’enregistre aussi dans ton dossier de projets.", App.project-name)
+            : @tr("Le projet « {} » est enregistré. Il sera rouvert au prochain lancement.", App.project-name);
+        color: Theme.muted;
+        font-size: Theme.small;
+        wrap: word-wrap;
+    }
+    // soutien (`.quit-support`)
+    if App.ask-quit: Rectangle {
+        border-radius: 8px;
+        background: #ff5a8c0f;
+        border-width: 1px;
+        border-color: #ff6ea040;
+        VerticalLayout {
+            padding: 12px;
+            padding-left: 14px;
+            padding-right: 14px;
+            spacing: 4px;
+            Text {
+                text: @tr("❤  ARKLIGHT est gratuit. Il fonctionne grâce au soutien de la communauté.");
+                color: #ff8fb1;
+                font-weight: 600;
+                wrap: word-wrap;
+            }
+            Text {
+                text: @tr("Si ce logiciel t’est utile, un don, même modeste, nous aide à continuer à le développer.");
+                color: Theme.muted;
+                font-size: Theme.small;
+                wrap: word-wrap;
+            }
+            HorizontalLayout {
+                padding-top: 4px;
+                alignment: end;
+                DonateButton {
+                    text: @tr("❤  Faire un don  →");
+                    clicked => {
+                        App.support-open = true;
+                    }
+                }
+            }
+        }
+    }
+    HorizontalLayout {
+        spacing: 8px;
+        TextButton {
+            text: @tr("bouton" => "Annuler");
+            clicked => {
+                App.ask-answer(0);
+            }
+        }
+        Rectangle {
+            horizontal-stretch: 1;
+        }
+        if App.ask-confirm: DangerButton {
+            text: App.ask-ok;
+            clicked => {
+                App.ask-answer(2);
+            }
+        }
+        if !App.ask-confirm && (!App.ask-quit || App.ask-dirty): DangerButton {
+            text: App.ask-quit ? @tr("Quitter sans enregistrer") : @tr("Ne pas enregistrer");
+            clicked => {
+                App.ask-answer(2);
+            }
+        }
+        if !App.ask-confirm && (!App.ask-quit || App.ask-dirty): TextButton {
+            primary: true;
+            text: App.ask-quit ? @tr("Enregistrer et quitter") : @tr("Enregistrer");
+            clicked => {
+                App.ask-answer(1);
+            }
+        }
+        if App.ask-quit && !App.ask-dirty: TextButton {
+            primary: true;
+            text: @tr("Quitter");
+            clicked => {
+                App.ask-answer(2);
+            }
+        }
+    }
+}
+
+/// Carte cliquable de la fenêtre « Faire un don » (`.sup-card`).
+component SupportCard inherits Rectangle {
+    in property <string> icon;
+    in property <color> icon-color;
+    in property <string> title;
+    in property <string> sub;
+    callback clicked();
+    height: card-row.preferred-height;
+    border-radius: 10px;
+    background: card-touch.has-hover ? Theme.hover : Theme.panel-2;
+    border-width: 1px;
+    border-color: card-touch.has-hover ? #48505e : Theme.line-2;
+    card-touch := TouchArea {
+        mouse-cursor: pointer;
+        clicked => {
+            root.clicked();
+        }
+    }
+    card-row := HorizontalLayout {
+        padding: 12px;
+        padding-left: 14px;
+        padding-right: 14px;
+        spacing: 12px;
+        VerticalLayout {
+            alignment: center;
+            Rectangle {
+                width: 32px;
+                height: 32px;
+                border-radius: 8px;
+                background: root.icon-color;
+                Text {
+                    text: root.icon;
+                    color: #07080f;
+                    font-weight: 900;
+                    font-size: 15px;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+            }
+        }
+        VerticalLayout {
+            horizontal-stretch: 1;
+            alignment: center;
+            spacing: 2px;
+            Text {
+                text: root.title;
+                color: Theme.text;
+                font-weight: 700;
+            }
+            Text {
+                text: root.sub;
+                color: Theme.muted;
+                font-size: Theme.small;
+                wrap: word-wrap;
+            }
+        }
+        Text {
+            text: "›";
+            color: Theme.dim;
+            font-size: 18px;
+            vertical-alignment: center;
+        }
+    }
+}
+
+/// Une adresse de cryptomonnaie et son bouton « Copier ».
+component Coin inherits Rectangle {
+    in property <string> icon;
+    in property <color> icon-color;
+    in property <string> name;
+    in property <string> network;
+    in property <string> address;
+    property <bool> copied;
+    border-radius: 8px;
+    border-width: 1px;
+    border-color: Theme.line-2;
+    background: Theme.panel-2;
+    height: coin-col.preferred-height;
+    // copie dans le presse-papiers (champ caché)
+    clip-input := TextInput {
+        visible: false;
+        width: 0px;
+        height: 0px;
+        text: root.address;
+    }
+    coin-col := VerticalLayout {
+        padding: 10px;
+        padding-left: 12px;
+        padding-right: 12px;
+        spacing: 6px;
+        HorizontalLayout {
+            spacing: 8px;
+            Rectangle {
+                width: 22px;
+                height: 22px;
+                border-radius: 6px;
+                background: root.icon-color;
+                Text {
+                    text: root.icon;
+                    color: #07080f;
+                    font-weight: 900;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+            }
+            Text {
+                text: root.name;
+                color: Theme.text;
+                font-weight: 700;
+                vertical-alignment: center;
+            }
+            Text {
+                text: root.network;
+                color: Theme.dim;
+                font-family: Theme.mono;
+                font-size: 10px;
+                vertical-alignment: center;
+            }
+            Rectangle { }
+        }
+        Text {
+            text: root.address;
+            color: Theme.accent;
+            font-family: Theme.mono;
+            font-size: Theme.tiny;
+            wrap: char-wrap;
+        }
+        HorizontalLayout {
+            alignment: start;
+            TextButton {
+                text: root.copied ? @tr("✓ Copié") : @tr("Copier l’adresse");
+                clicked => {
+                    clip-input.select-all();
+                    clip-input.copy();
+                    clip-input.clear-selection();
+                    root.copied = true;
+                }
+            }
+        }
+    }
+}
+
+/// « Faire un don » : PayPal ou cryptomonnaie (`openSupport`).
+export component SupportDialog inherits DialogFrame {
+    dialog-width: 520px;
+    property <bool> crypto;
+    HorizontalLayout {
+        spacing: 14px;
+        Rectangle {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            clip: true;
+            Image {
+                width: 48px;
+                height: 48px;
+                source: @image-url("../assets/arklight-256.png");
+            }
+        }
+        VerticalLayout {
+            alignment: center;
+            spacing: 2px;
+            Text {
+                text: @tr("Faire un don");
+                color: Theme.text;
+                font-size: 16px;
+                font-weight: 700;
+            }
+            Text {
+                text: @tr("ARKLIGHT · simulateur lumière libre");
+                color: Theme.muted;
+                font-size: Theme.small;
+            }
+        }
+    }
+    Text {
+        text: @tr("ARKLIGHT est libre, gratuit et sans publicité. Il est développé par 22eme ARKANE pour l’électro et la lumière, sur le temps libre et à ses frais.");
+        color: Theme.text;
+        wrap: word-wrap;
+    }
+    Text {
+        text: @tr("Si ce logiciel t’est utile, un don, même modeste, aide à continuer à le développer. C’est totalement facultatif : rien n’est bloqué, rien n’est limité.");
+        color: Theme.muted;
+        font-size: Theme.small;
+        wrap: word-wrap;
+    }
+    SupportCard {
+        icon: "P";
+        icon-color: #009cde;
+        title: "PayPal";
+        sub: @tr("Don rapide en euros : carte bancaire ou compte PayPal");
+        clicked => {
+            App.open-url("https://paypal.me/22emearkane");
+            App.support-open = false;
+        }
+    }
+    SupportCard {
+        icon: "B";
+        icon-color: #f7931a;
+        title: @tr("Cryptomonnaie");
+        sub: @tr("Bitcoin (Taproot) · USDC (réseau Sonic)");
+        clicked => {
+            root.crypto = !root.crypto;
+        }
+    }
+    if root.crypto: Coin {
+        icon: "B";
+        icon-color: #f7931a;
+        name: "Bitcoin";
+        network: @tr("Réseau Bitcoin · Taproot");
+        address: "bc1p386af47cm9eyk8k9cse5r72s7z9nr50q2s0ysk8d8ys5vugmnj7qgn3hca";
+    }
+    if root.crypto: Coin {
+        icon: "$";
+        icon-color: #2775ca;
+        name: "USDC";
+        network: @tr("Réseau Sonic");
+        address: "0x15a5177E00eD4D916953A3492C562197E91f7045";
+    }
+    Text {
+        text: @tr("Merci pour votre soutien. — 22eme ARKANE");
+        color: Theme.dim;
+        font-family: Theme.mono;
+        font-size: 10px;
+        letter-spacing: 0.6px;
+        horizontal-alignment: center;
+    }
+    HorizontalLayout {
+        alignment: end;
+        TextButton {
+            text: @tr("Fermer");
+            clicked => {
+                App.support-open = false;
+            }
+        }
+    }
+}

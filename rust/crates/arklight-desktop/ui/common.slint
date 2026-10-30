@@ -1,0 +1,1052 @@
+// Structures, état partagé (global App), dictée ORAKLE et petits composants de l'interface.
+import { ListView, ScrollView, LineEdit, Slider, ComboBox, Switch, Button, CheckBox } from "std-widgets.slint";
+import { Theme, Icon } from "theme.slint";
+// ARKLIGHT (version Rust) : fenêtre principale. Menus, bibliothèque et liste Scène (à gauche),
+// vue 3D (texture du moteur wgpu), inspecteur (à droite), barre d'ambiance, barre d'état.
+// Textes en français, traduits par @tr. Toute la logique est côté Rust : l'interface affiche des
+// lignes et des champs, et renvoie les gestes.
+
+
+/// Une ligne de la bibliothèque (kind : « fixture », « prop », « grip » ou « header »).
+export struct LibRow {
+    // brand (groupe repliable), cat (sous-titre), fixture, grip, prop, note, empty
+    kind: string,
+    id: string,
+    label: string,
+    // marque, modèle, lux (à droite du nom)
+    sub: string,
+    // icône (ui/icons/lib/<icon>.svg)
+    icon: string,
+    // HMI, prov., est.
+    badge: string,
+    count: int,
+    folded: bool,
+}
+
+/// Une ligne de la liste Scène (projecteur ou objet).
+export struct SceneRow {
+    // section, fold (objets repliables), group, fixture, object, empty
+    kind: string,
+    id: string,
+    name: string,
+    // groupes du projecteur ; type d'objet
+    sub: string,
+    // patch (« U1 · 001–006 ») et ses problèmes
+    patch: string,
+    warn: bool,
+    tip: string,
+    swatch: color,
+    lit: bool,
+    // éteint ; piloté par la console ARKLIGHT
+    off: bool,
+    held: bool,
+    object: bool,
+    icon: string,
+    // groupe : membres, en partie choisi ; objets : repliés
+    count: int,
+    partial: bool,
+    folded: bool,
+    selected: bool,
+    // projecteur principal d'une sélection multiple
+    primary: bool,
+}
+
+/// Un champ de l'inspecteur (kind : header, text, number, xyz, slider, combo, toggle, info, button).
+/// Choix d'un menu qui dépend de la sélection.
+export struct CtxItem {
+    title: string,
+    action: string,
+    checked: bool,
+    // sa place dans la liste de choix
+    index: int,
+}
+
+/// Sous-menu d'un menu du clic droit (une famille : « Diffusions », « Dômes »…).
+export struct CtxSub {
+    title: string,
+    items: [CtxItem],
+}
+
+export struct Field {
+    key: string,
+    label: string,
+    kind: string,
+    text: string,
+    value: float,
+    min: float,
+    max: float,
+    step: float,
+    options: [string],
+    // clés des boutons d'une rangée
+    keys: [string],
+    index: int,
+    on: bool,
+    // bulle d'aide
+    tip: string,
+    // couleur (champ « color »)
+    swatch: color,
+    // longue liste : choix sans famille, puis familles en sous-menus (vides : liste simple)
+    menu-items: [CtxItem],
+    menu-subs: [CtxSub],
+}
+
+/// Barre d'axes de la sélection (outil Déplacer) : centre et bout de chaque axe dans la vue ;
+/// len : longueur des axes (mètres).
+export struct Gizmo {
+    on: bool,
+    // outil Pivoter : anneaux X, Y, Z (moitié avant et moitié arrière, commandes de tracé) ; angle
+    // du geste en cours (« +15° »)
+    rotate: bool,
+    xf: string,
+    xb: string,
+    yf: string,
+    yb: string,
+    zf: string,
+    zb: string,
+    angle: string,
+    cx: length,
+    cy: length,
+    xx: length,
+    xy: length,
+    yx: length,
+    yy: length,
+    zx: length,
+    zy: length,
+    len: float,
+}
+
+/// Une ligne des nouveautés : « lead » (chapeau), « li » (puce), « p » (paragraphe).
+export struct NewsLine {
+    kind: string,
+    text: string,
+}
+
+/// Une version dans la fenêtre « Nouveautés d'ARKLIGHT ».
+export struct NewsEntry {
+    version: string,
+    date: string,
+    lines: [NewsLine],
+}
+
+/// Un plan dans la fenêtre « Séquences et plans » (vignette, nom, « 12 proj. · 4 obj. »).
+export struct PlanCard {
+    id: string,
+    name: string,
+    sub: string,
+    thumb: image,
+    has-thumb: bool,
+    current: bool,
+}
+
+/// Une séquence et ses plans (fenêtre « Séquences et plans »).
+export struct SeqRow {
+    id: string,
+    name: string,
+    index: int,
+    plans: [PlanCard],
+}
+
+/// Choix d'un menu du clic droit préparé par Rust (action passée à `App.action`).
+/// Menu du clic droit qui dépend de la sélection (« Pied », « Gélatine », « Toile »…) : ses choix,
+/// puis ses familles.
+export struct CtxMenu {
+    title: string,
+    items: [CtxItem],
+    subs: [CtxSub],
+}
+
+/// Point de saisie d'un anneau de rotation, à l'écran (« rx », « ry », « rz »).
+export struct GizmoDot {
+    axis: string,
+    x: length,
+    y: length,
+}
+
+/// Une section de l'inspecteur (titre vide : en tête, hors cadre).
+export struct FieldGroup {
+    title: string,
+    fields: [Field],
+}
+
+/// Un fader de la console (un canal du profil) ; mark : repère du contrôleur MIDI qui le commande.
+export struct ConsoleFader {
+    label: string,
+    channel: string,
+    value: float,
+    max: float,
+    text: string,
+    mark: string,
+}
+
+/// Élément de la face avant d'un projecteur (kind : key, knob, led, text, shake, display, ir, slider),
+/// comme `web/js/ui/control-panel.js` (claviers Astera) et `panel-face.js` (autres marques).
+export struct FaceItem {
+    kind: string,
+    id: string,
+    label: string,
+    // seconde légende (claviers à double légende)
+    sub: string,
+    shape: string,
+    lit: bool,
+    color: color,
+    push: bool,
+    // forme de la touche
+    round: bool,
+    small: bool,
+    rect: bool,
+    icon: bool,
+    logo: bool,
+    dual: bool,
+    link: bool,
+    // capuchon (dégradé clair → foncé) et bague des touches et molettes des marques
+    cap-light: color,
+    cap-dark: color,
+    ring: color,
+    // molette : repère, taille (« s », « m », « l »), angle (degrés)
+    pointer: bool,
+    size: string,
+    angle: float,
+    // durée de l'appui en cours (secondes)
+    held: float,
+}
+
+/// Une case d'une rangée : un élément, ou une colonne d'éléments (`row` : posés en ligne).
+export struct FaceCell {
+    col: bool,
+    row: bool,
+    items: [FaceItem],
+}
+
+/// Rangée de la face avant.
+export struct FaceRow {
+    cells: [FaceCell],
+}
+
+/// Touche d'une télécommande infrarouge (ARC1 : anneau de couleur ; ARC3 : fond de couleur).
+export struct RemoteKey {
+    id: string,
+    label: string,
+    ring: color,
+    fill: color,
+    ink: color,
+    empty: bool,
+}
+
+/// Une ligne du journal (heure, texte ; level : « », « warn », « error »).
+export struct LogLine {
+    time: string,
+    text: string,
+    level: string,
+}
+
+/// Une source DMX reçue (onglet Réseau).
+export struct NetSource {
+    protocol: string,
+    address: string,
+    name: string,
+    universes: string,
+}
+
+/// Étiquette d'un projecteur dans la vue 3D (position en pixels de la vue).
+export struct Label3D {
+    x: length,
+    y: length,
+    name: string,
+    sub: string,
+    selected: bool,
+    // projecteur éteint : étiquette estompée
+    off: bool,
+}
+
+/// Carte d'un projet (écran des projets).
+export struct ProjectCard {
+    index: int,
+    name: string,
+    sub: string,
+    has-thumb: bool,
+    thumb: image,
+}
+
+/// Rangée de cartes.
+export struct ProjectRow {
+    cards: [ProjectCard],
+}
+
+/// Une commande et ses touches (fenêtre des raccourcis).
+export struct ShortcutRow {
+    id: string,
+    label: string,
+    keys: string,
+    changed: bool,
+}
+
+/// Touche du clavier dessiné (fenêtre des raccourcis) : rangée, position et largeur en touches.
+export struct KbKey {
+    row: int,
+    x: float,
+    w: float,
+    cap: string,
+    sub: string,
+    // touche prise (commande), non attribuable, modificateur (enfoncé), choisie (filtre)
+    bound: bool,
+    action: string,
+    dead: bool,
+    is-mod: bool,
+    mod-on: bool,
+    picked: bool,
+    // combinaison (clic : filtre) ou modificateur (« mod:Ctrl »)
+    token: string,
+    tip: string,
+}
+
+/// Une ligne de la conversation avec l'assistant (role : user, assistant, tool, note, error).
+export struct AiLine {
+    role: string,
+    text: string,
+}
+
+/// Une ligne du journal Bluetooth (input : venue du téléphone).
+export struct BleLine {
+    text: string,
+    input: bool,
+}
+
+/// Une correspondance MIDI : commande du contrôleur → fonction d'ARKLIGHT (et son réglage).
+export struct MidiRow {
+    id: string,
+    source: string,
+    kind-index: int,
+    params: [string],
+    param-index: int,
+    note: string,
+    learning: bool,
+    preset: bool,
+}
+
+/// Une case du moniteur DMX.
+export struct MonitorCell {
+    value: int,
+    patched: bool,
+    start: bool,
+    // plusieurs projecteurs sur ce canal ; canal d'un projecteur choisi
+    conflict: bool,
+    mine: bool,
+    // couleur du projecteur (repère), projecteur à choisir d'un clic, infobulle
+    color: color,
+    owner: string,
+    tip: string,
+}
+
+/// Nom d'un projecteur posé sur ses canaux (rangée, colonne, nombre de cases) dans le moniteur DMX.
+export struct MonitorLabel {
+    row: int,
+    col: int,
+    span: int,
+    text: string,
+}
+
+/// Un groupe de projecteurs (all : toute la sélection en fait partie ; some : une partie).
+export struct GroupRow {
+    id: string,
+    name: string,
+    count: int,
+    all: bool,
+    some: bool,
+}
+
+/// Un projecteur ré-adressé (avant → après).
+export struct MoveRow {
+    name: string,
+    before: string,
+    after: string,
+}
+
+/// Dictée ORAKLE partagée par tous les champs de texte (src/dictation.rs).
+export global Dictation {
+    // champ qui écoute ("" : aucun ; « ai-send » : F8 de l'assistant)
+    in property <string> target;
+    // dernier texte dicté, son champ, et un compteur (il change à chaque texte)
+    in property <string> result;
+    in property <string> result-for;
+    in property <int> seq;
+    // aide au survol d'un micro : texte, position (fenêtre), visible
+    in property <string> tooltip;
+    in-out property <bool> tip-visible;
+    in-out property <length> tip-x;
+    in-out property <length> tip-y;
+    callback toggle(string);
+}
+
+/// Micro d'un champ : clic = ORAKLE en mains libres ; nouveau clic = le texte s'écrit dans le champ.
+export component MicButton inherits Rectangle {
+    in property <string> field;
+    property <bool> listening: Dictation.target == root.field;
+    property <bool> hovering: touch.has-hover;
+    width: 22px;
+    height: 22px;
+    border-radius: 11px;
+    background: root.listening ? #7a1d1d : touch.has-hover ? Theme.hover : transparent;
+    changed hovering => {
+        if (self.hovering) {
+            Dictation.tip-x = self.absolute-position.x;
+            Dictation.tip-y = self.absolute-position.y + self.height;
+            Dictation.tip-visible = true;
+        } else {
+            Dictation.tip-visible = false;
+        }
+    }
+    touch := TouchArea {
+        clicked => {
+            Dictation.tip-visible = false;
+            Dictation.toggle(root.field);
+        }
+    }
+    Path {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        width: 14px;
+        height: 14px;
+        viewbox-width: 24;
+        viewbox-height: 24;
+        commands: "M12 2 a3 3 0 0 0 -3 3 v6 a3 3 0 0 0 6 0 V5 a3 3 0 0 0 -3 -3 z M19 10 v1 a7 7 0 0 1 -14 0 v-1 M12 18 v4 M8 22 h8";
+        stroke: root.listening ? #ff8a8a : touch.has-hover ? Theme.text : Theme.dim;
+        stroke-width: 2px;
+        fill: transparent;
+    }
+}
+
+/// Champ de texte avec son micro (dictée ORAKLE), au style de la version JavaScript (`input`) ;
+/// `apply` : le texte dicté est validé aussitôt ; `icon` : loupe des champs de recherche.
+export component VoiceEdit inherits Rectangle {
+    in property <string> field;
+    in-out property <string> text;
+    in property <string> placeholder-text;
+    in property <bool> enabled: true;
+    in property <bool> apply: false;
+    in property <string> icon;
+    // la saisie prend la main à l'ouverture (fenêtres)
+    in property <bool> autofocus: false;
+    out property <bool> has-focus: edit.has-focus;
+    property <int> seq: Dictation.seq;
+    callback edited(string);
+    callback accepted(string);
+    init => {
+        if (root.autofocus) {
+            edit.focus();
+            edit.select-all();
+        }
+    }
+    changed seq => {
+        if (Dictation.result-for == root.field) {
+            root.text = root.text == "" ? Dictation.result : root.text + " " + Dictation.result;
+            root.edited(root.text);
+            if (root.apply) {
+                root.accepted(root.text);
+            }
+            edit.focus();
+        }
+    }
+    // met la main dans le champ (Ctrl+F…)
+    public function focus-edit() {
+        edit.focus();
+        edit.select-all();
+    }
+    min-width: 60px;
+    min-height: 28px;
+    border-radius: 4px;
+    background: Theme.field;
+    border-width: 1px;
+    border-color: edit.has-focus ? Theme.active-line : Theme.line-2;
+    opacity: root.enabled ? 1 : 0.5;
+    HorizontalLayout {
+        padding-left: 7px;
+        padding-right: 2px;
+        spacing: 5px;
+        if root.icon != "": VerticalLayout {
+            alignment: center;
+            Icon {
+                width: 14px;
+                height: 14px;
+                name: root.icon;
+                tint: Theme.dim;
+            }
+        }
+        Rectangle {
+            horizontal-stretch: 1;
+            clip: true;
+            TouchArea {
+                mouse-cursor: MouseCursor.text;
+                clicked => {
+                    edit.focus();
+                }
+            }
+            if root.text == "": Text {
+                width: parent.width;
+                height: parent.height;
+                text: root.placeholder-text;
+                color: Theme.dim;
+                font-size: Theme.font;
+                vertical-alignment: center;
+                overflow: elide;
+            }
+            // défilement du texte quand il dépasse (comme LineEdit)
+            edit := TextInput {
+                property <length> computed-x;
+                x: min(0px, max(parent.width - self.width - self.text-cursor-width, self.computed-x));
+                width: max(parent.width - self.text-cursor-width, self.preferred-width);
+                height: parent.height;
+                text <=> root.text;
+                color: Theme.text;
+                font-size: Theme.font;
+                vertical-alignment: center;
+                single-line: true;
+                enabled: root.enabled;
+                selection-background-color: #2d6cdf99;
+                selection-foreground-color: Theme.text;
+                cursor-position-changed(cpos) => {
+                    if (cpos.x + self.computed-x < 2px) {
+                        self.computed-x = -cpos.x + 2px;
+                    } else if (cpos.x + self.computed-x > parent.width - 2px - self.text-cursor-width) {
+                        self.computed-x = parent.width - cpos.x - 2px - self.text-cursor-width;
+                    }
+                }
+                edited => {
+                    root.edited(self.text);
+                }
+                accepted => {
+                    root.accepted(self.text);
+                }
+            }
+        }
+        VerticalLayout {
+            alignment: center;
+            MicButton {
+                field: root.field;
+            }
+        }
+    }
+}
+
+/// Ligne d'un formulaire : libellé à gauche, champ à droite.
+export component FormRow inherits HorizontalLayout {
+    in property <string> label;
+    spacing: 8px;
+    Text {
+        width: 110px;
+        text: root.label;
+        color: #c9ced6;
+        vertical-alignment: center;
+    }
+    @children
+}
+
+export component Pill inherits Rectangle {
+    in property <string> text;
+    in property <bool> on;
+    height: 22px;
+    border-radius: 11px;
+    background: on ? #1d2a1f : #1a1d22;
+    border-width: 1px;
+    border-color: on ? #2f6b3a : #2a2f37;
+    HorizontalLayout {
+        padding-left: 10px;
+        padding-right: 10px;
+        spacing: 6px;
+        alignment: center;
+        Rectangle {
+            width: 7px;
+            height: 7px;
+            y: (parent.height - self.height) / 2;
+            border-radius: 3.5px;
+            background: on ? #43c25b : #59606b;
+        }
+        Text {
+            text: root.text;
+            color: #c9ced6;
+            font-size: 12px;
+            vertical-alignment: center;
+        }
+    }
+}
+
+/// Onglet du panneau de gauche.
+export component Tab inherits Rectangle {
+    in property <string> text;
+    in property <bool> active;
+    callback clicked();
+    height: 30px;
+    border-radius: 6px;
+    background: active ? #232831 : touch.has-hover ? #1a1e24 : transparent;
+    touch := TouchArea {
+        clicked => {
+            root.clicked();
+        }
+    }
+    Text {
+        text: root.text;
+        color: active ? #f2f4f7 : #8b93a1;
+        font-weight: active ? 600 : 400;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+}
+
+/// Bouton bascule de la barre d'ambiance.
+export component Toggle inherits Rectangle {
+    in property <string> text;
+    in property <bool> on;
+    callback toggled();
+    height: 26px;
+    min-width: max(54px, toggle-label.preferred-width + 20px);
+    border-radius: 5px;
+    background: on ? #24324a : touch.has-hover ? #1c2027 : #15181d;
+    border-width: 1px;
+    border-color: on ? #3e6db5 : #2a2f37;
+    touch := TouchArea {
+        clicked => {
+            root.toggled();
+        }
+    }
+    HorizontalLayout {
+        padding-left: 9px;
+        padding-right: 9px;
+        toggle-label := Text {
+            text: root.text;
+            color: on ? #dce7fb : #9aa3ae;
+            font-size: 12px;
+            vertical-alignment: center;
+        }
+    }
+}
+
+/// Curseur étiqueté de la barre d'ambiance.
+export component EnvSlider inherits HorizontalLayout {
+    in property <string> label;
+    in property <string> value-text;
+    in-out property <float> value;
+    in property <float> minimum;
+    in property <float> maximum;
+    in property <float> step;
+    callback moved(float);
+    spacing: 6px;
+    Text {
+        text: root.label;
+        color: #8b93a1;
+        font-size: 12px;
+        vertical-alignment: center;
+    }
+    Slider {
+        width: 110px;
+        minimum: root.minimum;
+        maximum: root.maximum;
+        step: root.step;
+        value: root.value;
+        changed(v) => {
+            root.value = v;
+            root.moved(v);
+        }
+    }
+    Text {
+        width: 46px;
+        text: root.value-text;
+        color: #c9ced6;
+        font-size: 12px;
+        vertical-alignment: center;
+    }
+}
+
+/// État et actions de la fenêtre, partagés par tous ses panneaux (ui/*.slint) ; Rust y accède par
+/// `app.global::<App>()`.
+export global App {
+    // incrémenté par les panneaux : la fenêtre rend la main à ses raccourcis clavier
+    in-out property <int> refocus;
+    in property <image> view;
+    in property <string> project-name;
+    in property <bool> dirty;
+    in property <[SceneRow]> scene-rows;
+    in property <int> fixture-count;
+    in property <int> object-count;
+    in property <[LibRow]> library;
+    in property <[Field]> fields;
+    in property <[FieldGroup]> field-groups;
+    in property <string> inspector-title;
+    in property <string> undo-label;
+    in property <string> redo-label;
+    in property <string> gpu;
+    in property <string> version;
+    in property <float> frame-ms;
+    in-out property <string> language: "auto";
+    in-out property <bool> show-cyc;
+    in-out property <bool> show-floor: true;
+    in-out property <bool> show-stands: true;
+    in-out property <bool> show-bloom: true;
+    // surbrillance : tout le matériel visible dans le noir (H)
+    in-out property <bool> highlight;
+    // voir par la caméra (C) : légende du cadre (vide : vue libre), cadre en part de la vue
+    in property <string> look-label;
+    in property <float> look-w: 1;
+    in property <float> look-h: 1;
+    in-out property <float> haze;
+    in-out property <float> exposure-ev;
+    in-out property <float> ambient;
+    in-out property <bool> about-open;
+    // « Voulez-vous vraiment quitter ? » (ask-quit) ou « Enregistrer les modifications ? »
+    in-out property <bool> ask-open;
+    in property <bool> ask-quit;
+    in property <bool> ask-dirty;
+    // simple confirmation (« Revenir à la version enregistrée ? ») : titre, texte, bouton d'action
+    in property <bool> ask-confirm;
+    in property <string> ask-title;
+    in property <string> ask-note;
+    in property <string> ask-ok;
+    // F2 : le nom du projet (barre du haut) prend la main, tout sélectionné
+    in-out property <int> focus-name;
+    // « Faire un don »
+    in-out property <bool> support-open;
+    in-out property <int> left-tab: 1;
+    // bibliothèque : onglet (Lumières, Pieds, Grip, Décor), tri, éléments par onglet
+    in property <int> lib-tab;
+    in property <int> lib-sort;
+    in property <[int]> lib-counts: [0, 0, 0, 0];
+    // liste Scène : recherche, tri, compteur
+    in-out property <string> scene-search;
+    in property <int> scene-sort;
+    in property <string> scene-count;
+    // élément de la bibliothèque glissé vers la vue (position dans la fenêtre)
+    in-out property <string> drag-label;
+    in-out property <length> drag-x;
+    in-out property <length> drag-y;
+    in-out property <string> search;
+    in property <[ConsoleFader]> console-faders;
+    in property <string> console-title;
+    // console : modèle, familles (plusieurs modèles), profil, place dans le patch, état, valeurs brutes
+    in property <string> console-sub;
+    in property <[string]> console-chips;
+    in property <int> console-chip;
+    in property <[string]> console-profiles;
+    in property <int> console-profile;
+    in property <string> console-place;
+    in property <int> console-pixels;
+    in property <string> console-note;
+    in property <string> console-warn;
+    in property <bool> console-raw;
+    // bibliothèque : demande de mettre la main dans la recherche (Ctrl+F)
+    in-out property <int> focus-search;
+    in property <string> artnet-status;
+    in property <bool> artnet-on;
+    in property <string> sacn-status;
+    in property <bool> sacn-on;
+    in property <string> dmx-sources;
+    // journal (onglet « Journal »)
+    in property <[LogLine]> log-lines;
+    // télécommande infrarouge : ouverte, modèle (0 ARC1, 1 ARC3), touches, cible (0 la sélection, 1 tous les Astera), compte rendu
+    in-out property <bool> remote-open;
+    in property <int> remote-model;
+    in property <[RemoteKey]> remote-keys;
+    in-out property <int> remote-target;
+    in property <string> remote-feedback;
+    // réseau : adresse du PC, numérotation Art-Net (1 : Art-Net 0 = Univers 1), sources, compteurs
+    in property <string> net-ip;
+    in property <int> net-offset: 1;
+    in property <[NetSource]> net-sources;
+    in property <string> net-counters;
+    in property <[string]> plans;
+    in-out property <int> plan-index;
+    in property <[string]> recent;
+    in-out property <int> bottom-tab: 0;
+    in property <[MonitorCell]> monitor-cells;
+    in property <[string]> monitor-universes;
+    in-out property <int> monitor-universe-index;
+    in property <string> monitor-title;
+    in property <[MonitorLabel]> monitor-labels;
+    // rangée du premier projecteur choisi (le moniteur s'y place)
+    in property <int> monitor-row;
+    // « ⚠ 3 projecteurs en conflit — corriger… » (vide : pas de conflit)
+    in property <string> monitor-conflicts;
+    in property <bool> console-held;
+    in-out property <bool> show-console: true;
+    // panneaux de gauche et de droite, vue en plein écran (panneaux masqués)
+    in-out property <bool> show-left: true;
+    // nom des panneaux repliés, une lettre sous l'autre (« BIBLIOTHÈQUE », « INSPECTEUR »)
+    in property <[string]> left-strip;
+    in property <[string]> right-strip;
+    in-out property <bool> show-right: true;
+    // tailles des panneaux (tirer leur bord), gardées d'une fois sur l'autre
+    in-out property <length> left-w: 260px;
+    in-out property <length> right-w: 330px;
+    in-out property <length> bottom-h: 230px;
+    in-out property <bool> full-view;
+    // fenêtre en plein écran (F11)
+    in property <bool> fullscreen;
+    // aimant (pas de 10 cm et de 5°), vue prédéfinie (« persp », « front »… ; vide après un geste)
+    in-out property <bool> snap: true;
+    in property <Gizmo> gizmo;
+    // vue de moins de 1130 px de large : barre d'outils sur deux rangées
+    in property <bool> narrow-bar;
+    // fenêtre étroite : barre du haut resserrée (1 : champs plus courts, sans l'adresse IP ;
+    // 2 : sans les voyants, « Faire un don » en cœur seul)
+    in property <int> head-level;
+    // clic droit : menus selon la sélection ; objet seul (menu des objets) ; caméra (voir par elle)
+    in property <[CtxMenu]> ctx-menus;
+    // fenêtre « Séquences et plans… » : action (« open », « rename », « duplicate », « move »,
+    // « delete », « new-plan », « new-seq », « seq-rename », « seq-move », « seq-delete »), id, argument
+    in-out property <bool> plans-open;
+    in property <[SeqRow]> plan-seqs;
+    callback plans-action(string, string, string);
+    in property <bool> ctx-object;
+    in property <string> ctx-camera;
+    // anneaux de rotation : points de saisie (nombre fixe, mis à jour sur place) et anneau survolé
+    in property <[GizmoDot]> gizmo-dots;
+    in-out property <string> gizmo-hot;
+    in-out property <string> view-preset: "persp";
+    // bas de la vue : aide, images par seconde
+    in-out property <bool> show-help: true;
+    in-out property <bool> show-fps;
+    in property <int> selected-count;
+    in property <int> selected-fixtures;
+    in property <bool> selection-off;
+    in property <bool> selection-v5;
+    in property <bool> selection-aimable;
+    in property <string> same-label;
+    in property <[GroupRow]> groups;
+    in property <[string]> aim-targets;
+    in property <string> toast;
+    in property <[string]> midi-kinds;
+    in property <[MidiRow]> midi-rows;
+    in property <[string]> midi-presets;
+    in-out property <int> midi-preset-index;
+    in property <string> midi-devices;
+    // un contrôleur MIDI est branché (voyant de la barre du haut)
+    in property <bool> midi-on;
+    // préréglage MIDI actif : intégré (canal réglable, 1 à 16) ou enregistré (supprimable)
+    in property <bool> midi-builtin;
+    in property <bool> midi-user;
+    in property <int> midi-channel;
+    // voyants de la barre du haut : 0 coupé, 1 à l'écoute, 2 données reçues, 3 erreur ; bulles
+    in property <int> artnet-state;
+    in property <int> sacn-state;
+    in property <string> artnet-tip;
+    in property <string> sacn-tip;
+    in property <string> midi-tip;
+    in property <string> midi-last;
+    in property <string> midi-status;
+    in property <string> midi-page;
+    in property <string> midi-summary;
+    in property <bool> midi-learning;
+    in property <bool> blackout;
+    in property <[string]> ble-emulators;
+    in property <int> ble-emulator-index;
+    in property <string> ble-note;
+    in property <bool> ble-running;
+    in property <string> ble-status;
+    in property <[BleLine]> ble-lines;
+    in-out property <int> tool;
+    in-out property <bool> plot-mode;
+    in property <image> plot-image;
+    in property <[bool]> plot-flags;
+    in property <int> plot-tool;
+    in property <string> plot-hint;
+    in property <string> plot-item-kind;
+    in property <string> plot-item-text;
+    in property <bool> plot-item-closed;
+    in property <bool> plot-item-filled;
+    in property <bool> plot-item-is-text;
+    in property <bool> plot-item-dash;
+    // n° du choix : épaisseur du trait (1, 2, 3, 5, 8 px), taille du texte (12 à 60 px)
+    in property <int> plot-item-width;
+    in property <int> plot-item-size;
+    // hauteur du volume dans la vue 3D (m)
+    in property <string> plot-item-height;
+    // fenêtre « Fond et cartouche » : couleur du fond (vide : auto), image de fond, cartouche
+    in-out property <bool> plot-panel-open;
+    in property <string> plot-bg;
+    in property <bool> plot-underlay;
+    in property <string> plot-u-width;
+    in property <string> plot-u-rotation;
+    in property <float> plot-u-opacity;
+    in property <bool> plot-u-floor;
+    in property <string> plot-production;
+    in property <string> plot-author;
+    in property <string> panel-title;
+    in property <image> panel-screen;
+    in property <length> panel-screen-width;
+    in property <length> panel-screen-height;
+    in property <[FaceRow]> panel-rows;
+    // disposition : clavier Astera (« tube », « ax2 », « dual », « art7 »…) ou marque (« arri »…)
+    in property <string> panel-style;
+    in property <string> panel-hint;
+    in property <string> panel-note;
+    in property <[string]> ai-providers;
+    in property <int> ai-provider-index;
+    in property <[string]> ai-models;
+    in property <int> ai-model-index;
+    in property <bool> ai-key-needed;
+    in property <bool> ai-key-saved;
+    in property <bool> ai-aiodos;
+    // demande d'accès à AIODOS en cours, et son code à 6 chiffres
+    in property <bool> ai-aiodos-pending;
+    in property <string> ai-aiodos-code;
+    // état d'AIODOS (« ready », « not_installed », « not_running », « needs_access »…) et son message
+    in property <string> ai-aiodos-state;
+    in property <string> ai-aiodos-message;
+    in property <bool> ai-busy;
+    // photo jointe à la prochaine demande (nom vide : aucune), aussi en fond du plan 2D
+    in property <string> ai-photo-name;
+    in property <image> ai-photo;
+    in property <bool> ai-photo-underlay;
+    // adresse du serveur du fournisseur (vide : celle par défaut)
+    in property <bool> ai-url-shown;
+    in property <string> ai-url;
+    in property <string> ai-url-default;
+    in property <string> ai-status;
+    in property <[AiLine]> ai-log;
+    in-out property <string> ai-input;
+    in-out property <string> ai-key;
+    // étiquettes 3D (réglages du projet) : noms des projecteurs, adresses DMX
+    in property <bool> show-labels;
+    in property <bool> show-patch;
+    in property <[Label3D]> labels;
+    in-out property <bool> projects-open;
+    in property <[ProjectRow]> project-rows;
+    in property <string> projects-folder;
+    in-out property <bool> shortcuts-open;
+    in property <[ShortcutRow]> shortcut-rows;
+    // clavier dessiné (montré ou non)
+    in property <[KbKey]> kb-keys;
+    in-out property <bool> kb-shown: true;
+    in property <string> shortcut-capture;
+    in-out property <string> update-version;
+    in property <string> update-url;
+    // version de test (« 1.1.0-beta.1 ») : la note « alpha » de « À propos »
+    in property <bool> prerelease;
+    // nouveautés : fenêtre, versions (la plus récente en tête), version montrée, « ne plus afficher »
+    in-out property <bool> news-open;
+    in property <[NewsEntry]> news-entries;
+    in-out property <int> news-index;
+    in-out property <bool> news-hidden;
+    callback news-hide(bool);
+    // mise à jour : téléchargement de l'installeur (-1 : rien en cours ; 0 à 1 : avancement),
+    // installeur prêt (chemin) ; actions « download », « cancel », « install », « news »
+    in property <float> update-progress: -1;
+    in property <string> update-file;
+    callback update-action(string);
+    // installeur de la nouvelle version (vide : la page de la version)
+    in property <string> update-download;
+    // « À propos » : résultat de « Rechercher une mise à jour »
+    in property <string> about-status;
+    callback about-check();
+    in-out property <bool> prompt-open;
+    in property <string> prompt-title;
+    in property <string> prompt-label;
+    in property <string> prompt-note;
+    in-out property <string> prompt-value;
+    in-out property <bool> readdress-open;
+    in property <[string]> ra-scopes;
+    in-out property <int> ra-scope;
+    in property <[string]> ra-orders;
+    in-out property <int> ra-order;
+    in-out property <int> ra-pack;
+    in property <[string]> ra-aligns;
+    in-out property <int> ra-align;
+    in-out property <bool> ra-overflow;
+    in-out property <string> ra-universe;
+    in-out property <string> ra-address;
+    in property <bool> ra-conflicts-only;
+    in property <bool> ra-universe-scope;
+    in property <string> ra-summary;
+    in property <string> ra-status;
+    in property <bool> ra-warn;
+    in property <string> ra-unplaced;
+    in property <[MoveRow]> ra-moves;
+    in property <int> ra-count;
+    callback new-project();
+    callback open-project();
+    callback open-demo(string);
+    callback save-project();
+    callback save-project-as();
+    callback quit();
+    // réponse : 0 annuler, 1 enregistrer puis continuer, 2 continuer sans enregistrer
+    callback ask-answer(int);
+    callback undo();
+    callback redo();
+    callback duplicate();
+    callback delete-selection();
+    callback select-all();
+    callback select-none();
+    callback set-language(string);
+    callback reset-view();
+    callback set-env(string, float);
+    callback set-flag(string, bool);
+    callback search-changed(string);
+    // bibliothèque : « tab », « sort », « fold » (groupe) ; liste Scène : « search », « sort », « fold »
+    callback lib-action(string, string);
+    callback scene-action(string, string);
+    // élément de la bibliothèque déposé dans la fenêtre (kind, id, x, y)
+    callback drop-item(string, string, length, length);
+    // barre d'axes : phase (1 appui, 0 glisser, 2 relâcher), axe (« x », « y », « z », « xz »), position dans la vue
+    callback gizmo-drag(int, string, length, length);
+    callback add-item(string, string);
+    callback select-row(string, bool);
+    callback field-text(string, string);
+    callback field-value(string, float);
+    callback field-index(string, int);
+    callback field-toggle(string, bool);
+    callback field-button(string);
+    callback console-fader(int, float);
+    callback switch-plan(int);
+    callback new-plan(string);
+    callback new-sequence();
+    callback step-plan(bool);
+    callback remove-plan();
+    callback open-recent(int);
+    // projet passé par un second lancement d'ARKLIGHT (vide : montrer la fenêtre)
+    callback open-path(string);
+    // F10 : ouvrir les menus au clavier (compteur)
+    in-out property <int> menu-key;
+    // essais : l'inspecteur défile jusqu'en bas
+    in-out property <int> inspector-end;
+    // touche d'une commande pour les bulles d'aide (« (W) », vide sans touche) ; `keys-rev` change
+    // quand les raccourcis changent (les bulles se mettent à jour)
+    in property <int> keys-rev;
+    pure callback key-hint(string, int) -> string;
+    // touche d'une commande à droite d'un élément de menu (« ····Ctrl+S »)
+    pure callback menu-shortcut(string, int) -> string;
+    callback monitor-universe(int);
+    // clic sur un canal : choisir son projecteur (Ctrl : l'ajouter)
+    callback monitor-pick(string, bool);
+    callback console-release();
+    // numérotation Art-Net (0 ou 1)
+    callback net-offset-changed(int);
+    // télécommande : « model » (0 / 1), « key » (touche)
+    callback remote(string, string);
+    // « full », « black », « rainbow », « release », « release-all », « raw », « family:i », « profile:i »
+    callback console-action(string);
+    callback action(string);
+    callback prompt-ok(string);
+    callback readdress-scope(int);
+    callback readdress-changed();
+    callback readdress-apply();
+    callback ai(string, string);
+    callback ble(string, string);
+    callback open-url(string);
+    callback key(string, bool, bool, bool) -> bool;
+    callback key-up(string, bool, bool, bool);
+    callback shortcut(string, string);
+    callback projects(string, int);
+    callback panel-key(string, bool);
+    callback panel-turn(string, int);
+    callback panel-shake();
+    callback plot-option(string);
+    callback plot-tool-set(int);
+    callback plot-item(string, string);
+    callback plot-meta(string, string);
+    callback view-double();
+    callback plot-export(string);
+    callback midi(string, string);
+    callback midi-kind(string, int);
+    callback midi-param(string, int);
+    callback view-pointer(int, int, float, float, bool, bool) -> bool;
+    callback view-moved(float, float);
+    callback view-wheel(float, float, float);
+}
+

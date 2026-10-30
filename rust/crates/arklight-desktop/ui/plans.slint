@@ -1,0 +1,427 @@
+// Fenêtre « Séquences et plans… » (comme `web/js/ui/plans.js`) : chaque séquence et ses plans en
+// vignettes ; ouvrir, renommer, dupliquer, déplacer, supprimer ; nouveau plan, nouvelle séquence.
+import { ScrollView } from "std-widgets.slint";
+import { App, SeqRow, PlanCard } from "common.slint";
+import { Theme, Icon, TextButton, ToolButton } from "theme.slint";
+
+// Bouton « trois points » (options d'une séquence ou d'un plan).
+component MoreButton inherits Rectangle {
+    callback clicked();
+    width: 24px;
+    height: 22px;
+    border-radius: 4px;
+    background: touch.has-hover ? Theme.panel-2 : transparent;
+    touch := TouchArea {
+        clicked => {
+            root.clicked();
+        }
+    }
+    Icon {
+        name: "dots";
+        tint: touch.has-hover ? Theme.text : Theme.muted;
+        width: 16px;
+        height: 16px;
+    }
+}
+
+export component PlansDialog inherits Rectangle {
+    background: #000000b0;
+    TouchArea {
+        clicked => {
+            App.plans-open = false;
+        }
+    }
+    // vignettes 16/9
+    property <length> card-w: 176px;
+    property <length> card-h: 99px + 46px;
+    property <length> gap: 12px;
+
+    panel := Rectangle {
+        width: min(parent.width - 48px, 980px);
+        height: min(parent.height - 80px, body.preferred-height + 70px);
+        border-radius: 10px;
+        background: Theme.panel;
+        border-width: 1px;
+        border-color: Theme.line-2;
+        drop-shadow-blur: 24px;
+        drop-shadow-color: #00000080;
+        TouchArea { }
+        VerticalLayout {
+            // en-tête : titre, nouvelle séquence, fermer
+            HorizontalLayout {
+                height: 52px;
+                padding-left: 18px;
+                padding-right: 12px;
+                spacing: 8px;
+                Text {
+                    text: @tr("Séquences et plans");
+                    color: Theme.text;
+                    font-size: 16px;
+                    font-weight: 700;
+                    vertical-alignment: center;
+                    horizontal-stretch: 1;
+                }
+                VerticalLayout {
+                    alignment: center;
+                    seq-new := ToolButton {
+                        icon: "plus";
+                        text: @tr("Nouvelle séquence");
+                        dropdown: true;
+                        width: self.natural-width;
+                        clicked => {
+                            seq-new-menu.show({ x: 0, y: self.height + 2px });
+                        }
+                        seq-new-menu := ContextMenuArea {
+                            enabled: false;
+                            Menu {
+                                MenuItem {
+                                    title: @tr("Copie du plan actuel");
+                                    activated => {
+                                        App.plans-action("new-seq", "", "copy");
+                                    }
+                                }
+                                MenuItem {
+                                    title: @tr("Même décor, sans lumière");
+                                    activated => {
+                                        App.plans-action("new-seq", "", "decor");
+                                    }
+                                }
+                                MenuItem {
+                                    title: @tr("Plan vide");
+                                    activated => {
+                                        App.plans-action("new-seq", "", "empty");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                VerticalLayout {
+                    alignment: center;
+                    Rectangle {
+                        width: 30px;
+                        height: 30px;
+                        border-radius: 6px;
+                        background: close-touch.has-hover ? Theme.panel-2 : transparent;
+                        close-touch := TouchArea {
+                            clicked => {
+                                App.plans-open = false;
+                            }
+                        }
+                        Text {
+                            text: "×";
+                            color: Theme.muted;
+                            font-size: 20px;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
+            }
+            Rectangle {
+                height: 1px;
+                background: Theme.line;
+            }
+            scroll := ScrollView {
+                vertical-stretch: 1;
+                body := VerticalLayout {
+                    padding: 18px;
+                    spacing: 18px;
+                    for s in App.plan-seqs: VerticalLayout {
+                        spacing: 8px;
+                        // séquence : nom (double-clic : renommer), nombre de plans, options
+                        HorizontalLayout {
+                            spacing: 8px;
+                            Rectangle {
+                                width: seq-name.preferred-width;
+                                seq-name := Text {
+                                    text: s.name;
+                                    color: Theme.text;
+                                    font-size: 14px;
+                                    font-weight: 700;
+                                    vertical-alignment: center;
+                                }
+                                TouchArea {
+                                    double-clicked => {
+                                        App.plans-action("seq-rename", s.id, "");
+                                    }
+                                }
+                            }
+                            Text {
+                                text: s.plans.length == 1 ? @tr("1 plan") : @tr("{} plans", s.plans.length);
+                                color: Theme.dim;
+                                font-size: Theme.small;
+                                vertical-alignment: center;
+                            }
+                            seq-more := MoreButton {
+                                clicked => {
+                                    seq-menu.show({ x: 0, y: self.height + 2px });
+                                }
+                                seq-menu := ContextMenuArea {
+                                    enabled: false;
+                                    Menu {
+                                        MenuItem {
+                                            title: @tr("Renommer…");
+                                            activated => {
+                                                App.plans-action("seq-rename", s.id, "");
+                                            }
+                                        }
+                                        Menu {
+                                            title: @tr("Nouveau plan");
+                                            MenuItem {
+                                                title: @tr("Copie du plan actuel");
+                                                activated => {
+                                                    App.plans-action("new-plan", s.id, "copy");
+                                                }
+                                            }
+                                            MenuItem {
+                                                title: @tr("Même décor, sans lumière");
+                                                activated => {
+                                                    App.plans-action("new-plan", s.id, "decor");
+                                                }
+                                            }
+                                            MenuItem {
+                                                title: @tr("Plan vide");
+                                                activated => {
+                                                    App.plans-action("new-plan", s.id, "empty");
+                                                }
+                                            }
+                                        }
+                                        MenuSeparator { }
+                                        MenuItem {
+                                            title: @tr("Monter");
+                                            enabled: s.index > 0;
+                                            activated => {
+                                                App.plans-action("seq-move", s.id, s.index - 1);
+                                            }
+                                        }
+                                        MenuItem {
+                                            title: @tr("Descendre");
+                                            enabled: s.index < App.plan-seqs.length - 1;
+                                            activated => {
+                                                App.plans-action("seq-move", s.id, s.index + 1);
+                                            }
+                                        }
+                                        MenuSeparator { }
+                                        MenuItem {
+                                            title: @tr("Supprimer la séquence…");
+                                            enabled: App.plan-seqs.length > 1;
+                                            activated => {
+                                                App.plans-action("seq-delete", s.id, "");
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            Rectangle {
+                                horizontal-stretch: 1;
+                            }
+                        }
+                        // plans en vignettes, à la ligne quand la place manque ; « + » à la fin
+                        cards := Rectangle {
+                            property <int> per-row: max(1, floor((self.width + root.gap) / (root.card-w + root.gap)));
+                            height: ceil((s.plans.length + 1) / self.per-row) * (root.card-h + root.gap) - root.gap;
+                            for p[i] in s.plans: card := Rectangle {
+                                x: mod(i, cards.per-row) * (root.card-w + root.gap);
+                                y: floor(i / cards.per-row) * (root.card-h + root.gap);
+                                width: root.card-w;
+                                height: root.card-h;
+                                border-radius: 8px;
+                                background: card-touch.has-hover ? #1c2128 : #15191e;
+                                border-width: p.current ? 2px : 1px;
+                                border-color: p.current ? Theme.accent : card-touch.has-hover ? Theme.line-2 : Theme.line;
+                                card-touch := TouchArea {
+                                    clicked => {
+                                        App.plans-action("open", p.id, "");
+                                    }
+                                    pointer-event(e) => {
+                                        if (e.kind == PointerEventKind.down && e.button == PointerEventButton.right) {
+                                            card-menu.show({ x: self.mouse-x, y: self.mouse-y });
+                                        }
+                                    }
+                                }
+                                // vignette
+                                Rectangle {
+                                    x: 4px;
+                                    y: 4px;
+                                    width: parent.width - 8px;
+                                    height: 99px - 8px;
+                                    border-radius: 5px;
+                                    background: #0b0d10;
+                                    clip: true;
+                                    if p.has-thumb: Image {
+                                        width: parent.width;
+                                        height: parent.height;
+                                        source: p.thumb;
+                                        image-fit: cover;
+                                    }
+                                    if !p.has-thumb: Icon {
+                                        name: "camera";
+                                        tint: Theme.dim;
+                                        width: 26px;
+                                        height: 26px;
+                                    }
+                                }
+                                // nom (double-clic : renommer), options
+                                HorizontalLayout {
+                                    x: 10px;
+                                    y: 99px;
+                                    width: parent.width - 14px;
+                                    height: 24px;
+                                    spacing: 4px;
+                                    Rectangle {
+                                        horizontal-stretch: 1;
+                                        Text {
+                                            width: parent.width;
+                                            text: p.name;
+                                            color: Theme.text;
+                                            font-weight: 600;
+                                            overflow: elide;
+                                            vertical-alignment: center;
+                                        }
+                                        TouchArea {
+                                            clicked => {
+                                                App.plans-action("open", p.id, "");
+                                            }
+                                            double-clicked => {
+                                                App.plans-action("rename", p.id, "");
+                                            }
+                                        }
+                                    }
+                                    card-more := MoreButton {
+                                        clicked => {
+                                            card-menu.show({ x: root.card-w - 30px, y: 99px + 24px });
+                                        }
+                                    }
+                                }
+                                Text {
+                                    x: 10px;
+                                    y: 99px + 22px;
+                                    text: p.sub;
+                                    color: Theme.dim;
+                                    font-size: Theme.small;
+                                }
+                                card-menu := ContextMenuArea {
+                                    enabled: false;
+                                    Menu {
+                                        MenuItem {
+                                            title: @tr("Ouvrir ce plan");
+                                            enabled: !p.current;
+                                            activated => {
+                                                App.plans-action("open", p.id, "");
+                                            }
+                                        }
+                                        MenuItem {
+                                            title: @tr("Renommer…");
+                                            activated => {
+                                                App.plans-action("rename", p.id, "");
+                                            }
+                                        }
+                                        MenuItem {
+                                            title: @tr("Dupliquer");
+                                            activated => {
+                                                App.plans-action("duplicate", p.id, "");
+                                            }
+                                        }
+                                        MenuSeparator { }
+                                        MenuItem {
+                                            title: @tr("Déplacer vers la gauche");
+                                            enabled: i > 0;
+                                            activated => {
+                                                App.plans-action("move", p.id, s.id + ":" + (i - 1));
+                                            }
+                                        }
+                                        MenuItem {
+                                            title: @tr("Déplacer vers la droite");
+                                            enabled: i < s.plans.length - 1;
+                                            activated => {
+                                                App.plans-action("move", p.id, s.id + ":" + (i + 1));
+                                            }
+                                        }
+                                        Menu {
+                                            title: @tr("Déplacer dans la séquence");
+                                            enabled: App.plan-seqs.length > 1;
+                                            for o in App.plan-seqs: MenuItem {
+                                                title: o.name;
+                                                enabled: o.id != s.id;
+                                                activated => {
+                                                    App.plans-action("move", p.id, o.id + ":end");
+                                                }
+                                            }
+                                        }
+                                        MenuSeparator { }
+                                        MenuItem {
+                                            title: @tr("Supprimer le plan…");
+                                            activated => {
+                                                App.plans-action("delete", p.id, "");
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            // nouveau plan dans cette séquence
+                            add-card := Rectangle {
+                                x: mod(s.plans.length, cards.per-row) * (root.card-w + root.gap);
+                                y: floor(s.plans.length / cards.per-row) * (root.card-h + root.gap);
+                                width: root.card-w;
+                                height: root.card-h;
+                                border-radius: 8px;
+                                border-width: 1px;
+                                border-color: add-touch.has-hover ? Theme.accent : Theme.line-2;
+                                background: add-touch.has-hover ? #ffad3b10 : transparent;
+                                add-touch := TouchArea {
+                                    clicked => {
+                                        add-menu.show({ x: self.mouse-x, y: self.mouse-y });
+                                    }
+                                }
+                                VerticalLayout {
+                                    alignment: center;
+                                    spacing: 6px;
+                                    Text {
+                                        text: "+";
+                                        color: add-touch.has-hover ? Theme.accent : Theme.muted;
+                                        font-size: 26px;
+                                        horizontal-alignment: center;
+                                    }
+                                    Text {
+                                        text: @tr("Nouveau plan");
+                                        color: add-touch.has-hover ? Theme.accent : Theme.muted;
+                                        horizontal-alignment: center;
+                                    }
+                                }
+                                add-menu := ContextMenuArea {
+                                    enabled: false;
+                                    Menu {
+                                        MenuItem {
+                                            title: @tr("Copie du plan actuel");
+                                            activated => {
+                                                App.plans-action("new-plan", s.id, "copy");
+                                            }
+                                        }
+                                        MenuItem {
+                                            title: @tr("Même décor, sans lumière");
+                                            activated => {
+                                                App.plans-action("new-plan", s.id, "decor");
+                                            }
+                                        }
+                                        MenuItem {
+                                            title: @tr("Plan vide");
+                                            activated => {
+                                                App.plans-action("new-plan", s.id, "empty");
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    Text {
+                        text: @tr("Clic : ouvrir le plan · double-clic sur un nom : le renommer · clic droit : options");
+                        color: Theme.dim;
+                        font-size: Theme.small;
+                    }
+                }
+            }
+        }
+    }
+}

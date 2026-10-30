@@ -1,35 +1,59 @@
 // Plan de feu 2D : vue de dessus de la scène, outils de dessin, image de fond à l'échelle, exports
 // (PNG, SVG, impression / PDF avec la liste du matériel et le patch, CSV).
 import { h, toast } from '../ui/dom.js';
+import { icon } from '../ui/icons.js';
+import { lang, t, tMarkup } from '../i18n.js';
 import { openContextMenu } from '../ui/context-menu.js';
 import { getFixtureType } from '/shared/fixtures/index.js';
-import { getGripType } from '/shared/grip.js';
-import { renderPlot, titleBlock } from './render.js';
+import { getObjectType, isProp } from '/shared/objects.js';
+import { objectShown, renderPlot, titleBlock } from './render.js';
+import { PROP_CATEGORIES } from '/shared/props.js';
 import { distToSegment, fixturePlan, objectPlan, pointInPolygon, rotateYaw } from './geometry.js';
 import { buildEquipmentList, buildPatch, equipmentCsv, patchCsv } from './equipment.js';
+import { buildMvr } from '/shared/mvr.js';
+import { currentPlan, flatPlans } from '/shared/plans.js';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
+// [outil, icône, infobulle]
 const TOOLS = [
-  ['select', '↖', 'Sélection : clic, Ctrl+clic, cadre de sélection ; glisser pour déplacer'],
-  ['rect', '▭', 'Rectangle (maison, décor…)'],
-  ['ellipse', '◯', 'Ellipse ou cercle'],
-  ['polygon', '⬠', 'Forme point par point : double-clic ou Entrée pour terminer'],
-  ['freehand', '✎', 'Dessin à main levée'],
-  ['line', '╱', 'Ligne'],
-  ['arrow', '➜', 'Flèche (désigner un lieu, un kiosque…)'],
-  ['text', 'T', 'Texte'],
-  ['measure', '↔', 'Mesure d’une distance'],
+  ['select', 'select', 'Sélection : clic, Ctrl+clic, cadre de sélection ; glisser pour déplacer'],
+  ['rect', 'rect', 'Rectangle (maison, décor…)'],
+  ['ellipse', 'ellipse', 'Ellipse ou cercle'],
+  ['polygon', 'polygon', 'Forme point par point : double-clic ou Entrée pour terminer'],
+  ['freehand', 'freehand', 'Dessin à main levée'],
+  ['line', 'line', 'Ligne'],
+  ['arrow', 'arrow', 'Flèche (désigner un lieu, un kiosque…)'],
+  ['text', 'text', 'Texte'],
+  ['measure', 'measure', 'Mesure d’une distance'],
 ];
 const KIND_NAMES = { rect: 'Rectangle', ellipse: 'Ellipse', polygon: 'Forme', freehand: 'Main levée', line: 'Ligne', arrow: 'Flèche', text: 'Texte', measure: 'Mesure' };
 const OPT_KEY = 'arklight.plot.options';
 const r3 = (v) => Math.round(v * 1000) / 1000;
 
+// Ce qui s'affiche : par défaut le matériel seulement (projecteurs, pieds, grip), comme le plan de feu
+// qu'on envoie ; le décor (par catégorie), le studio et les annotations se cochent dans « Affichage ».
+const DECOR = PROP_CATEGORIES.map((c) => c.id); // people, animals, vehicles, furniture, set, outdoor, props, filmset
+// les sacs de sable restent dans la liste du matériel, pas sur le plan qu'on envoie
+const EQUIPMENT_ONLY = { stands: true, grip: true, sandbags: false, studio: false, annotations: false, ...Object.fromEntries(DECOR.map((c) => [c, false])) };
+const SHOW_ALL = Object.fromEntries(Object.keys(EQUIPMENT_ONLY).map((k) => [k, true]));
+
 function loadOptions() {
+  const defaults = { names: true, fixtures: true, addresses: true, supports: true, beams: true, grid: true, underlay: true, ...EQUIPMENT_ONLY, v: 3 };
   try {
-    return { names: true, addresses: true, supports: false, beams: true, grid: true, ...JSON.parse(localStorage.getItem(OPT_KEY) || '{}') };
+    const saved = JSON.parse(localStorage.getItem(OPT_KEY) || '{}');
+    if (!saved.v) delete saved.supports; // pieds affichés par défaut depuis la version 2
+    // version 3 : « matériel seulement » par défaut ; les choix d'étiquettes déjà faits sont gardés
+    if ((saved.v || 0) < 3) for (const k of [...Object.keys(EQUIPMENT_ONLY), 'underlay']) delete saved[k];
+    return { ...defaults, ...saved, v: 3 };
   } catch {
-    return { names: true, addresses: true, supports: false, beams: true, grid: true };
+    return defaults;
   }
+}
+
+/** Préréglage en cours : « equipment », « all » ou null (personnalisé). */
+function presetOf(options) {
+  const same = (preset) => Object.entries(preset).every(([k, v]) => !!options[k] === v);
+  return same(EQUIPMENT_ONLY) ? 'equipment' : same(SHOW_ALL) ? 'all' : null;
 }
 
 function download(name, data, type) {
@@ -68,32 +92,55 @@ export function mountPlot({ store, net, viewport, actions }) {
 
   // ------------------------------------------------------------------ barre d'outils
   const toolBtns = new Map();
+  // grille du plan : un bouton pour l'afficher ou la masquer (aussi dans Affichage ▾)
+  const gridBtn = h('button', { class: `ib toggle${options.grid ? ' active' : ''}`, title: 'Grille (1 m) : afficher / masquer', onclick: () => (setOption('grid', !options.grid), popKind === 'options' && renderPop()) }, icon('grid'));
+  // même barre que la vue 3D : sélecteur 3D / plan 2D, puis les outils séparés par de petits traits
   const toolbar = h(
     'div',
-    { class: 'plot-toolbar' },
-    h('button', { class: 'primary', title: 'Revenir à la vue 3D', onclick: () => hide() }, '◂ 3D'),
+    { class: 'plot-toolbar viewbar', role: 'toolbar', 'aria-label': 'Outils du plan de feu' },
+    h(
+      'div',
+      { class: 'mode-switch', role: 'group' },
+      h('button', { class: 'mode', 'data-cmd': 'view.plot', 'data-tip': 'Vue 3D', 'aria-pressed': 'false', onclick: () => hide() }, '3D'),
+      h('button', { class: 'mode active', 'data-cmd': 'view.plot', 'aria-pressed': 'true' }, icon('plan'), 'Plan 2D'),
+    ),
     h('span', { class: 'sep' }),
-    TOOLS.map(([id, icon, title]) => {
-      const b = h('button', { class: 'plot-tool', title, onclick: () => setTool(id) }, icon);
+    TOOLS.map(([id, ico, title]) => {
+      const b = h('button', { class: 'plot-tool ib', title, onclick: () => setTool(id) }, icon(ico));
       toolBtns.set(id, b);
       return b;
     }),
     h('span', { class: 'sep' }),
-    h('button', { title: 'Tout voir', onclick: () => fit() }, '⤢'),
-    h('button', { title: 'Image de fond : photo ou plan à l’échelle', onclick: (e) => togglePop('underlay', e.currentTarget) }, '🖼 Fond'),
-    h('button', { title: 'Ce qui s’affiche sur le plan', onclick: (e) => togglePop('options', e.currentTarget) }, 'Affichage ▾'),
-    h('button', { title: 'Exporter le plan, la liste du matériel et le patch', onclick: (e) => togglePop('export', e.currentTarget) }, 'Exporter ▾'),
+    h('button', { class: 'ib', title: 'Tout voir', onclick: () => fit() }, icon('fit')),
+    gridBtn,
+    h('button', { class: 'ib', 'data-pop': 'underlay', title: 'Image de fond : photo ou plan à l’échelle', onclick: (e) => togglePop('underlay', e.currentTarget) }, icon('image'), 'Fond'),
+    h('button', { class: 'ib', 'data-pop': 'options', title: 'Ce qui s’affiche sur le plan', onclick: (e) => togglePop('options', e.currentTarget) }, icon('layers'), 'Affichage ▾'),
+    h('button', { class: 'ib', 'data-pop': 'export', title: 'Exporter le plan, la liste du matériel et le patch', onclick: (e) => togglePop('export', e.currentTarget) }, icon('download'), 'Exporter ▾'),
   );
   const hint = h('div', { class: 'plot-hint' });
   const props = h('div', { class: 'plot-props hidden' });
   const pop = h('div', { class: 'plot-pop hidden' });
   const host = h('div', { class: 'plot hidden' }, toolbar, svg, hint, props, pop);
   wrap.append(host);
+  // une fenêtre ouverte (fond, affichage, export) se ferme quand on clique à côté
+  document.addEventListener(
+    'pointerdown',
+    (e) => {
+      if (!popKind || pop.contains(e.target) || e.target.closest?.('[data-pop]') || e.target.closest?.('.ctx-root, dialog')) return;
+      closePop();
+    },
+    true,
+  );
 
   function setTool(id) {
     tool = id;
     preview = null;
     calib = null;
+    // dessiner une annotation : les annotations doivent être visibles
+    if (id !== 'select' && options.annotations === false) {
+      setOption('annotations', true);
+      toast('Annotations affichées (Affichage ▾ pour les masquer)');
+    }
     for (const [k, b] of toolBtns) b.classList.toggle('active', k === id);
     hint.textContent =
       id === 'select'
@@ -138,7 +185,6 @@ export function mountPlot({ store, net, viewport, actions }) {
       zs.push(o.position[2]);
     }
     for (const it of store.scene?.plot?.items || []) for (const [x, z] of it.points) xs.push(x), zs.push(z);
-    if (store.scene?.environment?.actor !== false) xs.push(0), zs.push(0);
     if (!xs.length) xs.push(-5, 5), zs.push(-7, 4);
     const minX = Math.min(...xs) - 1.5;
     const maxX = Math.max(...xs) + 1.5;
@@ -157,10 +203,10 @@ export function mountPlot({ store, net, viewport, actions }) {
     }
     const o = store.selectedObject();
     if (o && !ids.length) {
-      const type = getGripType(o.type);
-      if (['frame', 'flag', 'bounce'].includes(type.family)) {
+      const type = getObjectType(o.type);
+      if (isProp(type) || ['frame', 'flag', 'bounce'].includes(type.family)) {
         const a = o.rotation[1];
-        const d = Math.max(0.8, (type.w || 1) / 2 + 0.4);
+        const d = Math.max(0.8, (isProp(type) ? Math.max(...type.size.filter((_, i) => i !== 1)) : type.w || 1) / 2 + 0.4);
         return [{ kind: 'rotate', x: o.position[0] + Math.sin(a) * d, z: o.position[2] + Math.cos(a) * d, target: { kind: 'object', id: o.id } }];
       }
     }
@@ -230,13 +276,19 @@ export function mountPlot({ store, net, viewport, actions }) {
       const pl = fixturePlan(f, getFixtureType(f.type));
       if (pointInPolygon(p, pl.poly) || Math.hypot(p[0] - pl.center[0], p[1] - pl.center[1]) <= tol() * 1.5) return { kind: 'fixture', id: f.id };
     }
+    // objets, puis cadres : un cadre est transparent sur le plan, on le prend par ses tubes ou son centre
     const objs = store.scene.objects || [];
-    for (let i = objs.length - 1; i >= 0; i--) {
-      const o = objs[i];
-      const pl = objectPlan(o, getGripType(o.type));
-      if (pointInPolygon(p, pl.poly) || Math.hypot(p[0] - pl.center[0], p[1] - pl.center[1]) <= tol() * 1.5) return { kind: 'object', id: o.id };
+    for (const frames of [false, true]) {
+      for (let i = objs.length - 1; i >= 0; i--) {
+        const o = objs[i];
+        const type = getObjectType(o.type);
+        if (!type || !objectShown(type, options) || (type.family === 'frame') !== frames) continue;
+        const pl = objectPlan(o, type);
+        const near = Math.hypot(p[0] - pl.center[0], p[1] - pl.center[1]) <= tol() * 1.5;
+        if (near || (frames ? pl.poly.some((a, k) => distToSegment(p, a, pl.poly[(k + 1) % pl.poly.length]) <= tol() * 1.5) : pointInPolygon(p, pl.poly))) return { kind: 'object', id: o.id };
+      }
     }
-    const items = store.scene.plot.items;
+    const items = options.annotations !== false ? store.scene.plot.items : [];
     for (let i = items.length - 1; i >= 0; i--) if (hitItem(items[i], p)) return { kind: 'plot', id: items[i].id };
     return null;
   }
@@ -407,7 +459,7 @@ export function mountPlot({ store, net, viewport, actions }) {
       }
       case 'rotate': {
         let a = Math.atan2(p[1] - drag.center[1], p[0] - drag.center[0]) - drag.start;
-        if (!e.shiftKey) a = Math.round(a / (Math.PI / 12)) * (Math.PI / 12); // crans de 15° (Maj : libre)
+        if (!e.shiftKey) a = Math.round(a / (Math.PI / 36)) * (Math.PI / 36); // crans de 5° (Maj : libre)
         const rotation = rotateYaw(drag.rotation, -a);
         if (drag.target.kind === 'fixture') {
           const f = store.fixtures.get(drag.target.id);
@@ -570,12 +622,12 @@ export function mountPlot({ store, net, viewport, actions }) {
 
   // ------------------------------------------------------------------ fenêtres : fond, affichage, export
   let popKind = null;
+  function closePop() {
+    popKind = null;
+    pop.classList.add('hidden');
+  }
   function togglePop(kind, anchor) {
-    if (popKind === kind) {
-      popKind = null;
-      pop.classList.add('hidden');
-      return;
-    }
+    if (popKind === kind) return closePop();
     popKind = kind;
     pop.classList.remove('hidden');
     pop.style.left = `${anchor.offsetLeft}px`;
@@ -584,14 +636,51 @@ export function mountPlot({ store, net, viewport, actions }) {
 
   function renderPop() {
     if (popKind === 'options') {
-      const box = (key, label) => h('label', {}, h('input', { type: 'checkbox', checked: options[key] !== false && !!(options[key] ?? true), onchange: (e) => setOption(key, e.target.checked) }), ` ${label}`);
-      pop.replaceChildren(box('names', 'Noms'), box('addresses', 'Adresses DMX'), box('supports', 'Pieds et hauteurs'), box('beams', 'Faisceaux'), box('grid', 'Grille (1 m)'));
+      const box = (key, label) => h('label', {}, h('input', { type: 'checkbox', checked: !!options[key], onchange: (e) => setOption(key, e.target.checked) }), ` ${label}`);
+      const preset = presetOf(options);
+      const apply = (values) => {
+        for (const [k, v] of Object.entries(values)) options[k] = v;
+        setOption('v', 3);
+        renderPop();
+      };
+      const presetBtn = (id, label, values, title) => h('button', { class: preset === id ? 'active' : '', title, onclick: () => apply(values) }, label);
+      pop.replaceChildren(
+        h(
+          'div',
+          { class: 'plot-presets' },
+          presetBtn('equipment', 'Matériel seulement', EQUIPMENT_ONLY, 'Projecteurs, pieds et grip : le plan de feu qu’on envoie'),
+          presetBtn('all', 'Tout afficher', SHOW_ALL, 'Avec le décor, le studio et les annotations'),
+        ),
+        h('div', { class: 'plot-pop-group' }, h('strong', {}, 'Matériel'), box('names', 'Noms'), box('fixtures', 'Numéros de fixture (Fix)'), box('addresses', 'Adresses DMX'), box('supports', 'Pieds et hauteurs'), box('beams', 'Faisceaux'), box('stands', 'Pieds seuls'), box('grip', 'Grip (cadres, drapeaux, réflecteurs…)'), box('sandbags', 'Sacs de sable')),
+        h('div', { class: 'plot-pop-group' }, h('strong', {}, 'Décor'), PROP_CATEGORIES.map((c) => box(c.id, c.label)), box('studio', 'Studio (cyclo)')),
+        h('div', { class: 'plot-pop-group' }, h('strong', {}, 'Plan'), box('annotations', 'Annotations (formes, textes, flèches, mesures)'), box('underlay', 'Image de fond'), box('grid', 'Grille (1 m)')),
+      );
     } else if (popKind === 'underlay') {
       const u = store.scene.plot.underlay;
       const file = h('input', { type: 'file', accept: 'image/png,image/jpeg,image/webp', class: 'hidden', onchange: (e) => uploadUnderlay(e.target.files[0]) });
       const setU = (changes) => net.send({ t: 'plot.meta', underlay: { ...u, ...changes } });
+      // couleur unie du fond : les projecteurs et les traits s'adaptent pour rester visibles
+      const bg = store.scene.plot.background || null;
+      const setBg = (v) => net.send({ t: 'plot.meta', background: v });
+      const swatch = (value, label, css) => h('button', { class: `plot-bg${bg === value ? ' active' : ''}`, title: label, onclick: () => setBg(value) }, h('i', { style: { background: css } }), label);
       pop.replaceChildren(
         ...[
+        h(
+          'div',
+          { class: 'plot-bgs' },
+          h('strong', {}, 'Couleur du fond'),
+          h(
+            'div',
+            { class: 'plot-bg-row' },
+            swatch(null, 'Auto', 'linear-gradient(135deg, #0f1216 50%, #ffffff 50%)'),
+            swatch('#000000', 'Noir', '#000000'),
+            swatch('#2b2f36', 'Gris foncé', '#2b2f36'),
+            swatch('#c9ccd1', 'Gris clair', '#c9ccd1'),
+            swatch('#ffffff', 'Blanc', '#ffffff'),
+            h('label', { class: 'plot-bg', title: 'Autre couleur' }, h('input', { type: 'color', value: bg || '#1d2b3a', onchange: (e) => setBg(e.target.value) }), 'Autre…'),
+          ),
+          h('div', { class: 'note' }, 'Auto : sombre à l’écran, blanc à l’export. Une couleur choisie sert aussi à l’export.'),
+        ),
         h('div', { class: 'note' }, 'Photo ou plan vu de dessus. Cale-le à l’échelle avec deux points dont tu connais la distance.'),
         file,
         h('button', { onclick: () => file.click() }, u ? 'Changer d’image…' : 'Importer une image…'),
@@ -620,8 +709,15 @@ export function mountPlot({ store, net, viewport, actions }) {
           h('button', { class: 'primary', onclick: () => printSheet() }, 'Imprimer / PDF (plan + liste + patch)'),
           h('button', { onclick: () => exportImage('png') }, 'Plan en image PNG'),
           h('button', { onclick: () => exportImage('svg') }, 'Plan en SVG (vectoriel)'),
-          h('button', { onclick: () => download(`liste-materiel-${slug()}.csv`, equipmentCsv(buildEquipmentList(store.scene, viewport)), 'text/csv') }, 'Liste du matériel (CSV)'),
-          h('button', { onclick: () => download(`patch-${slug()}.csv`, patchCsv(buildPatch(store.scene)), 'text/csv') }, 'Patch DMX (CSV)'),
+          h('button', { onclick: () => exportEquipmentCsv() }, 'Liste du matériel (CSV)'),
+          h('button', { onclick: () => exportPatchCsv() }, 'Patch DMX (CSV)'),
+        ),
+        h(
+          'div',
+          { class: 'plot-pop-group' },
+          h('strong', {}, 'Vers une console ou une appli'),
+          h('button', { class: 'primary', onclick: () => exportMvr() }, 'MVR (Blackout, grandMA3, Capture…)'),
+          h('div', { class: 'note' }, 'Patch, numéros de fixture, positions et orientations. Chaque modèle est décrit en GDTF.'),
         ),
       );
     }
@@ -629,6 +725,7 @@ export function mountPlot({ store, net, viewport, actions }) {
 
   function setOption(key, value) {
     options[key] = value;
+    gridBtn.classList.toggle('active', !!options.grid);
     try {
       localStorage.setItem(OPT_KEY, JSON.stringify(options));
     } catch {
@@ -693,7 +790,30 @@ export function mountPlot({ store, net, viewport, actions }) {
   }
 
   // ------------------------------------------------------------------ export
-  const slug = () => (store.scene.name || 'plan').toLowerCase().replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '') || 'plan';
+  // séquence et plan (projet à plusieurs plans) : dans le cartouche et le nom des fichiers
+  const planText = () => {
+    const cur = flatPlans(store.plans).length > 1 ? currentPlan(store.plans) : null;
+    return cur ? `${cur.seq.name} › ${cur.plan.name}` : '';
+  };
+  const docTitle = (title) => [title.production || store.scene.name, planText()].filter(Boolean).join(' — ');
+  const slug = () =>
+    [store.scene.name || 'plan', planText()]
+      .join(' ')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '') || 'plan';
+  const exportEquipmentCsv = () => download(t('liste-materiel-{0}.csv', { 0: slug() }), equipmentCsv(buildEquipmentList(store.scene, viewport), t), 'text/csv');
+  const exportPatchCsv = () => download(t('patch-{0}.csv', { 0: slug() }), patchCsv(buildPatch(store.scene), t), 'text/csv');
+
+  /** MVR (My Virtual Rig) : le patch et les positions pour Blackout, grandMA3, Capture, Vectorworks… */
+  function exportMvr() {
+    const { bytes, fixtures, skipped } = buildMvr(store.scene, { providerVersion: store.version || '', layerName: t('Projecteurs') });
+    if (!fixtures) return toast(t('Aucun projecteur à exporter'), 'error');
+    download(`${slug()}.mvr`, new Blob([bytes], { type: 'application/octet-stream' }));
+    toast(t('MVR exporté : {0} projecteurs{1}', { 0: fixtures, 1: skipped.length ? t(' ({0} sans DMX ignorés)', { 0: skipped.length }) : '' }), 'info', 4000);
+  }
 
   /** SVG du plan pour l'export : fond blanc, cadré sur la scène, avec cartouche. */
   async function exportSvg(W = 1754, H = 1240) {
@@ -701,14 +821,15 @@ export function mountPlot({ store, net, viewport, actions }) {
     const exportView = { ...fitted, s: fitted.s * 0.92, W, H };
     const scene = { ...store.scene, plot: { ...store.scene.plot, underlay: store.scene.plot.underlay ? { ...store.scene.plot.underlay, url: await inlineUrl(store.scene.plot.underlay.url) } : null } };
     const body = renderPlot({ scene, view: exportView, viewport, theme: 'print', options, sel: {} });
-    const date = new Date().toLocaleDateString('fr-FR');
-    const tb = titleBlock({ W, H, title: { ...(store.scene.plot.title || {}), scene: store.scene.name }, date });
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" font-family="Segoe UI, Arial, sans-serif">${body}${tb}</svg>`;
+    const date = new Date().toLocaleDateString(lang === 'en' ? 'en-GB' : 'fr-FR');
+    const tb = titleBlock({ W, H, title: { ...(store.scene.plot.title || {}), scene: store.scene.name, plan: planText() }, date, background: store.scene.plot.background });
+    // textes du plan et du cartouche dans la langue de l'interface
+    return tMarkup(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" font-family="Segoe UI, Arial, sans-serif">${body}${tb}</svg>`);
   }
 
   async function exportImage(kind) {
     const svgText = await exportSvg();
-    if (kind === 'svg') return download(`plan-de-feu-${slug()}.svg`, svgText, 'image/svg+xml');
+    if (kind === 'svg') return download(t('plan-de-feu-{0}.svg', { 0: slug() }), svgText, 'image/svg+xml');
     const img = new Image();
     img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgText)}`;
     await img.decode();
@@ -716,18 +837,18 @@ export function mountPlot({ store, net, viewport, actions }) {
     c.width = img.width;
     c.height = img.height;
     c.getContext('2d').drawImage(img, 0, 0);
-    c.toBlob((blob) => download(`plan-de-feu-${slug()}.png`, blob), 'image/png');
+    c.toBlob((blob) => download(t('plan-de-feu-{0}.png', { 0: slug() }), blob), 'image/png');
   }
 
   async function printSheet() {
     const w = window.open('', '_blank');
-    if (!w) return toast('Autorise les fenêtres pop-up pour imprimer', 'error');
+    if (!w) return toast(t('Autorise les fenêtres pop-up pour imprimer'), 'error');
     const svgText = await exportSvg();
     const list = buildEquipmentList(store.scene, viewport);
     const patch = buildPatch(store.scene);
     const esc = (s) => String(s ?? '').replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
     const title = store.scene.plot.title || {};
-    w.document.write(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Plan de feu — ${esc(title.production || store.scene.name)}</title>
+    w.document.write(tMarkup(`<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><title>Plan de feu — ${esc(docTitle(title))}</title>
 <style>
   body { font: 12px "Segoe UI", Arial, sans-serif; color: #111; margin: 0; }
   .page { page-break-after: always; padding: 10mm; }
@@ -739,10 +860,10 @@ export function mountPlot({ store, net, viewport, actions }) {
   @page { size: A4 landscape; margin: 8mm; }
 </style></head><body>
 <div class="page">${svgText}</div>
-<div class="page"><h1>Liste du matériel — ${esc(title.production || store.scene.name)}</h1>
+<div class="page"><h1>Liste du matériel — ${esc(docTitle(title))}</h1>
 ${list.sections.map((s) => `<h2>${esc(s.title)}</h2><table><tr><th>Désignation</th><th>Qté</th><th>Remarques</th></tr>${s.rows.map((r) => `<tr><td>${esc(r.name)}</td><td class="q">${r.qty}</td><td>${esc(r.note || '')}</td></tr>`).join('')}</table>`).join('')}
 <h2>Patch DMX</h2><table><tr><th>Univers</th><th>Adresses</th><th>Projecteur</th><th>Modèle</th><th>Mode</th></tr>${patch.map((p) => `<tr><td>${p.universe}</td><td>${p.address}–${p.address + p.footprint - 1}</td><td>${esc(p.name)}</td><td>${esc(p.model)}</td><td>${esc(p.mode)}</td></tr>`).join('')}</table>
-</div></body></html>`);
+</div></body></html>`));
     w.document.close();
     setTimeout(() => w.print(), 400);
   }
@@ -783,8 +904,10 @@ ${list.sections.map((s) => `<h2>${esc(s.title)}</h2><table><tr><th>Désignation<
   for (const ev of ['scene', 'fixture-added', 'fixture-updated', 'fixture-removed', 'selection', 'object-added', 'object-updated', 'object-removed', 'object-selection', 'env', 'groups']) store.addEventListener(ev, markDirty);
   store.addEventListener('plot', () => {
     if (selPlot && !store.scene.plot.items.some((x) => x.id === selPlot)) selPlot = null;
-    if (!drag) renderProps();
-    if (popKind === 'underlay' || popKind === 'export') renderPop();
+    // pas de nouveau rendu des réglages pendant une saisie : le champ perdrait le curseur à chaque lettre
+    const editing = (el) => el.contains(document.activeElement) && ['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName);
+    if (!drag && !(selPlot && editing(props))) renderProps();
+    if ((popKind === 'underlay' || popKind === 'export') && !editing(pop)) renderPop();
     markDirty();
   });
   store.addEventListener('plot-item-created', (e) => selectPlot(e.detail.id));
@@ -819,9 +942,10 @@ ${list.sections.map((s) => `<h2>${esc(s.title)}</h2><table><tr><th>Désignation<
     // exports (menu Fichier › Plan de feu), aussi quand le plan n'est pas affiché
     print: () => printSheet(),
     exportPng: () => exportImage('png'),
+    exportMvr: () => exportMvr(),
     exportSvgFile: () => exportImage('svg'),
-    equipmentCsv: () => download(`liste-materiel-${slug()}.csv`, equipmentCsv(buildEquipmentList(store.scene, viewport)), 'text/csv'),
-    patchCsv: () => download(`patch-${slug()}.csv`, patchCsv(buildPatch(store.scene)), 'text/csv'),
+    equipmentCsv: () => exportEquipmentCsv(),
+    patchCsv: () => exportPatchCsv(),
     /** Position à l'écran (px client) d'un point du sol : utile pour les tests. */
     toScreen(x, z) {
       const r = svg.getBoundingClientRect();

@@ -1,0 +1,718 @@
+// Barre d'outils de la vue (comme `.viewbar` de la version JavaScript) : 3D ou plan 2D, outils
+// déplacer / tourner / aimant, vues, cadrer, affichage, ambiance ; en plan 2D, les outils de dessin.
+import { App } from "common.slint";
+import { Theme, Icon, ToolButton, ToolSep, ToolSlider } from "theme.slint";
+
+/// Choix 3D / Plan 2D (deux boutons accolés, orange quand choisi).
+component ModeSwitch inherits Rectangle {
+    height: 30px;
+    width: mode-row.preferred-width + 2px;
+    border-radius: Theme.radius;
+    border-width: 1px;
+    border-color: Theme.line-2;
+    clip: true;
+    mode-row := HorizontalLayout {
+        padding: 1px;
+        for m[i] in [{ label: "3D", icon: "" }, { label: @tr("Plan 2D"), icon: "plan" }]: mode-btn := Rectangle {
+            property <bool> active: (i == 1) == App.plot-mode;
+            width: mode-label.preferred-width + (m.icon != "" ? 22px : 0) + 24px;
+            background: self.active ? Theme.accent : Theme.panel-2;
+            mode-touch := TouchArea {
+                clicked => {
+                    if (!mode-btn.active) {
+                        App.action("toggle-plot");
+                    }
+                    App.refocus += 1;
+                }
+            }
+            if i == 1: Rectangle {
+                x: 0;
+                width: 1px;
+                background: Theme.line-2;
+            }
+            HorizontalLayout {
+                alignment: center;
+                spacing: 6px;
+                if m.icon != "": VerticalLayout {
+                    alignment: center;
+                    Icon {
+                        width: 16px;
+                        height: 16px;
+                        name: m.icon;
+                        tint: mode-btn.active ? Theme.accent-ink : mode-touch.has-hover ? Theme.text : Theme.muted;
+                    }
+                }
+                mode-label := Text {
+                    text: m.label;
+                    color: mode-btn.active ? Theme.accent-ink : mode-touch.has-hover ? Theme.text : Theme.muted;
+                    font-weight: 600;
+                    font-size: Theme.font;
+                    vertical-alignment: center;
+                }
+            }
+        }
+    }
+}
+
+/// Ambiance : brume, exposition, lumière d'ambiance.
+component EnvSliders inherits HorizontalLayout {
+    spacing: 4px;
+    VerticalLayout {
+        alignment: center;
+        ToolSlider {
+            icon: "haze";
+            tip: @tr("Brume") + " : " + round(App.haze * 100) + " %";
+            minimum: 0;
+            maximum: 1;
+            step: 0.01;
+            value: App.haze;
+            moved(v) => {
+                App.haze = v;
+                App.set-env("haze", v);
+            }
+        }
+    }
+    VerticalLayout {
+        alignment: center;
+        ToolSlider {
+            icon: "exposure";
+            tip: @tr("Exposition");
+            minimum: -10;
+            maximum: 3;
+            step: 0.5;
+            value: App.exposure-ev;
+            value-text: @tr("{} IL", (App.exposure-ev > 0 ? "+" : "") + round(App.exposure-ev * 10) / 10);
+            moved(v) => {
+                App.exposure-ev = v;
+                App.set-env("exposure", v);
+            }
+        }
+    }
+    VerticalLayout {
+        alignment: center;
+        ToolSlider {
+            icon: "ambient";
+            tip: @tr("Lumière d’ambiance") + " : " + round(App.ambient * 1000) / 1000;
+            minimum: 0;
+            maximum: 0.5;
+            step: 0.005;
+            value: App.ambient;
+            moved(v) => {
+                App.ambient = v;
+                App.set-env("ambient", v);
+            }
+        }
+    }
+}
+
+export component Viewbar inherits Rectangle {
+    // fenêtre étroite : l'ambiance passe sur une seconde rangée (largeur lue par Rust : une
+    // liaison sur la largeur de la barre elle-même ferait une boucle de mise en page)
+    property <bool> narrow: App.narrow-bar;
+    min-width: 200px;
+    height: root.narrow && !App.plot-mode ? 78px : 42px;
+    background: Theme.panel;
+    clip: true;
+    Rectangle {
+        y: parent.height - 1px;
+        height: 1px;
+        background: Theme.line;
+    }
+
+    VerticalLayout {
+      HorizontalLayout {
+        height: 42px;
+        padding-left: 8px;
+        padding-right: 8px;
+        spacing: 4px;
+
+        VerticalLayout {
+            alignment: center;
+            ModeSwitch { }
+        }
+        VerticalLayout {
+            alignment: center;
+            ToolSep { }
+        }
+
+        // ---- vue 3D
+        if !App.plot-mode: HorizontalLayout {
+            spacing: 4px;
+            VerticalLayout {
+                alignment: center;
+                ToolButton {
+                    icon: "move";
+                    active: App.tool == 0;
+                    tip: @tr("Déplacer") + App.key-hint("tool.translate", App.keys-rev);
+                    clicked => {
+                        App.tool = 0;
+                        App.refocus += 1;
+                    }
+                }
+            }
+            VerticalLayout {
+                alignment: center;
+                ToolButton {
+                    icon: "rotate";
+                    active: App.tool == 1;
+                    tip: @tr("Tourner : pan / tilt") + App.key-hint("tool.rotate", App.keys-rev);
+                    clicked => {
+                        App.tool = 1;
+                        App.refocus += 1;
+                    }
+                }
+            }
+            VerticalLayout {
+                alignment: center;
+                ToolButton {
+                    icon: "magnet";
+                    active: App.snap;
+                    warm: true;
+                    tip: @tr("Aimant : pas de 10 cm et de 5°") + App.key-hint("snap.toggle", App.keys-rev) + @tr(" — Maj pour s’en passer");
+                    clicked => {
+                        App.snap = !App.snap;
+                        App.refocus += 1;
+                    }
+                }
+            }
+            VerticalLayout {
+                alignment: center;
+                ToolSep { }
+            }
+            for v in [
+                { id: "persp", icon: "cube", tip: @tr("Vue 3D") + App.key-hint("view.persp", App.keys-rev) },
+                { id: "front", icon: "view-front", tip: @tr("Vue de face") + App.key-hint("view.front", App.keys-rev) },
+                { id: "top", icon: "view-top", tip: @tr("Vue de dessus") + App.key-hint("view.top", App.keys-rev) },
+                { id: "side", icon: "view-side", tip: @tr("Vue de côté") + App.key-hint("view.side", App.keys-rev) },
+            ]: VerticalLayout {
+                alignment: center;
+                ToolButton {
+                    icon: v.icon;
+                    active: App.view-preset == v.id;
+                    tip: v.tip;
+                    clicked => {
+                        App.action("view:" + v.id);
+                        App.refocus += 1;
+                    }
+                }
+            }
+            VerticalLayout {
+                alignment: center;
+                ToolButton {
+                    icon: "camera";
+                    active: App.look-label != "";
+                    tip: @tr("Voir par la caméra") + App.key-hint("view.camera", App.keys-rev) + @tr(" — Échap pour sortir");
+                    clicked => {
+                        App.action("camera");
+                        App.refocus += 1;
+                    }
+                }
+            }
+            VerticalLayout {
+                alignment: center;
+                ToolButton {
+                    icon: "focus";
+                    enabled: App.selected-count > 0;
+                    tip: @tr("Cadrer la sélection") + App.key-hint("view.frame", App.keys-rev);
+                    clicked => {
+                        App.action("frame");
+                        App.refocus += 1;
+                    }
+                }
+            }
+            VerticalLayout {
+                alignment: center;
+                ToolSep { }
+            }
+            VerticalLayout {
+                alignment: center;
+                ToolButton {
+                    icon: "eye";
+                    active: App.highlight;
+                    tip: @tr("Surbrillance : voir tout dans le noir") + App.key-hint("view.highlight", App.keys-rev);
+                    clicked => {
+                        App.set-flag("highlight", !App.highlight);
+                        App.refocus += 1;
+                    }
+                }
+            }
+            VerticalLayout {
+                alignment: center;
+                ToolButton {
+                    icon: "remote";
+                    active: App.remote-open;
+                    tip: @tr("Télécommande infrarouge") + App.key-hint("remote.toggle", App.keys-rev);
+                    clicked => {
+                        App.remote-open = !App.remote-open;
+                        App.refocus += 1;
+                    }
+                }
+            }
+            // affichage : menu de cases à cocher
+            VerticalLayout {
+                alignment: center;
+                Rectangle {
+                    width: env-button.natural-width;
+                    height: 30px;
+                    env-menu := ContextMenuArea {
+                        enabled: false;
+                        Menu {
+                            MenuItem {
+                                title: @tr("Sol");
+                                checkable: true;
+                                checked: App.show-floor;
+                                activated => {
+                                    App.set-flag("floor", !App.show-floor);
+                                }
+                            }
+                            MenuItem {
+                                title: @tr("Cyclo (fond)");
+                                checkable: true;
+                                checked: App.show-cyc;
+                                activated => {
+                                    App.set-flag("cyc", !App.show-cyc);
+                                }
+                            }
+                            MenuItem {
+                                title: @tr("Pieds de projecteur");
+                                checkable: true;
+                                checked: App.show-stands;
+                                activated => {
+                                    App.set-flag("stands", !App.show-stands);
+                                }
+                            }
+                            MenuItem {
+                                title: @tr("Noms des projecteurs");
+                                checkable: true;
+                                checked: App.show-labels;
+                                activated => {
+                                    App.set-flag("labels", !App.show-labels);
+                                }
+                            }
+                            MenuItem {
+                                title: @tr("Adresses DMX");
+                                checkable: true;
+                                checked: App.show-patch;
+                                activated => {
+                                    App.set-flag("labelPatch", !App.show-patch);
+                                }
+                            }
+                            MenuSeparator { }
+                            MenuItem {
+                                title: @tr("Halo des sources lumineuses");
+                                checkable: true;
+                                checked: App.show-bloom;
+                                activated => {
+                                    App.set-flag("bloom", !App.show-bloom);
+                                }
+                            }
+                            MenuItem {
+                                title: @tr("Aide en bas de la vue");
+                                checkable: true;
+                                checked: App.show-help;
+                                activated => {
+                                    App.show-help = !App.show-help;
+                                }
+                            }
+                            MenuItem {
+                                title: @tr("Images par seconde");
+                                checkable: true;
+                                checked: App.show-fps;
+                                activated => {
+                                    App.show-fps = !App.show-fps;
+                                }
+                            }
+                        }
+                    }
+                    env-button := ToolButton {
+                        width: parent.width;
+                        icon: "layers";
+                        text: @tr("Affichage");
+                        dropdown: true;
+                        clicked => {
+                            env-menu.show({ x: 0, y: self.height + 2px });
+                        }
+                    }
+                }
+            }
+
+        }
+        if !App.plot-mode && !root.narrow: HorizontalLayout {
+            spacing: 4px;
+            VerticalLayout {
+                alignment: center;
+                ToolSep { }
+            }
+            EnvSliders { }
+        }
+
+        // ---- plan de feu 2D : outils de dessin
+        if App.plot-mode: HorizontalLayout {
+            spacing: 4px;
+            for t[i] in [
+                { icon: "select", tip: @tr("Sélection") },
+                { icon: "rect", tip: @tr("Rectangle") },
+                { icon: "ellipse", tip: @tr("Ellipse") },
+                { icon: "polygon", tip: @tr("Forme (double-clic pour finir)") },
+                { icon: "freehand", tip: @tr("Main levée") },
+                { icon: "line", tip: @tr("Ligne") },
+                { icon: "arrow", tip: @tr("Flèche") },
+                { icon: "text", tip: @tr("Texte") },
+                { icon: "measure", tip: @tr("Mesure") },
+            ]: VerticalLayout {
+                alignment: center;
+                ToolButton {
+                    icon: t.icon;
+                    active: App.plot-tool == i;
+                    tip: t.tip;
+                    clicked => {
+                        App.plot-tool-set(i);
+                        App.refocus += 1;
+                    }
+                }
+            }
+            VerticalLayout {
+                alignment: center;
+                ToolSep { }
+            }
+            VerticalLayout {
+                alignment: center;
+                ToolButton {
+                    icon: "fit";
+                    tip: @tr("Tout voir");
+                    clicked => {
+                        App.action("plot-fit");
+                        App.refocus += 1;
+                    }
+                }
+            }
+            // plan de feu dessiné sur papier : l'assistant le lit et place tout (2D et 3D)
+            VerticalLayout {
+                alignment: center;
+                ToolButton {
+                    icon: "sparkle";
+                    text: root.narrow ? "" : @tr("Plan dessiné…");
+                    width: self.natural-width;
+                    tip: @tr("Photo d’un plan de feu dessiné sur papier : l’assistant le lit et place les projecteurs, le grip, le décor et les formes (maison…), sur le plan et dans la 3D");
+                    clicked => {
+                        App.ai("drawing", "");
+                        App.refocus += 1;
+                    }
+                }
+            }
+            VerticalLayout {
+                alignment: center;
+                Rectangle {
+                    width: show-button.natural-width;
+                    height: 30px;
+                    show-menu := ContextMenuArea {
+                        enabled: false;
+                        Menu {
+                            MenuItem {
+                                title: @tr("Tout montrer");
+                                activated => {
+                                    App.plot-option("all");
+                                }
+                            }
+                            MenuItem {
+                                title: @tr("Matériel seulement");
+                                activated => {
+                                    App.plot-option("equipment");
+                                }
+                            }
+                            MenuItem {
+                                title: @tr("Masquer les noms, numéros et adresses DMX");
+                                activated => {
+                                    App.plot-option("no-text");
+                                }
+                            }
+                            MenuItem {
+                                title: @tr("Tout masquer (projecteurs seuls)");
+                                activated => {
+                                    App.plot-option("none");
+                                }
+                            }
+                            MenuSeparator { }
+                            MenuItem {
+                                title: @tr("Noms");
+                                checkable: true;
+                                checked: App.plot-flags[0];
+                                activated => {
+                                    App.plot-option("names");
+                                }
+                            }
+                            MenuItem {
+                                title: @tr("Numéros de fixture (Fix)");
+                                checkable: true;
+                                checked: App.plot-flags[1];
+                                activated => {
+                                    App.plot-option("fixtures");
+                                }
+                            }
+                            MenuItem {
+                                title: @tr("Adresses DMX");
+                                checkable: true;
+                                checked: App.plot-flags[2];
+                                activated => {
+                                    App.plot-option("addresses");
+                                }
+                            }
+                            MenuItem {
+                                title: @tr("Pieds, hauteurs et accessoires");
+                                checkable: true;
+                                checked: App.plot-flags[3];
+                                activated => {
+                                    App.plot-option("supports");
+                                }
+                            }
+                            MenuItem {
+                                title: @tr("Faisceaux");
+                                checkable: true;
+                                checked: App.plot-flags[4];
+                                activated => {
+                                    App.plot-option("beams");
+                                }
+                            }
+                            MenuItem {
+                                title: @tr("Grille");
+                                checkable: true;
+                                checked: App.plot-flags[5];
+                                activated => {
+                                    App.plot-option("grid");
+                                }
+                            }
+                            MenuItem {
+                                title: @tr("Image de fond");
+                                checkable: true;
+                                checked: App.plot-flags[6];
+                                activated => {
+                                    App.plot-option("underlay");
+                                }
+                            }
+                            MenuItem {
+                                title: @tr("Pieds seuls");
+                                checkable: true;
+                                checked: App.plot-flags[7];
+                                activated => {
+                                    App.plot-option("stands");
+                                }
+                            }
+                            MenuItem {
+                                title: @tr("Grip");
+                                checkable: true;
+                                checked: App.plot-flags[8];
+                                activated => {
+                                    App.plot-option("grip");
+                                }
+                            }
+                            MenuItem {
+                                title: @tr("Sacs de sable");
+                                checkable: true;
+                                checked: App.plot-flags[9];
+                                activated => {
+                                    App.plot-option("sandbags");
+                                }
+                            }
+                            MenuItem {
+                                title: @tr("Cyclo");
+                                checkable: true;
+                                checked: App.plot-flags[10];
+                                activated => {
+                                    App.plot-option("studio");
+                                }
+                            }
+                            MenuItem {
+                                title: @tr("Formes, textes, flèches");
+                                checkable: true;
+                                checked: App.plot-flags[11];
+                                activated => {
+                                    App.plot-option("annotations");
+                                }
+                            }
+                            Menu {
+                                title: @tr("Décor");
+                                MenuItem {
+                                    title: @tr("Personnages");
+                                    checkable: true;
+                                    checked: App.plot-flags[12];
+                                    activated => {
+                                        App.plot-option("people");
+                                    }
+                                }
+                                MenuItem {
+                                    title: @tr("Animaux");
+                                    checkable: true;
+                                    checked: App.plot-flags[13];
+                                    activated => {
+                                        App.plot-option("animals");
+                                    }
+                                }
+                                MenuItem {
+                                    title: @tr("Véhicules");
+                                    checkable: true;
+                                    checked: App.plot-flags[14];
+                                    activated => {
+                                        App.plot-option("vehicles");
+                                    }
+                                }
+                                MenuItem {
+                                    title: @tr("Mobilier");
+                                    checkable: true;
+                                    checked: App.plot-flags[15];
+                                    activated => {
+                                        App.plot-option("furniture");
+                                    }
+                                }
+                                MenuItem {
+                                    title: @tr("Décor et architecture");
+                                    checkable: true;
+                                    checked: App.plot-flags[16];
+                                    activated => {
+                                        App.plot-option("set");
+                                    }
+                                }
+                                MenuItem {
+                                    title: @tr("Extérieur et nature");
+                                    checkable: true;
+                                    checked: App.plot-flags[17];
+                                    activated => {
+                                        App.plot-option("outdoor");
+                                    }
+                                }
+                                MenuItem {
+                                    title: @tr("Accessoires");
+                                    checkable: true;
+                                    checked: App.plot-flags[18];
+                                    activated => {
+                                        App.plot-option("props");
+                                    }
+                                }
+                                MenuItem {
+                                    title: @tr("Plateau (caméra, son…)");
+                                    checkable: true;
+                                    checked: App.plot-flags[19];
+                                    activated => {
+                                        App.plot-option("filmset");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    show-button := ToolButton {
+                        width: parent.width;
+                        icon: "eye";
+                        text: root.narrow ? "" : @tr("Affichage");
+                        dropdown: true;
+                        tip: @tr("Montrer ou masquer les éléments du plan : noms, adresses DMX, grille…");
+                        clicked => {
+                            show-menu.show({ x: 0, y: self.height + 2px });
+                        }
+                    }
+                }
+            }
+            VerticalLayout {
+                alignment: center;
+                ToolButton {
+                    icon: "image";
+                    active: App.plot-panel-open;
+                    tip: @tr("Fond et cartouche (couleur, image de fond, production)…");
+                    clicked => {
+                        App.plot-panel-open = !App.plot-panel-open;
+                    }
+                }
+            }
+            VerticalLayout {
+                alignment: center;
+                Rectangle {
+                    width: export-button.natural-width;
+                    height: 30px;
+                    export-menu := ContextMenuArea {
+                        enabled: false;
+                        Menu {
+                            MenuItem {
+                                title: @tr("Imprimer / PDF (plan + liste + patch)") + "    Ctrl+P";
+                                activated => {
+                                    App.plot-export("print");
+                                }
+                            }
+                            MenuSeparator { }
+                            MenuItem {
+                                title: @tr("Plan en PDF…");
+                                activated => {
+                                    App.plot-export("pdf");
+                                }
+                            }
+                            MenuItem {
+                                title: @tr("Plan en SVG…");
+                                activated => {
+                                    App.plot-export("svg");
+                                }
+                            }
+                            MenuItem {
+                                title: @tr("Plan en PNG…");
+                                activated => {
+                                    App.plot-export("png");
+                                }
+                            }
+                            MenuSeparator { }
+                            MenuItem {
+                                title: @tr("Liste du matériel (CSV)…");
+                                activated => {
+                                    App.plot-export("equipment");
+                                }
+                            }
+                            MenuItem {
+                                title: @tr("Patch DMX (CSV)…");
+                                activated => {
+                                    App.plot-export("patch");
+                                }
+                            }
+                            MenuItem {
+                                title: @tr("Export MVR (Blackout, consoles)…");
+                                activated => {
+                                    App.plot-export("mvr");
+                                }
+                            }
+                        }
+                    }
+                    export-button := ToolButton {
+                        width: parent.width;
+                        icon: "download";
+                        text: root.narrow ? "" : @tr("Exporter");
+                        tip: @tr("Exporter");
+                        dropdown: true;
+                        clicked => {
+                            export-menu.show({ x: 0, y: self.height + 2px });
+                        }
+                    }
+                }
+            }
+        }
+
+        Rectangle {
+            horizontal-stretch: 1;
+        }
+
+        // vue en plein écran (panneaux masqués)
+        VerticalLayout {
+            alignment: center;
+            ToolButton {
+                icon: "fullscreen";
+                active: App.full-view;
+                tip: (App.full-view ? @tr("Revenir aux panneaux") : @tr("Vue en plein écran")) + App.key-hint("view.fullview", App.keys-rev);
+                clicked => {
+                    App.full-view = !App.full-view;
+                    App.refocus += 1;
+                }
+            }
+        }
+      }
+      if !App.plot-mode && root.narrow: HorizontalLayout {
+        height: 36px;
+        padding-left: 8px;
+        padding-bottom: 6px;
+        alignment: start;
+        EnvSliders { }
+      }
+    }
+}

@@ -52,6 +52,11 @@ const KEY_NAMES = {
 };
 const MODS = ['Ctrl', 'Alt', 'Shift'];
 
+/** Noms des touches dans une autre langue (« Maj » → « Shift »…), à appeler au démarrage. */
+export function setKeyNames(names) {
+  Object.assign(KEY_NAMES, names);
+}
+
 /** Combinaisons gardées par le navigateur : elles ne marchent que dans l'application installée. */
 export const BROWSER_RESERVED = new Set(['Ctrl+N', 'Ctrl+T', 'Ctrl+W', 'Ctrl+Shift+N', 'Ctrl+Shift+T', 'Ctrl+Shift+W', 'Ctrl+Tab', 'Ctrl+Shift+Tab', 'F11']);
 
@@ -189,6 +194,12 @@ function visualCombo(token, mods) {
 }
 
 // ------------------------------------------------------------------ gestionnaire
+/** Traduction des textes des fenêtres natives (confirm), fournie par l'interface. */
+let translateText = (s) => s;
+export function setTranslator(fn) {
+  translateText = fn;
+}
+
 export function createShortcuts({ desktop = false } = {}) {
   let map = resolveBindings(loadOverrides());
   let index = new Map(); // touche → commande
@@ -232,7 +243,14 @@ export function createShortcuts({ desktop = false } = {}) {
     /** Première touche de la commande, lisible (pour les menus et les infobulles). */
     label: (id) => keyLabel((map.get(id) || [])[0]),
     onChange: (fn) => listeners.add(fn),
-    open: () => openDialog(),
+    open: (query) => openDialog(query),
+    /** Petite fenêtre « appuie sur la nouvelle touche » (clic droit sur un bouton de la barre d'outils). */
+    quickEdit: (id) => openQuick(id),
+    /** Retire toutes les touches d'une commande. */
+    clearKeys(id) {
+      map.set(id, []);
+      commit();
+    },
     isReserved: (combo) => !desktop && BROWSER_RESERVED.has(combo),
   };
 
@@ -274,7 +292,7 @@ export function createShortcuts({ desktop = false } = {}) {
           'button',
           {
             onclick: () => {
-              if (!confirm('Remettre toutes les touches par défaut ? Tes raccourcis personnalisés seront effacés.')) return;
+              if (!confirm(translateText('Remettre toutes les touches par défaut ? Tes raccourcis personnalisés seront effacés.'))) return;
               const before = snapshot();
               map = resolveBindings({});
               capturing = null;
@@ -348,9 +366,10 @@ export function createShortcuts({ desktop = false } = {}) {
     });
   }
 
-  function openDialog() {
+  function openDialog(query) {
     if (!dlg) build();
     note = null;
+    if (typeof query === 'string') ui.search.value = query;
     render();
     if (!dlg.open) dlg.showModal();
     ui.search.focus();
@@ -371,8 +390,8 @@ export function createShortcuts({ desktop = false } = {}) {
     renderList();
     renderStatus();
   }
-  function assign(id, i, combo) {
-    const c = commandById.get(id);
+  /** Donne la touche à la commande (au rang i) en la retirant des autres. À suivre de commit(). */
+  function setKey(id, i, combo) {
     const before = snapshot();
     const takenBy = COMMANDS.filter((o) => o.id !== id && (map.get(o.id) || []).includes(combo));
     for (const o of takenBy) map.set(o.id, map.get(o.id).filter((k) => k !== combo));
@@ -382,6 +401,26 @@ export function createShortcuts({ desktop = false } = {}) {
       else ks.push(combo);
     }
     map.set(id, ks);
+    return { before, takenBy };
+  }
+  /** Touches par défaut d'une commande (retirées des commandes qui les avaient prises). À suivre de commit(). */
+  function setDefaultKeys(id) {
+    const c = commandById.get(id);
+    const before = snapshot();
+    const freed = [];
+    for (const k of c.keys) {
+      for (const o of COMMANDS) {
+        if (o.id === id || !(map.get(o.id) || []).includes(k)) continue;
+        map.set(o.id, map.get(o.id).filter((x) => x !== k));
+        freed.push(`${keyLabel(k)} (« ${o.label} »)`);
+      }
+    }
+    map.set(id, [...c.keys]);
+    return { before, freed };
+  }
+  function assign(id, i, combo) {
+    const c = commandById.get(id);
+    const { before, takenBy } = setKey(id, i, combo);
     capturing = null;
     if (takenBy.length) note = { text: `${keyLabel(combo)} servait à « ${takenBy.map((o) => o.label).join(' », « ')} » : la touche passe à « ${c.label} ».`, kind: 'warn', undo: before };
     else if (api.isReserved(combo)) note = { text: `${keyLabel(combo)} est gardé par le navigateur : ce raccourci marchera dans l’application installée.`, kind: 'warn' };
@@ -400,19 +439,128 @@ export function createShortcuts({ desktop = false } = {}) {
   }
   function resetCommand(id) {
     const c = commandById.get(id);
-    const before = snapshot();
-    const freed = [];
-    for (const k of c.keys) {
-      for (const o of COMMANDS) {
-        if (o.id === id || !(map.get(o.id) || []).includes(k)) continue;
-        map.set(o.id, map.get(o.id).filter((x) => x !== k));
-        freed.push(`${keyLabel(k)} (« ${o.label} »)`);
-      }
-    }
-    map.set(id, [...c.keys]);
+    const { before, freed } = setDefaultKeys(id);
     note = { text: `« ${c.label} » : touches par défaut${freed.length ? ` — retiré de ${freed.join(', ')}` : ''}.`, kind: freed.length ? 'warn' : 'ok', undo: before };
     commit();
     render();
+  }
+
+  // ---- changement rapide : clic droit sur un bouton › Changer le raccourci
+  function openQuick(id) {
+    const c = commandById.get(id);
+    if (!c) return;
+    document.querySelector('dialog.kbd-quick')?.close();
+    let undo = null;
+    const keysEl = h('div', { class: 'kbq-keys' });
+    const zone = h('div', { class: 'kbq-zone' }, 'Appuie sur la nouvelle touche…');
+    const msg = h('div', { class: 'kbq-msg' }, 'Ctrl, Alt et Maj sont possibles. Échap : fermer sans rien changer.');
+    const say = (text, kind = '') => {
+      msg.textContent = text;
+      msg.className = `kbq-msg ${kind}`;
+    };
+    const showKeys = () => {
+      const ks = map.get(id) || [];
+      keysEl.replaceChildren(...(ks.length ? ks.map((k) => h('span', { class: `kbd-chip${api.isReserved(k) ? ' reserved' : ''}` }, h('span', { class: 'kbd-chip-key' }, keyLabel(k)))) : [h('span', { class: 'note' }, 'aucun')]));
+    };
+    const undoBtn = h(
+      'button',
+      {
+        class: 'hidden',
+        onclick: () => {
+          if (!undo) return;
+          map = undo;
+          undo = null;
+          commit();
+          showKeys();
+          zone.textContent = 'Appuie sur la nouvelle touche…';
+          say('Modification annulée.', 'ok');
+          undoBtn.classList.add('hidden');
+        },
+      },
+      'Annuler la modification',
+    );
+    const changed = (before, text, kind) => {
+      undo = before;
+      commit();
+      showKeys();
+      say(text, kind);
+      undoBtn.classList.remove('hidden');
+    };
+    const dlgQ = h(
+      'dialog',
+      { class: 'dialog kbd-quick' },
+      h('h3', {}, 'Changer le raccourci'),
+      h('div', { class: 'kbq-cmd' }, h('b', {}, c.label), h('span', { class: 'note' }, ` · ${menuById.get(c.menu).label} › ${c.section}`)),
+      h('div', { class: 'kbq-row' }, h('span', { class: 'note' }, 'Touches actuelles'), keysEl),
+      zone,
+      msg,
+      h(
+        'div',
+        { class: 'dialog-actions' },
+        h(
+          'button',
+          {
+            title: 'Plus aucune touche pour cette commande',
+            onclick: () => {
+              const before = snapshot();
+              map.set(id, []);
+              changed(before, `« ${c.label} » n’a plus de raccourci.`, 'ok');
+            },
+          },
+          'Retirer',
+        ),
+        h(
+          'button',
+          {
+            title: c.keys.length ? `Touche d’origine : ${c.keys.map(keyLabel).join(', ')}` : 'Pas de touche d’origine',
+            onclick: () => {
+              const { before, freed } = setDefaultKeys(id);
+              changed(before, `Touches par défaut${freed.length ? ` — retiré de ${freed.join(', ')}` : ''}.`, freed.length ? 'warn' : 'ok');
+            },
+          },
+          'Par défaut',
+        ),
+        undoBtn,
+        h('span', { class: 'spacer' }),
+        h(
+          'button',
+          {
+            onclick: () => {
+              dlgQ.close();
+              openDialog(c.label);
+            },
+          },
+          'Tous les raccourcis…',
+        ),
+        h('button', { class: 'primary', onclick: () => dlgQ.close() }, 'Fermer'),
+      ),
+    );
+    // toute touche est prise pour la commande, sauf Échap seule (fermer)
+    const onKey = (e) => {
+      if (!dlgQ.open) return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      if (e.key === 'Escape' && !e.ctrlKey && !e.altKey && !e.shiftKey) return dlgQ.close();
+      const combo = comboOf(e);
+      if (!combo) {
+        const live = [e.ctrlKey && 'Ctrl', e.altKey && 'Alt', e.shiftKey && 'Shift'].filter(Boolean);
+        zone.textContent = live.length ? `${keyLabel(live.join('+'))}+…` : 'Appuie sur la nouvelle touche…';
+        return;
+      }
+      zone.textContent = keyLabel(combo);
+      const { before, takenBy } = setKey(id, 0, combo);
+      if (takenBy.length) changed(before, `${keyLabel(combo)} servait à « ${takenBy.map((o) => o.label).join(' », « ')} » : la touche passe à « ${c.label} ».`, 'warn');
+      else if (api.isReserved(combo)) changed(before, `${keyLabel(combo)} est gardé par le navigateur : ce raccourci marchera dans l’application installée.`, 'warn');
+      else changed(before, `« ${c.label} » : ${keyLabel(combo)}`, 'ok');
+    };
+    window.addEventListener('keydown', onKey, true);
+    dlgQ.addEventListener('close', () => {
+      window.removeEventListener('keydown', onKey, true);
+      dlgQ.remove();
+    });
+    showKeys();
+    document.body.append(dlgQ);
+    dlgQ.showModal();
   }
 
   // ---- affichage

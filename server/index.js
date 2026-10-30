@@ -3,8 +3,8 @@
 //  - reçoit le DMX (Art-Net / sACN) des applis et consoles
 //  - tient l'état de la scène et le diffuse aux interfaces par WebSocket
 import { createServer } from 'node:http';
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { WebSocketServer } from 'ws';
 import { createStaticHandler } from './static.js';
@@ -18,6 +18,19 @@ import { testEcho } from './ble/emulators/test-echo.js';
 import { asteraBox } from './ble/emulators/astera-box.js';
 import { APP_VERSION, UPDATE_REPO, checkForUpdate } from './update-check.js';
 import { History, UNDOABLE } from './history.js';
+import { ProjectLibrary, cleanThumbnail, projectName, safeName } from './projects.js';
+import { buildDemo } from './demo-project.js';
+import { getDemo } from '../shared/demos.js';
+import { translate } from '../shared/i18n.js';
+import { RdmResponder } from '../shared/rdm.js';
+import { getFixtureType, getMode } from '../shared/fixtures/index.js';
+import { Assistant } from './ai/assistant.js';
+import { KeyStore } from './ai/keys.js';
+import { PROVIDERS, listModels, providerUrl, useAiodos } from './ai/providers.js';
+import { createAiodos } from './ai/aiodos.js';
+import { SUGGESTED_MODELS, installOllama, ollamaStatus, pickModel, pullModel, startOllama } from './ai/ollama.js';
+import { VOCABULARY, installVoice, transcribe, voiceStatus } from './ai/voice.js';
+import { isLocalClient } from './local-client.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 // Données de l'utilisateur (scènes, réglages, images de fond) : à côté du code en développement,
@@ -44,11 +57,74 @@ function loadConfig() {
 const config = loadConfig();
 const PORT = Number(process.env.ARKLIGHT_PORT || config.port);
 
+const saveConfig = () => writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2));
 const store = new SceneStore(join(DATA, 'scenes'));
+// projets : dossier au choix (disque externe…), récents ouverts d'ailleurs
+const library = new ProjectLibrary({ defaultDir: join(DATA, 'scenes'), config, onConfig: saveConfig });
+store.projectsDir = library.root;
+store.lang = config.lang === 'en' ? 'en' : 'fr'; // noms des nouveaux objets, projet d'exemple
+if (store.savedPath) library.allow(store.savedPath);
 const ASSETS = join(DATA, 'scenes', 'assets'); // images de fond des plans de feu
 mkdirSync(ASSETS, { recursive: true });
 const universes = new UniverseStore();
-const history = new History({ limit: 100 }); // annuler / rétablir
+// annuler / rétablir : une pile par plan (changer de plan ne mélange pas les étapes)
+const histories = new Map();
+let history = null;
+function useHistory() {
+  const id = store.current.plan;
+  if (!histories.has(id)) histories.set(id, new History({ limit: 100 }));
+  history = histories.get(id);
+}
+function resetHistories() {
+  histories.clear();
+  useHistory();
+}
+useHistory();
+
+// ---------------------------------------------------------------- assistant IA
+// Réglages (config.json) : fournisseur, modèle, adresses ; clés API à part (ai-keys.json) : dans le
+// profil de l'application de bureau (ARKLIGHT_KEYS, voir desktop/keys-file.js), jamais dans
+// Documents ; à côté du code en développement (fichier ignoré par git).
+const AI_DEFAULTS = { provider: 'ollama', model: '', urls: {} };
+const VOICE_DEFAULTS = { enabled: false, model: 'base', lang: 'auto', autoSend: true };
+config.ai = { ...AI_DEFAULTS, ...(config.ai && typeof config.ai === 'object' ? config.ai : {}) };
+config.ai.voice = { ...VOICE_DEFAULTS, ...(config.ai.voice && typeof config.ai.voice === 'object' ? config.ai.voice : {}) };
+const aiKeys = new KeyStore(process.env.ARKLIGHT_KEYS || join(DATA, 'ai-keys.json'));
+const assistant = new Assistant({ store, settings: () => config.ai, keyFor: (p) => aiKeys.get(p) });
+let aiTask = null; // téléchargement en cours (Ollama, modèle) : { kind, ctrl }
+// AIODOS (IA locale d'ARKANE) : accès accordé dans AIODOS, clé gardée avec les autres
+const aiodos = createAiodos({ keys: aiKeys, version: APP_VERSION, lang: () => config.lang });
+useAiodos(aiodos);
+
+/** État de l'assistant pour les réglages de l'interface (jamais les clés elles-mêmes). */
+async function aiState() {
+  const [st, ai] = await Promise.all([ollamaStatus(providerUrl('ollama', config.ai)), aiodos.status()]);
+  // pas encore de modèle choisi : le meilleur modèle local installé
+  if (config.ai.provider === 'ollama' && !config.ai.model && st.models.length) {
+    config.ai.model = pickModel(st.models);
+    if (config.ai.model) saveConfig();
+  }
+  if (config.ai.provider === 'aiodos' && !config.ai.model && ai.state === 'ready') {
+    config.ai.model = await aiodos.pickModel().catch(() => '');
+    if (config.ai.model) saveConfig();
+  }
+  // le code d'une demande d'accès ne part qu'aux interfaces de cet ordinateur (ai.aiodos.code)
+  const { code, ...aiodosState } = ai;
+  void code;
+  return {
+    t: 'ai.state',
+    config: config.ai,
+    providers: Object.entries(PROVIDERS).map(([id, p]) => ({ id, label: p.label, key: !!p.key, local: !!p.local, url: providerUrl(id, config.ai), defaultUrl: p.url, defaultModel: p.defaultModel || '' })),
+    keys: aiKeys.list(),
+    encrypted: aiKeys.encrypted,
+    ollama: st,
+    aiodos: aiodosState,
+    suggested: SUGGESTED_MODELS,
+    voice: { ...voiceStatus(DATA), platform: process.platform },
+    busy: assistant.busy,
+    task: aiTask ? aiTask.kind : null,
+  };
+}
 
 // ---------------------------------------------------------------- journal
 const logs = [];
@@ -86,6 +162,37 @@ artnet.on('dmx', ({ portAddress, data, source }) => {
   });
 });
 
+// RDM : les applis (Luminair…) découvrent les projecteurs de la scène, lisent leur modèle et leurs
+// canaux, et peuvent changer leur adresse, leur mode ou leur nom, ou les faire clignoter.
+const rdm = new RdmResponder({
+  getFixtures: () => store.scene.fixtures,
+  onSet(f, changes, what) {
+    const before = { address: f.settings.dmxAddress, name: f.name };
+    const updated = store.updateFixture(f.id, changes);
+    if (!updated) return;
+    broadcast({ t: 'fixture.updated', fixture: updated, origin: 0 });
+    if (what === 'address') log('info', `RDM : ${updated.name} → adresse ${updated.settings.dmxAddress} (avant ${before.address})`);
+    else if (what === 'mode') log('info', `RDM : ${updated.name} → mode ${getMode(getFixtureType(updated.type), updated.settings.dmxMode)?.name || updated.settings.dmxMode}`);
+    else log('info', `RDM : « ${before.name} » renommé « ${updated.name} »`);
+    syncSacnUniverses();
+    broadcastHistory();
+  },
+  onIdentify(f, on) {
+    broadcast({ t: 'fixture.identify', id: f.id, on });
+    log('info', on ? `RDM : identification de ${f.name}` : `RDM : fin de l’identification de ${f.name}`);
+  },
+});
+artnet.rdm = {
+  tod: (pa) => rdm.tod(pa + config.artnetUniverseOffset),
+  handle: (pa, data) => rdm.handle(pa + config.artnetUniverseOffset, data),
+};
+let lastDiscovery = '';
+artnet.on('rdm-discovery', ({ source, devices }) => {
+  const key = `${source}|${devices}`;
+  if (key !== lastDiscovery) log('info', `RDM : découverte demandée par ${source} — ${devices} projecteur(s) annoncé(s)`);
+  lastDiscovery = key;
+});
+
 sacn.on('listening', (p) => log('info', `sACN : écoute sur le port UDP ${p}`));
 sacn.on('error', (e) => log('error', `sACN : ${e.message}`));
 sacn.on('dmx', ({ universe, data, priority, source, sourceName, cid }) => {
@@ -119,6 +226,19 @@ function broadcast(obj) {
   for (const ws of uiClients) if (ws.readyState === 1) ws.send(s);
 }
 
+/** Aux seules interfaces ouvertes sur cet ordinateur. */
+function broadcastLocal(obj) {
+  const s = JSON.stringify(obj);
+  for (const ws of uiClients) if (ws.local && ws.readyState === 1) ws.send(s);
+}
+
+/**
+ * Interface ouverte sur cet ordinateur (adresse locale ET origine de l'interface d'ARKLIGHT, ou
+ * programme qui n'est pas un navigateur) : une page web d'un autre site, même ouverte sur ce PC,
+ * n'en est pas une (voir local-client.js).
+ */
+const isLocal = (req) => isLocalClient(req, server.address()?.port ?? PORT);
+
 /** Trame binaire : [0x01][univers u16 BE][512 octets] */
 function dmxFrame(u, data) {
   const buf = Buffer.alloc(3 + 512);
@@ -138,9 +258,57 @@ function statusPayload() {
   };
 }
 
-/** État d'annulation et d'enregistrement : menus Édition et Fichier, point « non enregistré ». */
+/** État d'annulation et d'enregistrement : menus Édition et Fichier, titre de la fenêtre. */
 function historyPayload() {
-  return { t: 'history', ...history.status(), dirty: store.dirty, savedName: store.savedName };
+  return { t: 'history', ...history.status(), dirty: store.dirty, savedName: store.savedName, savedPath: store.savedPath };
+}
+
+// ---------------------------------------------------------------- projets
+/** Liste des projets pour l'écran « Projets » (vignettes comprises). */
+function projectsPayload() {
+  return {
+    t: 'projects',
+    root: library.root,
+    rootDefault: library.isDefault,
+    rootAvailable: library.available,
+    current: store.savedPath,
+    items: library.list().map(({ modifiedMs, ...it }) => (void modifiedMs, it)),
+  };
+}
+const samePath = (a, b) => !!a && !!b && resolve(a).toLowerCase() === resolve(b).toLowerCase();
+
+/** Scène complète (nouveau projet, projet ouvert, changement de plan) avec ses séquences et plans. */
+function broadcastScene() {
+  broadcast({ t: 'scene', scene: store.scene, plans: store.planInfo() });
+}
+function broadcastPlans() {
+  broadcast({ t: 'plans', plans: store.planInfo() });
+}
+/** Le plan courant a changé : sa scène, son historique, ses univers DMX. */
+function planChanged() {
+  useHistory();
+  broadcastScene();
+  syncSacnUniverses();
+}
+
+function openProject(path) {
+  const scene = store.loadFrom(path);
+  library.addRecent(path);
+  resetHistories();
+  broadcastScene();
+  syncSacnUniverses();
+  log('info', `Projet ouvert : ${scene.name}`);
+  broadcastHistory();
+  return scene;
+}
+
+function saveProject(path, thumbnail) {
+  const name = store.saveTo(path, { thumbnail: cleanThumbnail(thumbnail) });
+  library.addRecent(path);
+  broadcast({ t: 'scene.meta', name });
+  log('info', `Projet enregistré : ${path}`);
+  broadcastHistory();
+  return name;
 }
 let lastHistory = '';
 function broadcastHistory() {
@@ -149,6 +317,71 @@ function broadcastHistory() {
   if (s === lastHistory) return;
   lastHistory = s;
   broadcast(p);
+}
+
+/**
+ * Une demande à l'assistant : il agit dans la scène (une seule étape « Annuler » par demande, par
+ * plan), les interfaces voient les changements au fur et à mesure.
+ */
+async function askAssistant(ws, msg) {
+  if (config.ai.provider === 'ollama' && !config.ai.model) await aiState(); // choisit le modèle local
+  let step = history.begin(store.scene, store.revision, { t: 'ai.action' });
+  const endStep = () => {
+    if (step && history.end(step, store.scene, store.revision) === 'noop') store.revision = step.revision;
+    step = null;
+  };
+  const flush = (runner) => {
+    const c = runner.changed;
+    if (c.has('fixtures') || c.has('objects') || c.has('groups')) broadcast({ t: 'scene.restore', scene: store.scene, origin: 0, undo: false, label: '' });
+    if (c.has('env')) broadcast({ t: 'env', environment: store.scene.environment, origin: 0 });
+    if (c.has('fixtures')) syncSacnUniverses();
+    c.clear();
+    broadcastHistory();
+  };
+  const hooks = {
+    afterTool: flush,
+    // DMX : univers reçus (dont le dernier état conservé) et ceux qui reçoivent encore un signal
+    dmxState: () => ({ data: new Set(universes.universes.keys()), live: new Set(universes.sources().flatMap((s) => s.universes)) }),
+    forgetDmx: (list) => {
+      const done = list.filter((u) => universes.universes.has(u) && universes.forget(u));
+      if (done.length) broadcast({ t: 'dmx.forget', universes: done });
+      return done;
+    },
+    planChanging: () => endStep(),
+    planChanged: () => {
+      planChanged();
+      step = history.begin(store.scene, store.revision, { t: 'ai.action' });
+    },
+  };
+  send(ws, { t: 'ai.event', kind: 'start' });
+  try {
+    const size = Array.isArray(msg.imageSize) ? msg.imageSize.map(Number) : null;
+    const imageAspect = size && size[0] > 0 && size[1] > 0 ? size[0] / size[1] : null;
+    const runner = await assistant.ask({ text: msg.text, images: Array.isArray(msg.images) ? msg.images.slice(0, 4) : [], imageAspect, lang: config.lang, hooks, onEvent: (e) => send(ws, { t: 'ai.event', ...e }) });
+    flush(runner);
+    send(ws, { t: 'ai.done', select: runner.lastAdded });
+  } catch (e) {
+    send(ws, { t: 'ai.error', message: e.message, code: e.code || null });
+  } finally {
+    endStep();
+    broadcastHistory();
+  }
+}
+
+/** Téléchargement (installeur d'Ollama, modèle) : progression envoyée à toutes les interfaces. */
+function runAiTask(kind, fn) {
+  if (aiTask) throw new Error('Un téléchargement est déjà en cours');
+  const ctrl = new AbortController();
+  aiTask = { kind, ctrl };
+  const progress = (p) => broadcast({ t: 'ai.progress', kind, ...p });
+  progress({ pct: 0, text: '…' });
+  fn(progress, ctrl.signal)
+    .then(() => broadcast({ t: 'ai.progress', kind, pct: 100, done: true }))
+    .catch((e) => broadcast({ t: 'ai.progress', kind, error: ctrl.signal.aborted ? 'Annulé' : e.message, done: true }))
+    .finally(async () => {
+      aiTask = null;
+      broadcast(await aiState());
+    });
 }
 
 function broadcastGroups(ws, extra = {}) {
@@ -236,7 +469,7 @@ function handleUi(ws, msg) {
       break;
     case 'plot.meta': {
       const p = store.updatePlotMeta(msg);
-      broadcast({ t: 'plot.meta', underlay: p.underlay, title: p.title, origin: ws.id });
+      broadcast({ t: 'plot.meta', underlay: p.underlay, title: p.title, background: p.background, origin: ws.id });
       break;
     }
     // ---- groupes de projecteurs
@@ -254,30 +487,276 @@ function handleUi(ws, msg) {
     case 'env.update':
       broadcast({ t: 'env', environment: store.updateEnvironment(msg.changes), origin: ws.id });
       break;
-    case 'scene.rename':
-      store.rename(msg.name);
+    case 'scene.rename': {
+      // projet déjà enregistré : son fichier change de nom avec lui
+      const n = safeName(msg.name);
+      if (!n) break;
+      if (store.savedPath && n !== store.savedName) {
+        library.allow(store.savedPath);
+        store.savedPath = library.rename(store.savedPath, n);
+        log('info', `Projet renommé : ${n}`);
+      }
+      store.rename(n);
       broadcast({ t: 'scene.meta', name: store.scene.name });
       break;
+    }
     case 'scene.new':
-      history.clear();
-      broadcast({ t: 'scene', scene: store.newScene() });
+    case 'project.new':
+      store.newScene();
+      resetHistories();
+      broadcastScene();
       syncSacnUniverses();
+      break;
+    case 'project.demo': {
+      const demo = getDemo(msg.id);
+      buildDemo(store, store.lang, demo.id);
+      store.rename(translate(demo.name, store.lang));
+      resetHistories();
+      broadcastScene();
+      syncSacnUniverses();
+      log('info', 'Projet d’exemple ouvert (à enregistrer pour le garder)');
+      break;
+    }
+    case 'projects.list':
+      send(ws, projectsPayload());
+      break;
+    case 'project.open':
+      if (!library.isKnown(msg.path)) throw new Error('Projet inconnu : rouvre la liste des projets');
+      openProject(msg.path);
+      break;
+    case 'project.save': {
+      // nom donné : dans le dossier des projets (ou celui du projet ouvert) ; sinon dans son fichier
+      let path = store.savedPath;
+      if (typeof msg.name === 'string') {
+        const folder = msg.where === 'current' && store.savedPath ? dirname(store.savedPath) : library.root;
+        path = library.target(folder, msg.name);
+        if (!msg.overwrite && existsSync(path) && !samePath(path, store.savedPath)) {
+          send(ws, { t: 'project.exists', name: projectName(path), path });
+          break;
+        }
+      }
+      if (!path) throw new Error('Donne un nom au projet');
+      const name = saveProject(path, msg.thumbnail);
+      send(ws, { t: 'project.saved', name, path });
+      break;
+    }
+    case 'project.rename': {
+      const to = library.rename(msg.path, msg.name);
+      if (samePath(msg.path, store.savedPath)) {
+        store.savedPath = to;
+        store.rename(projectName(to));
+        broadcast({ t: 'scene.meta', name: store.scene.name });
+      }
+      send(ws, projectsPayload());
+      break;
+    }
+    case 'project.duplicate':
+      library.duplicate(msg.path, msg.name);
+      send(ws, projectsPayload());
+      break;
+    case 'project.forget':
+      library.forget(msg.path);
+      send(ws, projectsPayload());
+      break;
+    case 'project.trash':
+      if (samePath(msg.path, store.savedPath)) throw new Error('Ce projet est ouvert : ouvre-en un autre avant de le mettre à la corbeille');
+      library
+        .trashFile(msg.path)
+        .then(() => {
+          log('info', `Projet mis à la corbeille : ${projectName(msg.path)}`);
+          send(ws, projectsPayload());
+        })
+        .catch((e) => send(ws, { t: 'error', message: `Corbeille : ${e.message}` }));
       break;
     case 'scene.save': {
       const name = store.save(msg.name);
+      library.addRecent(store.savedPath);
       broadcast({ t: 'scene.meta', name });
       send(ws, { t: 'scene.list', items: store.list() });
-      log('info', `Scène enregistrée : ${name}`);
+      log('info', `Projet enregistré : ${name}`);
       break;
     }
     case 'scene.load':
-      broadcast({ t: 'scene', scene: store.load(msg.name) });
-      history.clear();
+      store.load(msg.name);
+      resetHistories();
+      broadcastScene();
       syncSacnUniverses();
-      log('info', `Scène ouverte : ${store.scene.name}`);
+      library.addRecent(store.savedPath);
+      log('info', `Projet ouvert : ${store.scene.name}`);
       break;
     case 'scene.exists':
       send(ws, { t: 'scene.exists', name: msg.name, exists: store.exists(msg.name) });
+      break;
+    // ---- séquences et plans (un plan de feu par plan)
+    case 'plan.switch':
+      if (store.switchPlan(msg.id, { thumbnail: msg.thumbnail })) planChanged();
+      break;
+    case 'plan.thumbnail':
+      if (store.setPlanThumbnail(msg.id, msg.thumbnail)) broadcastPlans();
+      break;
+    case 'plan.new': {
+      const p = store.newPlan({ seq: msg.seq, mode: msg.mode, name: msg.name, thumbnail: msg.thumbnail });
+      planChanged();
+      log('info', `Nouveau plan : ${p.name}`);
+      break;
+    }
+    case 'sequence.new': {
+      const sq = store.newSequence({ mode: msg.mode, name: msg.name, thumbnail: msg.thumbnail });
+      planChanged();
+      log('info', `Nouvelle séquence : ${sq.name}`);
+      break;
+    }
+    case 'plan.duplicate':
+      if (store.duplicatePlan(msg.id)) broadcastPlans();
+      break;
+    case 'plan.rename':
+      if (store.renamePlan(msg.id, msg.name)) broadcastPlans();
+      break;
+    case 'sequence.rename':
+      if (store.renameSequence(msg.id, msg.name)) broadcastPlans();
+      break;
+    case 'plan.move':
+      if (store.movePlan(msg.id, { seq: msg.seq, index: msg.index })) broadcastPlans();
+      break;
+    case 'sequence.move':
+      if (store.moveSequence(msg.id, msg.index)) broadcastPlans();
+      break;
+    case 'plan.delete':
+    case 'sequence.delete': {
+      const before = store.current.plan;
+      const gone = msg.t === 'plan.delete' ? [msg.id] : (store.sequences.find((sq) => sq.id === msg.id)?.plans || []).map((p) => p.id);
+      const ok = msg.t === 'plan.delete' ? store.removePlan(msg.id) : store.removeSequence(msg.id);
+      if (!ok) break;
+      for (const id of gone) histories.delete(id);
+      if (store.current.plan !== before) planChanged();
+      else broadcastPlans();
+      break;
+    }
+    // ---- assistant IA
+    case 'ai.state':
+      aiState().then((st) => send(ws, st));
+      break;
+    case 'ai.config': {
+      const c = msg.changes || {};
+      if (typeof c.provider === 'string' && PROVIDERS[c.provider]) {
+        if (c.provider !== config.ai.provider) config.ai.model = PROVIDERS[c.provider].defaultModel || '';
+        config.ai.provider = c.provider;
+      }
+      if (typeof c.model === 'string') config.ai.model = c.model.trim().slice(0, 120);
+      if (c.voice && typeof c.voice === 'object') {
+        const v = c.voice;
+        if (typeof v.enabled === 'boolean') config.ai.voice.enabled = v.enabled;
+        if (typeof v.autoSend === 'boolean') config.ai.voice.autoSend = v.autoSend;
+        if (['base', 'small'].includes(v.model)) config.ai.voice.model = v.model;
+        if (['auto', 'fr', 'en', 'es'].includes(v.lang)) config.ai.voice.lang = v.lang;
+      }
+      if (c.urls && typeof c.urls === 'object') {
+        config.ai.urls = { ...config.ai.urls };
+        for (const [k, v] of Object.entries(c.urls)) if (PROVIDERS[k] && typeof v === 'string') config.ai.urls[k] = v.trim().slice(0, 300);
+      }
+      saveConfig();
+      aiState().then((st) => broadcast(st));
+      break;
+    }
+    case 'ai.key':
+      if (!PROVIDERS[msg.provider]?.key) break;
+      aiKeys.set(msg.provider, msg.key);
+      log('info', msg.key ? `Assistant : clé ${PROVIDERS[msg.provider].label} enregistrée sur cet ordinateur` : `Assistant : clé ${PROVIDERS[msg.provider].label} effacée`);
+      aiState().then((st) => broadcast(st));
+      break;
+    case 'ai.models': {
+      const provider = PROVIDERS[msg.provider] ? msg.provider : config.ai.provider;
+      listModels({ provider, key: aiKeys.get(provider), cfg: config.ai })
+        .then((models) => send(ws, { t: 'ai.models', provider, models }))
+        .catch((e) => send(ws, { t: 'ai.models', provider, models: [], error: e.message }));
+      break;
+    }
+    case 'ai.ask':
+      if (typeof msg.text !== 'string' || !msg.text.trim()) break;
+      askAssistant(ws, msg);
+      break;
+    case 'ai.stop':
+      assistant.stop();
+      break;
+    case 'ai.reset':
+      if (!assistant.busy) assistant.reset();
+      send(ws, { t: 'ai.reset' });
+      break;
+    case 'ai.ollama.start':
+      startOllama();
+      log('info', 'Assistant : démarrage d’Ollama');
+      setTimeout(() => aiState().then((st) => broadcast(st)), 4000);
+      break;
+    case 'ai.ollama.pull': {
+      const model = String(msg.model || '').trim();
+      if (!/^[\w.:/-]{2,80}$/.test(model)) throw new Error('Nom de modèle invalide');
+      runAiTask('pull', async (progress, signal) => {
+        log('info', `Assistant : téléchargement du modèle ${model}`);
+        await pullModel(providerUrl('ollama', config.ai), model, progress, signal);
+        if (config.ai.provider === 'ollama') {
+          config.ai.model = model;
+          saveConfig();
+        }
+        log('info', `Assistant : modèle ${model} prêt`);
+      });
+      break;
+    }
+    case 'ai.ollama.install':
+      if (!process.env.ARKLIGHT_DESKTOP) throw new Error('Installation possible seulement dans l’application de bureau');
+      runAiTask('install', async (progress, signal) => {
+        log('info', 'Assistant : téléchargement de l’installeur officiel d’Ollama');
+        await installOllama(join(DATA, 'downloads'), progress, signal);
+      });
+      break;
+    case 'ai.voice.install':
+      if (process.platform !== 'win32') throw new Error('Installation automatique prévue pour Windows');
+      runAiTask('voice', async (progress, signal) => {
+        log('info', 'Assistant : installation de la reconnaissance vocale (whisper.cpp)');
+        await installVoice(DATA, config.ai.voice.model, progress, signal);
+        config.ai.voice.enabled = true;
+        saveConfig();
+        log('info', 'Assistant : reconnaissance vocale prête');
+      });
+      break;
+    case 'ai.task.cancel':
+      aiTask?.ctrl.abort();
+      break;
+    // ---- AIODOS : se connecter (code à 6 chiffres comparé dans AIODOS), annuler, se déconnecter, lancer
+    case 'ai.aiodos.connect':
+      log('info', 'Assistant : demande d’accès à AIODOS');
+      aiodos
+        .connect({
+          onCode: (code) => {
+            broadcastLocal({ t: 'ai.aiodos.code', code });
+            aiState().then((st) => broadcast(st));
+          },
+        })
+        .then(async () => {
+          log('info', 'Assistant : ARKLIGHT est connecté à AIODOS');
+          broadcastLocal({ t: 'ai.aiodos.code', code: null, done: true });
+        })
+        .catch((e) => {
+          broadcastLocal({ t: 'ai.aiodos.code', code: null, error: e.code === 'cancelled' ? '' : e.message });
+          if (e.code !== 'cancelled') log('warn', `AIODOS : ${e.message}`);
+        })
+        .finally(async () => broadcast(await aiState()));
+      break;
+    case 'ai.aiodos.cancel':
+      aiodos.cancel();
+      break;
+    case 'ai.aiodos.disconnect':
+      aiodos
+        .disconnect()
+        .then(() => log('info', 'Assistant : ARKLIGHT est déconnecté d’AIODOS'))
+        .catch((e) => log('warn', `AIODOS : ${e.message}`))
+        .finally(async () => broadcast(await aiState()));
+      break;
+    case 'ai.aiodos.launch':
+      log('info', 'Assistant : lancement d’AIODOS');
+      aiodos
+        .launch()
+        .catch((e) => send(ws, { t: 'error', message: e.message }))
+        .finally(async () => broadcast(await aiState()));
       break;
     // ---- annuler / rétablir
     case 'history.undo':
@@ -301,8 +780,10 @@ function handleUi(ws, msg) {
       send(ws, { t: 'scene.list', items: store.list() });
       break;
     case 'config.update': {
-      const allowed = ['artnetUniverseOffset'];
+      const allowed = ['artnetUniverseOffset', 'lang'];
       for (const k of allowed) if (msg.changes?.[k] !== undefined) config[k] = msg.changes[k];
+      config.lang = config.lang === 'en' ? 'en' : 'fr';
+      store.lang = config.lang;
       writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2));
       broadcast({ t: 'config', config });
       break;
@@ -316,6 +797,15 @@ function handleUi(ws, msg) {
     case 'dmx.release':
       universes.terminate(msg.universe, 'ui|test');
       break;
+    case 'dmx.forget': {
+      // « Reprendre la main » : on oublie le dernier état DMX des univers qui ne reçoivent plus rien
+      const list = (Array.isArray(msg.universes) ? msg.universes : [msg.universe]).map(Number).filter((u) => Number.isInteger(u) && u > 0);
+      const forgotten = list.filter((u) => universes.forget(u));
+      if (forgotten.length) broadcast({ t: 'dmx.forget', universes: forgotten });
+      const busy = list.filter((u) => !forgotten.includes(u));
+      if (busy.length) send(ws, { t: 'error', message: `Univers ${busy.join(', ')} : une console ou une appli envoie encore du DMX` });
+      break;
+    }
     case 'ble.start':
       ble.startProcess();
       break;
@@ -363,8 +853,42 @@ function handleUpload(req, res) {
   });
 }
 
+// Commande vocale : l'interface envoie la parole (WAV 16 kHz mono), le serveur la transcrit avec Whisper
+const VOICE_MAX = 12 * 1024 * 1024;
+function handleVoice(req, res) {
+  const reply = (code, obj) => res.writeHead(code, { 'Content-Type': 'application/json; charset=utf-8' }).end(JSON.stringify(obj));
+  if (!isLocal(req)) return reply(403, { error: 'L’assistant IA ne s’utilise que sur l’ordinateur où ARKLIGHT tourne' });
+  const chunks = [];
+  let size = 0;
+  req.on('data', (c) => {
+    size += c.length;
+    if (size > VOICE_MAX) {
+      reply(413, { error: 'Enregistrement trop long' });
+      req.destroy();
+    } else chunks.push(c);
+  });
+  req.on('end', async () => {
+    if (size > VOICE_MAX) return;
+    const dir = join(DATA, 'whisper', 'tmp');
+    mkdirSync(dir, { recursive: true });
+    const wav = join(dir, `voix-${Date.now().toString(36)}.wav`);
+    writeFileSync(wav, Buffer.concat(chunks));
+    // amorce : vocabulaire du métier + noms du projet (projecteurs, groupes, décor, plans)
+    const names = [...new Set([...store.scene.fixtures.map((f) => f.name), ...store.scene.groups.map((g) => g.name), ...store.scene.objects.map((o) => o.name)])].slice(0, 60).join(', ');
+    try {
+      const text = await transcribe({ dir: DATA, model: config.ai.voice.model, wav, lang: config.ai.voice.lang, prompt: `${VOCABULARY} ${names}` });
+      reply(200, { text });
+    } catch (e) {
+      reply(500, { error: e.message });
+    } finally {
+      rmSync(wav, { force: true });
+    }
+  });
+}
+
 const server = createServer((req, res) => {
   if (req.method === 'POST' && new URL(req.url, 'http://localhost').pathname === '/upload') return handleUpload(req, res);
+  if (req.method === 'POST' && new URL(req.url, 'http://localhost').pathname === '/ai/voice') return handleVoice(req, res);
   if (!serveStatic(req, res)) res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }).end('Introuvable');
 });
 
@@ -375,8 +899,12 @@ wss.on('connection', (ws, req) => {
   if (path === '/bridge') return ble.attach(ws);
   if (path !== '/ws') return ws.close(1008, 'Chemin inconnu');
   ws.id = nextClientId++;
+  // interface ouverte sur cet ordinateur (et non depuis une tablette du réseau, ni une page web
+  // d'un autre site ouverte sur ce PC) : seule à pouvoir se servir de l'assistant IA (clés API,
+  // AIODOS : ARKLIGHT ne doit pas en devenir le relais)
+  ws.local = isLocal(req);
   uiClients.add(ws);
-  send(ws, { t: 'hello', clientId: ws.id, scene: store.scene, config, logs, version: APP_VERSION, repo: UPDATE_REPO, desktop: !!process.env.ARKLIGHT_DESKTOP, history: historyPayload() });
+  send(ws, { t: 'hello', clientId: ws.id, scene: store.scene, plans: store.planInfo(), config, logs, version: APP_VERSION, repo: UPDATE_REPO, desktop: !!process.env.ARKLIGHT_DESKTOP, local: ws.local, history: historyPayload() });
   if (lastUpdate) send(ws, { t: 'update', ...lastUpdate });
   send(ws, statusPayload());
   send(ws, { t: 'ble.status', ...ble.status(), traffic: ble.traffic });
@@ -390,6 +918,7 @@ wss.on('connection', (ws, req) => {
       return send(ws, { t: 'error', message: 'JSON invalide' });
     }
     try {
+      if (typeof msg.t === 'string' && msg.t.startsWith('ai.') && !ws.local) throw new Error('L’assistant IA ne s’utilise que sur l’ordinateur où ARKLIGHT tourne');
       if (UNDOABLE.has(msg.t)) {
         // une étape d'historique, sauf si rien n'a changé (la scène reste alors « enregistrée »)
         const step = history.begin(store.scene, store.revision, msg);
@@ -460,6 +989,36 @@ export const ready = new Promise((resolve, reject) => {
   });
 });
 server.listen(PORT);
+
+/**
+ * Projets, pour l'application de bureau : ses fenêtres « Enregistrer sous », « Ouvrir » et « Choisir
+ * un dossier » donnent des chemins choisis par l'utilisateur (jamais reçus par le réseau).
+ */
+export const projects = {
+  root: () => library.root,
+  setRoot(dir) {
+    const root = library.setRoot(dir);
+    store.projectsDir = root;
+    log('info', `Dossier des projets : ${root}`);
+    broadcast({ t: 'projects.changed' });
+    return root;
+  },
+  open(path) {
+    library.allow(path);
+    return { name: openProject(path).name };
+  },
+  saveTo(path, thumbnail) {
+    library.allow(path);
+    return { name: saveProject(path, thumbnail), path };
+  },
+  /** Chemin connu de l'écran « Projets » (pour « Afficher dans le dossier »). */
+  isKnown: (path) => library.isKnown(path) || samePath(path, store.savedPath),
+  currentPath: () => store.savedPath,
+  suggestedName: () => store.scene.name,
+  setTrash(fn) {
+    library.trash = fn;
+  },
+};
 
 /** Enregistre la scène en cours et arrête le pont Bluetooth (fermeture du logiciel). */
 export function shutdown() {

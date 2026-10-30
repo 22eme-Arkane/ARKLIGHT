@@ -1,0 +1,634 @@
+// Face avant du projecteur choisi, en tête de l'inspecteur, comme la version JavaScript :
+// claviers Astera (`.keyfoil` de web/js/ui/control-panel.js : tube clair, claviers noirs, double
+// légende, dessus de l'AsteraBox ART7, culot des ampoules, embouts des AX1 / AX3) et faces des
+// autres marques (`.pf` de panel-face.js : capuchons, molettes crantées, voyants). Rust décrit la
+// face (src/onboard_panel.rs) et reçoit les gestes (App.panel-key, App.panel-turn).
+import { App, FaceItem, FaceCell } from "common.slint";
+import { Theme, Icon, TextButton } from "theme.slint";
+
+/// Barre de maintien sous une touche (appui long : jusqu'à 5 s) et durée.
+component HoldBar inherits Rectangle {
+    in property <float> held;
+    in property <bool> thin;
+    height: root.thin ? 2px : 3px;
+    background: root.thin ? transparent : #111111;
+    border-radius: 2px;
+    Rectangle {
+        x: 0;
+        width: parent.width * min(1, root.held / 5);
+        height: parent.height;
+        background: Theme.accent;
+        border-radius: 2px;
+    }
+    if !root.thin && root.held > 0: Text {
+        y: 5px;
+        width: parent.width;
+        text: round(root.held * 10) / 10 + " s";
+        color: Theme.accent;
+        font-family: Theme.mono;
+        font-size: 10px;
+        horizontal-alignment: center;
+    }
+}
+
+/// Touche d'un clavier Astera (`.keyfoil .device-btn`) : ronde, claire sur le tube, noire ailleurs.
+component KfKey inherits Rectangle {
+    in property <FaceItem> it;
+    in property <bool> light;
+    property <length> side: it.dual ? 44px : it.icon ? 32px : it.small ? 40px : 38px;
+    width: it.logo ? max(60px, key-text.preferred-width + 18px) : self.side;
+    height: it.logo ? 38px : self.side;
+    border-radius: it.logo ? 8px : self.height / 2;
+    background: it.link ? @radial-gradient(circle, #4fd27f 0%, #1f8a45 100%)
+        : root.light ? @radial-gradient(circle, #ffffff 0%, #d5dae0 100%)
+        : @radial-gradient(circle, #2a2f36 0%, #121417 100%);
+    border-width: 1.5px;
+    border-color: it.link ? #0f4d26 : root.light ? #6b737d : #9aa2ab;
+    property <color> ink: it.link ? #ffffff : root.light ? #1c1f23 : #f1f3f5;
+    key-touch := TouchArea {
+        pointer-event(e) => {
+            if (e.button == PointerEventButton.left && e.kind == PointerEventKind.down) {
+                App.panel-key(it.id, true);
+            }
+            if (e.button == PointerEventButton.left && e.kind == PointerEventKind.up) {
+                App.panel-key(it.id, false);
+            }
+        }
+    }
+    // enfoncée : un peu plus bas, un peu plus sombre
+    if key-touch.pressed: Rectangle {
+        border-radius: parent.border-radius;
+        background: #00000026;
+    }
+    if it.label == "⏻": Icon {
+        y: (parent.height - self.height) / 2 + (key-touch.pressed ? 1px : 0px);
+        width: 18px;
+        height: 18px;
+        name: "power";
+        tint: root.ink;
+    }
+    VerticalLayout {
+        y: key-touch.pressed ? 1px : 0px;
+        alignment: center;
+        spacing: 1px;
+        if it.dual && it.sub != "": Text {
+            text: it.sub;
+            color: root.ink;
+            opacity: 0.75;
+            font-size: 7px;
+            letter-spacing: 0.3px;
+            horizontal-alignment: center;
+        }
+        key-text := Text {
+            text: it.label == "⏻" ? "" : it.label;
+            color: root.ink;
+            font-size: it.icon ? 15px : it.round ? 16px : 10px;
+            font-weight: it.logo ? 800 : 700;
+            horizontal-alignment: center;
+        }
+    }
+    if it.held > 0: HoldBar {
+        x: 4px;
+        y: parent.height + 6px;
+        width: parent.width - 8px;
+        held: it.held;
+    }
+}
+
+/// Voyant (`.led`) : point coloré qui luit quand il est allumé, légende dessous.
+component Led inherits VerticalLayout {
+    in property <FaceItem> it;
+    in property <length> dot: 10px;
+    in property <color> ink: Theme.muted;
+    in property <length> label-size: 10px;
+    spacing: 2px;
+    alignment: center;
+    HorizontalLayout {
+        alignment: center;
+        Rectangle {
+            width: root.dot;
+            height: root.dot;
+            border-radius: root.dot / 2;
+            background: it.lit ? it.color : #1b1f24;
+            border-width: 1px;
+            border-color: #000000;
+            drop-shadow-blur: it.lit ? 8px : 0px;
+            drop-shadow-color: it.lit ? it.color : transparent;
+        }
+    }
+    if it.label != "": Text {
+        text: it.label;
+        color: root.ink;
+        font-size: root.label-size;
+        letter-spacing: 0.4px;
+        horizontal-alignment: center;
+    }
+}
+
+/// Écran de la face (image dessinée par Rust), à sa place dans la rangée.
+component FaceScreen inherits Rectangle {
+    in property <bool> keyfoil;
+    in property <length> max-w: 280px;
+    property <length> w: root.keyfoil ? min(192px, root.max-w) : min(App.panel-screen-width, root.max-w);
+    width: self.w + (root.keyfoil ? 4px : 6px);
+    height: self.w * App.panel-screen-height / max(1px, App.panel-screen-width) + (root.keyfoil ? 4px : 6px);
+    border-radius: 3px;
+    background: #000000;
+    border-width: root.keyfoil ? 2px : 3px;
+    border-color: root.keyfoil ? #0b0d10 : #121417;
+    Image {
+        width: root.w;
+        height: parent.height - (root.keyfoil ? 4px : 6px);
+        source: App.panel-screen;
+        image-fit: fill;
+        image-rendering: pixelated;
+    }
+}
+
+/// Un élément d'un clavier Astera.
+component KfItem inherits Rectangle {
+    in property <FaceItem> it;
+    in property <bool> light;
+    in property <length> max-w;
+    property <color> ink: root.light ? #1c1f23 : #e6e8eb;
+    width: inner.preferred-width;
+    height: inner.preferred-height;
+    inner := HorizontalLayout {
+        alignment: center;
+        if it.kind == "key": KfKey {
+            it: root.it;
+            light: root.light;
+        }
+        if it.kind == "display": FaceScreen {
+            keyfoil: true;
+            max-w: root.max-w;
+        }
+        // fenêtre du récepteur infrarouge
+        if it.kind == "ir": VerticalLayout {
+            alignment: center;
+            Rectangle {
+                width: 10px;
+                height: 14px;
+                border-top-left-radius: 5px;
+                border-top-right-radius: 5px;
+                border-bottom-left-radius: 2px;
+                border-bottom-right-radius: 2px;
+                background: #15171a;
+            }
+        }
+        if it.kind == "led": Led {
+            it: root.it;
+            ink: root.light ? #5a6068 : Theme.muted;
+        }
+        if it.kind == "text": VerticalLayout {
+            alignment: center;
+            Text {
+                // « ▲ ASTERA » (logo), adresse du site, titres (BTB, CRMX), légendes
+                text: it.label;
+                color: root.ink;
+                opacity: it.label == "www.astera-led.com" ? 0.6 : 0.85;
+                font-size: it.label == "BTB" || it.label == "CRMX" ? 10px : 9px;
+                font-weight: it.label == "www.astera-led.com" ? 400 : 800;
+                letter-spacing: 0.7px;
+                horizontal-alignment: center;
+            }
+        }
+        // TouchSlider de l'HydraPanel
+        if it.kind == "slider": Rectangle {
+            width: 26px;
+            height: 96px;
+            border-radius: 13px;
+            background: @linear-gradient(180deg, #1b1f24 0%, #0e1013 100%);
+            border-width: 1px;
+            border-color: #3a414b;
+            VerticalLayout {
+                padding-top: 6px;
+                padding-bottom: 6px;
+                Text {
+                    text: "+";
+                    color: #e6e8eb;
+                    font-weight: 700;
+                    horizontal-alignment: center;
+                }
+                Rectangle {
+                    vertical-stretch: 1;
+                }
+                Text {
+                    text: "−";
+                    color: #e6e8eb;
+                    font-weight: 700;
+                    horizontal-alignment: center;
+                }
+            }
+        }
+        if it.kind == "shake": TextButton {
+            text: it.label;
+            clicked => {
+                App.panel-shake();
+            }
+        }
+    }
+}
+
+/// Touche d'une face de marque (`.pk-key`) : capuchon rond, légende dessous.
+component PkKey inherits VerticalLayout {
+    in property <FaceItem> it;
+    spacing: 4px;
+    alignment: start;
+    HorizontalLayout {
+        alignment: center;
+        cap := Rectangle {
+            width: it.rect ? 30px : it.round ? 30px : it.small ? 17px : 24px;
+            height: it.rect ? 16px : self.width;
+            border-radius: it.rect ? 4px : self.width / 2;
+            background: @radial-gradient(circle, it.cap-light 0%, it.cap-dark 100%);
+            border-width: it.ring == #000000 ? 1px : 3px;
+            border-color: it.ring;
+            drop-shadow-offset-y: pk-touch.pressed ? 1px : 2px;
+            drop-shadow-blur: 2px;
+            drop-shadow-color: #0000008c;
+            pk-touch := TouchArea {
+                pointer-event(e) => {
+                    if (e.button == PointerEventButton.left && e.kind == PointerEventKind.down) {
+                        App.panel-key(it.id, true);
+                    }
+                    if (e.button == PointerEventButton.left && e.kind == PointerEventKind.up) {
+                        App.panel-key(it.id, false);
+                    }
+                }
+            }
+            if pk-touch.pressed: Rectangle {
+                border-radius: parent.border-radius;
+                background: #ffffff33;
+            }
+            if it.held > 0: HoldBar {
+                x: 2px;
+                y: parent.height + 3px;
+                width: parent.width - 4px;
+                thin: true;
+                held: it.held;
+            }
+        }
+    }
+    if it.label != "": Text {
+        max-width: 76px;
+        text: it.label;
+        color: #c9ccd1;
+        font-size: 8px;
+        letter-spacing: 0.5px;
+        horizontal-alignment: center;
+        wrap: word-wrap;
+    }
+}
+
+/// Molette d'une face de marque (`.pk-knob`) : crantée, capuchon, repère ; roulette ou glisser pour
+/// tourner, clic pour appuyer (molettes cliquables).
+component PkKnob inherits VerticalLayout {
+    in property <FaceItem> it;
+    property <length> d: it.size == "l" ? 58px : it.size == "s" ? 34px : 46px;
+    property <length> last-x;
+    property <length> last-y;
+    property <length> acc;
+    property <bool> moved;
+    spacing: 5px;
+    alignment: start;
+    HorizontalLayout {
+        alignment: center;
+        dial := Rectangle {
+            width: root.d;
+            height: root.d;
+            border-radius: root.d / 2;
+            background: #24272b;
+            border-width: 2px;
+            border-color: it.ring;
+            drop-shadow-offset-y: 3px;
+            drop-shadow-blur: 5px;
+            drop-shadow-color: #0000008c;
+            // crans tout autour
+            for i in 36: Rectangle {
+                x: root.d / 2 + (root.d / 2 - 3px) * sin(i * 10deg) - 1px;
+                y: root.d / 2 - (root.d / 2 - 3px) * cos(i * 10deg) - 1px;
+                width: 2px;
+                height: 2px;
+                border-radius: 1px;
+                background: #191b1e;
+            }
+            Rectangle {
+                x: root.d * 0.16;
+                y: root.d * 0.16;
+                width: root.d * 0.68;
+                height: root.d * 0.68;
+                border-radius: self.width / 2;
+                background: @radial-gradient(circle, it.cap-light 0%, it.cap-dark 100%);
+            }
+            if it.pointer: Path {
+                width: root.d;
+                height: root.d;
+                viewbox-width: root.d / 1px;
+                viewbox-height: root.d / 1px;
+                stroke: #f2f2f2;
+                stroke-width: 3px;
+                commands: "M " + (root.d / 2 + root.d * 0.07 * sin(it.angle * 1deg)) / 1px + " " + (root.d / 2 - root.d * 0.07 * cos(it.angle * 1deg)) / 1px
+                    + " L " + (root.d / 2 + root.d * 0.43 * sin(it.angle * 1deg)) / 1px + " " + (root.d / 2 - root.d * 0.43 * cos(it.angle * 1deg)) / 1px;
+            }
+            if knob-touch.pressed && it.push: Rectangle {
+                border-radius: parent.border-radius;
+                background: #ffffff22;
+            }
+            knob-touch := TouchArea {
+                mouse-cursor: MouseCursor.grab;
+                scroll-event(e) => {
+                    App.panel-turn(it.id, e.delta-y > 0 ? 1 : -1);
+                    accept
+                }
+                pointer-event(e) => {
+                    if (e.button == PointerEventButton.left && e.kind == PointerEventKind.down) {
+                        root.last-x = self.mouse-x;
+                        root.last-y = self.mouse-y;
+                        root.acc = 0;
+                        root.moved = false;
+                    }
+                    // clic sans tourner : appui (molettes cliquables)
+                    if (e.button == PointerEventButton.left && e.kind == PointerEventKind.up && it.push && !root.moved) {
+                        App.panel-key(it.id, true);
+                        App.panel-key(it.id, false);
+                    }
+                }
+                moved => {
+                    if (self.pressed) {
+                        root.acc += (self.mouse-x - root.last-x) - (self.mouse-y - root.last-y);
+                        root.last-x = self.mouse-x;
+                        root.last-y = self.mouse-y;
+                        if (abs(root.acc) >= 6px) {
+                            App.panel-turn(it.id, root.acc > 0 ? 1 : -1);
+                            root.acc = 0;
+                            root.moved = true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if it.label != "": Text {
+        max-width: 76px;
+        text: it.label;
+        color: #c9ccd1;
+        font-size: 8px;
+        letter-spacing: 0.5px;
+        horizontal-alignment: center;
+        wrap: word-wrap;
+    }
+}
+
+/// Un élément d'une face de marque.
+component PkItem inherits Rectangle {
+    in property <FaceItem> it;
+    in property <length> max-w;
+    width: inner.preferred-width;
+    height: inner.preferred-height;
+    inner := HorizontalLayout {
+        alignment: center;
+        if it.kind == "key": PkKey {
+            it: root.it;
+        }
+        if it.kind == "knob": PkKnob {
+            it: root.it;
+        }
+        if it.kind == "led": Led {
+            it: root.it;
+            dot: 8px;
+            ink: #c9ccd1;
+            label-size: 8px;
+        }
+        if it.kind == "display": FaceScreen {
+            max-w: root.max-w;
+        }
+        if it.kind == "text": VerticalLayout {
+            alignment: center;
+            Text {
+                text: it.label;
+                color: #c9ccd1;
+                font-size: 8px;
+                letter-spacing: 0.5px;
+            }
+        }
+        if it.kind == "shake": TextButton {
+            text: it.label;
+            clicked => {
+                App.panel-shake();
+            }
+        }
+    }
+}
+
+/// Une case : un élément, ou une colonne d'éléments.
+component Cell inherits Rectangle {
+    in property <FaceCell> cell;
+    in property <bool> keyfoil;
+    in property <bool> light;
+    in property <length> max-w;
+    width: col.preferred-width;
+    height: col.preferred-height;
+    col := VerticalLayout {
+        alignment: center;
+        spacing: root.keyfoil ? 6px : 12px;
+        if !cell.row: VerticalLayout {
+            alignment: center;
+            spacing: root.keyfoil ? 6px : 12px;
+            for it in cell.items: HorizontalLayout {
+                alignment: center;
+                if root.keyfoil: KfItem {
+                    it: it;
+                    light: root.light;
+                    max-w: root.max-w;
+                }
+                if !root.keyfoil: PkItem {
+                    it: it;
+                    max-w: root.max-w;
+                }
+            }
+        }
+        if cell.row: HorizontalLayout {
+            alignment: center;
+            spacing: 18px;
+            for it in cell.items: VerticalLayout {
+                alignment: center;
+                if root.keyfoil: KfItem {
+                    it: it;
+                    light: root.light;
+                    max-w: root.max-w;
+                }
+                if !root.keyfoil: PkItem {
+                    it: it;
+                    max-w: root.max-w;
+                }
+            }
+        }
+    }
+}
+
+export component FrontPanel inherits VerticalLayout {
+    property <string> style: App.panel-style;
+    property <bool> keyfoil: style == "tube" || style == "ax2" || style == "v5square" || style == "quik" || style == "dual";
+    property <bool> light: style == "tube";
+    // embouts et culots dessinés à part ; ART7 : dessus de la box
+    property <bool> special: style == "ax1" || style == "ax3" || style == "bulb";
+    spacing: 8px;
+
+    // ---- clavier Astera, face d'une marque, dessus de l'ART7
+    if !root.special: HorizontalLayout {
+        alignment: center;
+        face := Rectangle {
+            width: min(face-rows.preferred-width, root.width);
+            height: face-rows.preferred-height;
+            border-radius: root.keyfoil ? 14px : 10px;
+            border-width: 1px;
+            border-color: root.light ? #b9c0c8 : root.keyfoil || style == "art7" ? #2c323a : style == "aputure" ? #2a2d31 : #3c4047;
+            background: root.light ? @linear-gradient(180deg, #f2f4f6 0%, #dfe3e7 100%)
+                : root.keyfoil ? #0d0f12
+                : style == "art7" ? #0e1013
+                : style == "aputure" ? @linear-gradient(180deg, #17191c 0%, #0d0e10 100%)
+                : style == "hive" ? @linear-gradient(180deg, #2b2e33 0%, #1e2024 100%)
+                : style == "dedo" ? @linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%)
+                : style == "dmg" ? @linear-gradient(180deg, #1c1d20 0%, #121315 100%)
+                : style == "kino" ? @linear-gradient(180deg, #23262b 0%, #181a1e 100%)
+                : style == "litegear" ? @linear-gradient(180deg, #252a31 0%, #191d22 100%)
+                : @linear-gradient(180deg, #31343a 0%, #26292e 100%);
+            face-rows := VerticalLayout {
+                padding-left: root.keyfoil ? 10px : 14px;
+                padding-right: root.keyfoil ? 10px : 14px;
+                padding-top: root.keyfoil ? 10px : 12px;
+                // place pour les barres de maintien sous la dernière rangée
+                padding-bottom: root.keyfoil ? 14px : 12px;
+                spacing: root.keyfoil ? 14px : 12px;
+                for row in App.panel-rows: HorizontalLayout {
+                    alignment: center;
+                    spacing: root.keyfoil ? 8px : style == "art7" ? 10px : 12px;
+                    for c in row.cells: Cell {
+                        cell: c;
+                        keyfoil: root.keyfoil || style == "art7";
+                        light: root.light;
+                        max-w: root.width - 120px;
+                    }
+                }
+            }
+        }
+    }
+
+    // ---- culot des ampoules (NYX, SolaBulb) : prise DC et touche ON/OFF
+    if style == "bulb": HorizontalLayout {
+        alignment: center;
+        Rectangle {
+            width: 64px;
+            height: 120px;
+            border-radius: 32px;
+            border-width: 1px;
+            border-color: #3c4148;
+            background: @linear-gradient(180deg, #8f969e 0%, #5f666e 100%);
+            Rectangle {
+                x: 23px;
+                y: 18px;
+                width: 18px;
+                height: 18px;
+                border-radius: 9px;
+                background: @radial-gradient(circle, #d8dbde 0%, #d8dbde 15%, #1c1f22 20%, #1c1f22 100%);
+            }
+            for row in App.panel-rows: Rectangle {
+                for c in row.cells: Rectangle {
+                    for it in c.items: Rectangle {
+                        if it.kind == "key": KfKey {
+                            x: 12px;
+                            y: 58px;
+                            it: it;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // ---- embout de l'AX1 (prise de charge, filetage, touche) ou face arrière de l'AX3 (aimant)
+    if style == "ax1" || style == "ax3": HorizontalLayout {
+        alignment: center;
+        Rectangle {
+            width: 150px;
+            height: 150px;
+            border-radius: 75px;
+            border-width: 2px;
+            border-color: #4b5158;
+            background: style == "ax3" ? @radial-gradient(circle, #3a3f45 0%, #1d2024 70%) : @radial-gradient(circle, #c9ced4 0%, #8b939c 70%, #6c737b 100%);
+            if style == "ax1": Rectangle {
+                x: 57px;
+                y: 18px;
+                width: 36px;
+                height: 36px;
+                border-radius: 18px;
+                background: @radial-gradient(circle, #3a3f45 0%, #121417 100%);
+            }
+            if style == "ax1": Rectangle {
+                x: 65px;
+                y: 65px;
+                width: 20px;
+                height: 20px;
+                border-radius: 10px;
+                background: @radial-gradient(circle, #2b2f34 0%, #2b2f34 40%, #9aa1a9 45%, #6e757d 100%);
+            }
+            if style == "ax3": Rectangle {
+                x: 40px;
+                y: 40px;
+                width: 70px;
+                height: 70px;
+                border-radius: 35px;
+                background: @radial-gradient(circle, #e9ecef 0%, #aeb5bd 100%);
+            }
+            for row in App.panel-rows: Rectangle {
+                for c in row.cells: Rectangle {
+                    for it in c.items: Rectangle {
+                        if it.kind == "key" && it.id == "power": KfKey {
+                            x: 55px;
+                            y: style == "ax3" ? 55px : 96px;
+                            it: it;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    // AX3 : bouton latéral ; AX1 : secouer le tube
+    if style == "ax1" || style == "ax3": HorizontalLayout {
+        alignment: center;
+        spacing: 8px;
+        for row in App.panel-rows: HorizontalLayout {
+            spacing: 8px;
+            for c in row.cells: HorizontalLayout {
+                spacing: 8px;
+                for it in c.items: HorizontalLayout {
+                    if it.kind == "key" && it.id == "power-side": KfKey {
+                        it: it;
+                    }
+                    if it.kind == "shake": TextButton {
+                        text: it.label;
+                        clicked => {
+                            App.panel-shake();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // message du projecteur (`.device-msg`), explication
+    if App.panel-hint != "": Text {
+        text: App.panel-hint;
+        color: Theme.accent;
+        font-size: Theme.small;
+        horizontal-alignment: center;
+        wrap: word-wrap;
+    }
+    if App.panel-note != "": Text {
+        text: App.panel-note;
+        color: Theme.muted;
+        font-size: Theme.small;
+        wrap: word-wrap;
+    }
+}

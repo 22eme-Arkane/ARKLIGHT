@@ -9,6 +9,15 @@ import { AsteraV5Controller, profileBaseName } from '../shared/onboard/astera-v5
 const titan = getFixtureType('astera.titan');
 const fixture = (type = titan) => ({ id: 'ftest', settings: defaultSettings(type), state: defaultState(type) });
 
+test('réglages par défaut : chaque projecteur a sa copie (standalone non partagé)', () => {
+  const a = defaultSettings(titan);
+  const b = defaultSettings(titan);
+  assert.notEqual(a.standalone, b.standalone);
+  a.standalone.colors[0].hue = 123;
+  assert.notEqual(b.standalone.colors[0].hue, 123);
+  assert.notEqual(defaultSettings(titan).standalone.colors[0].hue, 123, 'la bibliothèque reste intacte');
+});
+
 test('profils Titan : empreintes et canaux 16 bits', () => {
   assert.equal(titan.dmx.modes.length, 143);
   assert.equal(modeFootprint(titan, '42'), 48); // RGB RGB, 16 pixels

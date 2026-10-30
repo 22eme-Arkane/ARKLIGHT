@@ -6,6 +6,7 @@
     <title>ARKLIGHT</title>
     <link rel="icon" type="image/png" href="/img/ark-light-logo.png" />
     <link rel="stylesheet" href="/css/app.css" />
+    <script src="/js/boot.js"></script>
     <script type="importmap">
       {
         "imports": {
@@ -20,14 +21,14 @@
       <div class="brand" title="À propos d’ARKLIGHT"><img class="brand-logo" src="/img/ark-light-logo.png" alt="" />ARK<span>LIGHT</span></div>
       <nav id="menubar" class="menubar" role="menubar" aria-label="Menus"></nav>
       <div class="scene-title">
-        <input id="scene-name" class="scene-name" title="Nom de la scène (F2 pour renommer)" spellcheck="false" />
-        <span id="scene-dirty" class="scene-dirty hidden" title="Modifications non enregistrées (Ctrl+S pour enregistrer)">●</span>
+        <input id="scene-name" class="scene-name" title="Nom du projet (F2 pour renommer)" spellcheck="false" />
       </div>
       <div class="spacer"></div>
       <div class="status" id="status">
         <span class="pill" id="st-artnet"><i></i>Art-Net</span>
         <span class="pill" id="st-sacn"><i></i>sACN</span>
         <span class="pill" id="st-box" title="Fausse AsteraBox (Bluetooth)"><i></i>AsteraBox</span>
+        <button class="pill pill-btn hidden" id="st-midi" title="Contrôleur MIDI"><i></i>MIDI</button>
         <span class="ip" id="st-ip" title="Adresse IP du PC à saisir dans l'application"></span>
         <span class="pill" id="st-ws"><i></i>Serveur</span>
       </div>
@@ -48,36 +49,50 @@
       </aside>
 
       <section class="viewport-wrap">
-        <div id="viewport" class="viewport"></div>
-        <div class="toolbar">
-          <button data-tool="translate" class="active" title="Déplacer (W)">✥ Déplacer</button>
-          <button data-tool="rotate" title="Pivoter (E)">⟳ Pivoter</button>
+        <div class="viewbar" id="viewbar" role="toolbar" aria-label="Outils de la vue 3D">
+          <div class="mode-switch" role="group" aria-label="Vue 3D ou plan de feu 2D">
+            <button class="mode active" data-cmd="view.plot" aria-pressed="true">3D</button>
+            <button class="mode" id="btn-plot" data-cmd="view.plot" aria-pressed="false"><i data-icon="plan"></i>Plan 2D</button>
+          </div>
           <span class="sep"></span>
-          <button id="btn-snap" class="toggle active" title="Aimantation 10 cm / 15°">Aimant</button>
+          <button class="ib active" data-tool="translate" data-cmd="tool.translate"><i data-icon="move"></i></button>
+          <button class="ib" data-tool="rotate" data-cmd="tool.rotate"><i data-icon="rotate"></i></button>
+          <button id="btn-snap" class="ib toggle active" data-cmd="snap.toggle"><i data-icon="magnet"></i></button>
           <span class="sep"></span>
-          <button data-view="persp" title="Vue perspective">3D</button>
-          <button data-view="front" title="Vue de face">Face</button>
-          <button data-view="top" title="Vue de dessus">Dessus</button>
-          <button data-view="side" title="Vue de côté">Côté</button>
+          <button class="ib" data-view="persp" data-cmd="view.persp"><i data-icon="cube"></i></button>
+          <button class="ib" data-view="front" data-cmd="view.front"><i data-icon="view-front"></i></button>
+          <button class="ib" data-view="top" data-cmd="view.top"><i data-icon="view-top"></i></button>
+          <button class="ib" data-view="side" data-cmd="view.side"><i data-icon="view-side"></i></button>
+          <button id="btn-camview" class="ib toggle" data-cmd="view.camera"><i data-icon="camera"></i></button>
+          <button id="btn-frame" class="ib" data-cmd="view.frame"><i data-icon="focus"></i></button>
           <span class="sep"></span>
-          <label title="Densité de la brume (faisceaux visibles)">Brume <input id="env-haze" type="range" min="0" max="1" step="0.01" /></label>
-          <label title="Exposition de la caméra, en diaphragmes (IL) : baisse-la face à un 2K tungstène ou un HMI">Expo <input id="env-exposure" type="range" min="-10" max="3" step="0.5" /> <span id="env-exposure-val" class="mono expo-val">0 IL</span></label>
-          <label title="Lumière d'ambiance du studio">Ambiance <input id="env-ambient" type="range" min="0" max="0.5" step="0.005" /></label>
-          <button id="btn-env" title="Décor : sol, cyclo, personnage">Décor ▾</button>
-          <button id="btn-remote" title="Télécommandes infrarouges Astera ARC1 / ARC3">📡 Télécommande</button>
+          <button id="btn-highlight" class="ib toggle" data-cmd="view.highlight"><i data-icon="eye"></i></button>
+          <button id="btn-env" class="ib"><i data-icon="layers"></i>Affichage ▾</button>
+          <button id="btn-remote" class="ib toggle" data-cmd="remote.toggle"><i data-icon="remote"></i></button>
           <span class="sep"></span>
-          <button id="btn-plot" class="primary" title="Plan de feu 2D : vue de dessus, formes, annotations, export avec la liste du matériel">🗺 Plan 2D</button>
+          <label class="slider" id="sl-haze"><i data-icon="haze"></i><input id="env-haze" type="range" min="0" max="1" step="0.01" /></label>
+          <label class="slider" id="sl-exposure"><i data-icon="exposure"></i><input id="env-exposure" type="range" min="-10" max="3" step="0.5" /><span id="env-exposure-val" class="mono expo-val">0 IL</span></label>
+          <label class="slider" id="sl-ambient"><i data-icon="ambient"></i><input id="env-ambient" type="range" min="0" max="0.5" step="0.005" /></label>
         </div>
-        <div id="env-menu" class="popover hidden">
-          <label><input type="checkbox" data-env="floor" /> Sol</label>
-          <label><input type="checkbox" data-env="cyc" /> Cyclo (fond)</label>
-          <label><input type="checkbox" data-env="actor" /> Personnage</label>
-          <label><input type="checkbox" data-env="stands" /> Pieds de projecteur</label>
-          <label><input type="checkbox" data-env="labels" /> Noms des projecteurs</label>
-          <label><input type="checkbox" data-env="labelPatch" /> Adresses DMX</label>
+        <div class="viewport-area">
+          <div id="viewport" class="viewport"></div>
+          <div id="env-menu" class="popover hidden">
+            <label><input type="checkbox" data-env="floor" /> Sol</label>
+            <label><input type="checkbox" data-env="cyc" /> Cyclo (fond)</label>
+            <label><input type="checkbox" data-env="stands" /> Pieds de projecteur</label>
+            <label><input type="checkbox" data-env="labels" /> Noms des projecteurs</label>
+            <label><input type="checkbox" data-env="labelPatch" /> Adresses DMX</label>
+            <hr />
+            <label><input type="checkbox" data-pref="bloom" /> Halo des sources lumineuses</label>
+            <label><input type="checkbox" data-pref="help" /> Aide en bas de la vue</label>
+            <label><input type="checkbox" data-pref="fps" /> Images par seconde</label>
+          </div>
+          <div class="view-foot">
+            <span class="hint"><span id="viewport-hint"></span><button id="hint-close" class="hint-close" title="Masquer l’aide (Affichage › Aide en bas de la vue pour la remettre)">×</button></span>
+            <span class="fps" id="fps"></span>
+          </div>
         </div>
-        <div class="hint" id="viewport-hint">Clic : sélectionner · Ctrl+clic : sélection multiple · Clic droit : menu · Glisser : orbiter · Clic droit glissé : décaler · Molette : zoom · W/E : déplacer/pivoter · Ctrl+A : tout · Ctrl+G : grouper · Suppr · Ctrl+D · F : cadrer</div>
-        <div class="fps" id="fps"></div>
+        <button id="btn-fullview" class="view-corner" data-cmd="view.fullview"><i data-icon="fullscreen"></i></button>
       </section>
 
       <aside class="panel right">
@@ -87,27 +102,20 @@
 
     <footer class="drawer" id="drawer">
       <nav class="tabs">
-        <button data-tab="console" class="active">Console de test</button>
+        <button data-tab="console" class="active">Console</button>
         <button data-tab="dmx">Moniteur DMX</button>
         <button data-tab="log">Journal</button>
         <button data-tab="network">Réseau</button>
         <button data-tab="bluetooth">Bluetooth</button>
-        <span class="spacer"></span>
-        <button id="drawer-toggle" title="Replier / déplier">▾</button>
+        <button data-tab="assistant" class="tab-ai"><i data-icon="sparkle"></i>Assistant IA</button>
       </nav>
       <div class="tab-body" data-body="console"></div>
       <div class="tab-body hidden" data-body="dmx"></div>
       <div class="tab-body hidden" data-body="log"></div>
       <div class="tab-body hidden" data-body="network"></div>
       <div class="tab-body hidden" data-body="bluetooth"></div>
+      <div class="tab-body hidden" data-body="assistant"></div>
     </footer>
-
-    <dialog id="dlg-open" class="dialog">
-      <h3>Ouvrir une scène</h3>
-      <div id="open-list" class="open-list"></div>
-      <div class="dialog-actions"><button value="cancel" formmethod="dialog" id="open-cancel">Fermer</button></div>
-    </dialog>
-
     <div id="toast" class="toast hidden"></div>
     <script type="module" src="/js/app.js"></script>
   </body>

@@ -5,7 +5,7 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { SceneStore } from '../server/scene-store.js';
-import { getFixtureType } from '../shared/fixtures/index.js';
+import { FIXTURE_TYPES, getFixtureType } from '../shared/fixtures/index.js';
 import { resolveSupport } from '../shared/fixtures/supports.js';
 
 function withStore(fn) {
@@ -29,7 +29,7 @@ test('grip : ajout avec garniture par défaut, mise à jour, suppression', () =>
     assert.deepEqual(store.getObject(frame.id).position, [0, 2, 0]);
     assert.throws(() => store.addObject({ type: 'inconnu' }));
     assert.ok(store.removeObject(frame.id));
-    assert.equal(store.scene.objects.length, 0);
+    assert.deepEqual(store.scene.objects.map((o) => o.name), ['Comédien'], 'reste le comédien de la scène neuve');
   }));
 
 test('plan de feu : éléments nettoyés, image de fond limitée aux fichiers importés', () =>
@@ -47,10 +47,17 @@ test('plan de feu : éléments nettoyés, image de fond limitée aux fichiers im
     assert.equal(store.scene.plot.underlay.width, 20);
     assert.equal(store.scene.plot.title.production, 'Pub');
     assert.ok(store.removePlotItem(it.id));
-    // scène d'une version antérieure : plan et grip ajoutés au chargement
+    // scène d'une version antérieure : plan ajouté, personnage du décor fixe devenu un objet déplaçable
     const old = store._sanitize({ fixtures: [] });
-    assert.deepEqual(old.objects, []);
+    assert.deepEqual(old.objects.map((o) => [o.type, o.name, o.position]), [['person-man', 'Comédien', [0, 0, 0]]]);
+    assert.equal(old.environment.actor, undefined);
     assert.deepEqual(old.plot.items, []);
+    assert.equal(old.plot.background, null);
+    assert.deepEqual(store._sanitize({ fixtures: [], environment: { actor: false } }).objects, [], 'personnage masqué : pas ajouté');
+    store.updatePlotMeta({ background: '#FFFFFF' });
+    assert.equal(store.scene.plot.background, '#ffffff');
+    store.updatePlotMeta({ background: 'rouge' });
+    assert.equal(store.scene.plot.background, null);
   }));
 
 test('pieds : choix automatique selon le poids, la hauteur et le montage', () => {
@@ -63,3 +70,26 @@ test('pieds : choix automatique selon le poids, la hauteur et le montage', () =>
   const forced = resolveSupport(m18, 'stand-1000', 2.5);
   assert.ok(forced.warnings.some((w) => w.includes('charge')), 'M18 trop lourd pour un pied de 1000');
 });
+
+test('décor : objets de la bibliothèque, réglages nettoyés, numéros de fixture', () =>
+  withStore((store) => {
+    const dog = store.addObject({ type: 'dog', position: [1, 0, 1], props: { color: '#ABCDEF', inconnu: 1 } });
+    assert.equal(dog.name, 'Chien 1');
+    assert.deepEqual(dog.props, { color: '#abcdef' });
+    const p = store.addObject({ type: 'person-woman' });
+    store.updateObject(p.id, { props: { pose: 'sitting', height: 999 } });
+    assert.equal(store.getObject(p.id).props.pose, 'sitting');
+    assert.equal(store.getObject(p.id).props.height, 220, 'taille bornée');
+    store.updateObject(p.id, { props: { pose: 'danse' } });
+    assert.equal(store.getObject(p.id).props.pose, 'sitting', 'pose inconnue ignorée');
+    // numéros de fixture : à la suite, réglables, effaçables
+    const a = store.addFixture({ type: FIXTURE_TYPES.find((t) => t.dmx?.modes?.length).id });
+    const b = store.addFixture({ type: a.type });
+    assert.equal(b.settings.fixtureNumber, a.settings.fixtureNumber + 1);
+    store.updateFixture(b.id, { settings: { fixtureNumber: '101.6' } });
+    assert.equal(store.getFixture(b.id).settings.fixtureNumber, 102);
+    store.updateFixture(b.id, { settings: { fixtureNumber: '' } });
+    assert.equal(store.getFixture(b.id).settings.fixtureNumber, null);
+    const c = store.addFixture({ type: a.type, settings: { fixtureNumber: 7 } });
+    assert.equal(c.settings.fixtureNumber, 7);
+  }));

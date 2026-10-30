@@ -4,7 +4,25 @@ import { getFixtureType, getMode } from '/shared/fixtures/index.js';
 import { compileMode } from '/shared/engine/dmx.js';
 import { findPatchConflicts, rangeOf } from '/shared/engine/addressing.js';
 import { h } from './dom.js';
-import { channelLabel } from './test-console.js';
+import { channelLabel } from './channels.js';
+
+/**
+ * Nom d'un projecteur raccourci pour tenir en n caractères : « LS 600D Pro 1 » → « LS 600D P 1 »
+ * → « LS600D 1 » → « LS6… ». Les mots avec des chiffres (modèle, numéro) sont gardés en priorité.
+ */
+export function abbreviate(name, n) {
+  const full = String(name).trim();
+  if (n <= 0) return '';
+  if (full.length <= n) return full;
+  const words = full.split(/\s+/);
+  const tries = [
+    words.map((w) => (/\d/.test(w) || w.length <= 3 ? w : w[0])).join(' '),
+    words.filter((w) => /\d/.test(w)).join(' '),
+    words.map((w) => (/\d/.test(w) ? w : w[0])).join(''),
+  ];
+  for (const t of tries) if (t && t.length <= n) return t;
+  return n > 1 ? `${tries[1] || full}`.slice(0, n - 1) + '…' : full[0];
+}
 
 /** Couleur stable par projecteur (repère visuel sur la grille). */
 function colorOf(id) {
@@ -20,6 +38,7 @@ export function mountDmxMonitor({ store, isVisible, actions }) {
   const conflictBtn = h('button', { class: 'conflict-pill hidden', title: 'Corriger automatiquement les chevauchements', onclick: () => actions.openReaddress({ scope: 'conflicts' }) });
   const grid = h('div', { class: 'dmx-grid' });
   const cells = [];
+  let labels = []; // noms des projecteurs posés sur leurs canaux : { el, name, n }
   for (let i = 0; i < 512; i++) {
     const bar = h('div', { class: 'bar' });
     const own = h('div', { class: 'own' });
@@ -87,9 +106,19 @@ export function mountDmxMonitor({ store, isVisible, actions }) {
     conflictBtn.classList.toggle('hidden', !conflicts.ids.size);
     conflictBtn.textContent = `⚠ ${conflicts.ids.size} projecteur${conflicts.ids.size > 1 ? 's' : ''} en conflit${conflicts.ids.size && inU < conflicts.ids.size ? ` (${inU} dans U${u})` : ''} — corriger…`;
     for (const c of cells) c.owners = null;
+    for (const l of labels) l.el.remove();
+    labels = [];
     for (const f of fixtures) {
       const r = rangeOf(f);
       if (!r.footprint || r.universe !== u) continue;
+      // nom posé sur les canaux du projecteur, une fois par ligne de la grille
+      for (let ch = r.start; ch <= Math.min(512, r.end); ) {
+        const rowEnd = Math.min(Math.min(512, r.end), Math.ceil(ch / 32) * 32);
+        const el = h('span', { class: 'fx' });
+        cells[ch - 1].cell.append(el);
+        labels.push({ el, name: f.name, n: rowEnd - ch + 1 });
+        ch = rowEnd + 1;
+      }
       const type = getFixtureType(f.type);
       const mode = getMode(type, f.settings.dmxMode);
       const slots = mode ? compileMode(mode).slots : [];
@@ -115,7 +144,19 @@ export function mountDmxMonitor({ store, isVisible, actions }) {
     }
     patchU = u;
     patchDirty = false;
+    layoutLabels();
   }
+
+  /** Largeur des noms selon la place disponible (abrégés si besoin). */
+  function layoutLabels() {
+    const cellW = cells[0].cell.getBoundingClientRect().width || 26;
+    for (const l of labels) {
+      const px = l.n * (cellW + 2) - 6;
+      l.el.style.width = `${px}px`;
+      l.el.textContent = abbreviate(l.name, Math.floor(px / 5.6));
+    }
+  }
+  new ResizeObserver(() => labels.length && layoutLabels()).observe(grid);
 
   let queued = false;
   function paint(force = false) {

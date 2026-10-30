@@ -1,0 +1,241 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1754" height="1240" viewBox="0 0 1754 1240" font-family="Segoe UI, Arial, sans-serif"><rect x="0" y="0" width="1754" height="1240" fill="#2b2f36"/>
+<line x1="-45.8" y1="0" x2="-45.8" y2="1240" stroke="#393d44" stroke-width="1"/>
+<line x1="18.1" y1="0" x2="18.1" y2="1240" stroke="#393d44" stroke-width="1"/>
+<line x1="82" y1="0" x2="82" y2="1240" stroke="#393d44" stroke-width="1"/>
+<line x1="145.8" y1="0" x2="145.8" y2="1240" stroke="#393d44" stroke-width="1"/>
+<line x1="209.7" y1="0" x2="209.7" y2="1240" stroke="#4e5259" stroke-width="1"/>
+<line x1="273.5" y1="0" x2="273.5" y2="1240" stroke="#393d44" stroke-width="1"/>
+<line x1="337.4" y1="0" x2="337.4" y2="1240" stroke="#393d44" stroke-width="1"/>
+<line x1="401.3" y1="0" x2="401.3" y2="1240" stroke="#393d44" stroke-width="1"/>
+<line x1="465.1" y1="0" x2="465.1" y2="1240" stroke="#393d44" stroke-width="1"/>
+<line x1="529" y1="0" x2="529" y2="1240" stroke="#4e5259" stroke-width="1"/>
+<line x1="592.8" y1="0" x2="592.8" y2="1240" stroke="#393d44" stroke-width="1"/>
+<line x1="656.7" y1="0" x2="656.7" y2="1240" stroke="#393d44" stroke-width="1"/>
+<line x1="720.5" y1="0" x2="720.5" y2="1240" stroke="#393d44" stroke-width="1"/>
+<line x1="784.4" y1="0" x2="784.4" y2="1240" stroke="#393d44" stroke-width="1"/>
+<line x1="848.3" y1="0" x2="848.3" y2="1240" stroke="#4e5259" stroke-width="1"/>
+<line x1="912.1" y1="0" x2="912.1" y2="1240" stroke="#393d44" stroke-width="1"/>
+<line x1="976" y1="0" x2="976" y2="1240" stroke="#393d44" stroke-width="1"/>
+<line x1="1039.8" y1="0" x2="1039.8" y2="1240" stroke="#393d44" stroke-width="1"/>
+<line x1="1103.7" y1="0" x2="1103.7" y2="1240" stroke="#393d44" stroke-width="1"/>
+<line x1="1167.6" y1="0" x2="1167.6" y2="1240" stroke="#4e5259" stroke-width="1"/>
+<line x1="1231.4" y1="0" x2="1231.4" y2="1240" stroke="#393d44" stroke-width="1"/>
+<line x1="1295.3" y1="0" x2="1295.3" y2="1240" stroke="#393d44" stroke-width="1"/>
+<line x1="1359.1" y1="0" x2="1359.1" y2="1240" stroke="#393d44" stroke-width="1"/>
+<line x1="1423" y1="0" x2="1423" y2="1240" stroke="#393d44" stroke-width="1"/>
+<line x1="1486.9" y1="0" x2="1486.9" y2="1240" stroke="#4e5259" stroke-width="1"/>
+<line x1="1550.7" y1="0" x2="1550.7" y2="1240" stroke="#393d44" stroke-width="1"/>
+<line x1="1614.6" y1="0" x2="1614.6" y2="1240" stroke="#393d44" stroke-width="1"/>
+<line x1="1678.4" y1="0" x2="1678.4" y2="1240" stroke="#393d44" stroke-width="1"/>
+<line x1="1742.3" y1="0" x2="1742.3" y2="1240" stroke="#393d44" stroke-width="1"/>
+<line x1="1806.1" y1="0" x2="1806.1" y2="1240" stroke="#4e5259" stroke-width="1"/>
+<line x1="0" y1="-44.1" x2="1754" y2="-44.1" stroke="#393d44" stroke-width="1"/>
+<line x1="0" y1="19.7" x2="1754" y2="19.7" stroke="#4e5259" stroke-width="1"/>
+<line x1="0" y1="83.6" x2="1754" y2="83.6" stroke="#393d44" stroke-width="1"/>
+<line x1="0" y1="147.4" x2="1754" y2="147.4" stroke="#393d44" stroke-width="1"/>
+<line x1="0" y1="211.3" x2="1754" y2="211.3" stroke="#393d44" stroke-width="1"/>
+<line x1="0" y1="275.2" x2="1754" y2="275.2" stroke="#393d44" stroke-width="1"/>
+<line x1="0" y1="339" x2="1754" y2="339" stroke="#4e5259" stroke-width="1"/>
+<line x1="0" y1="402.9" x2="1754" y2="402.9" stroke="#393d44" stroke-width="1"/>
+<line x1="0" y1="466.7" x2="1754" y2="466.7" stroke="#393d44" stroke-width="1"/>
+<line x1="0" y1="530.6" x2="1754" y2="530.6" stroke="#393d44" stroke-width="1"/>
+<line x1="0" y1="594.5" x2="1754" y2="594.5" stroke="#393d44" stroke-width="1"/>
+<line x1="0" y1="658.3" x2="1754" y2="658.3" stroke="#4e5259" stroke-width="1"/>
+<line x1="0" y1="722.2" x2="1754" y2="722.2" stroke="#393d44" stroke-width="1"/>
+<line x1="0" y1="786" x2="1754" y2="786" stroke="#393d44" stroke-width="1"/>
+<line x1="0" y1="849.9" x2="1754" y2="849.9" stroke="#393d44" stroke-width="1"/>
+<line x1="0" y1="913.8" x2="1754" y2="913.8" stroke="#393d44" stroke-width="1"/>
+<line x1="0" y1="977.6" x2="1754" y2="977.6" stroke="#4e5259" stroke-width="1"/>
+<line x1="0" y1="1041.5" x2="1754" y2="1041.5" stroke="#393d44" stroke-width="1"/>
+<line x1="0" y1="1105.3" x2="1754" y2="1105.3" stroke="#393d44" stroke-width="1"/>
+<line x1="0" y1="1169.2" x2="1754" y2="1169.2" stroke="#393d44" stroke-width="1"/>
+<line x1="0" y1="1233" x2="1754" y2="1233" stroke="#393d44" stroke-width="1"/>
+<line x1="0" y1="1296.9" x2="1754" y2="1296.9" stroke="#4e5259" stroke-width="1"/>
+<rect x="337.4" y="211.3" width="1021.7" height="76.6" fill="#71757b" opacity="0.25"/>
+<line x1="337.4" y1="211.3" x2="1359.1" y2="211.3" stroke="#71757b" stroke-width="3"/>
+<text x="848.3" y="205.3" fill="#8a919c" font-size="11" text-anchor="middle">Cyclo (fond)</text>
+<rect x="631.1" y="383.7" width="434.3" height="268.2" stroke="#c792ea" stroke-width="2" fill="none" stroke-dasharray="6 4"/><text x="848.3" y="521.8" fill="#d9dde3" font-size="16" text-anchor="middle">Décor du salon</text>
+<line x1="848.3" y1="1067" x2="848.3" y2="901" stroke="#3ddc84" stroke-width="2" stroke-linecap="round" /><polygon points="848.3,901 853.5,911.8 843.1,911.8" fill="#3ddc84"/><text x="848.3" y="1061" fill="#d9dde3" font-size="16" text-anchor="middle">Travelling avant</text>
+<text x="771.6" y="173" fill="#9aa3ae" font-size="16" font-weight="600">Cyclo blanc</text>
+<line x1="848.3" y1="977.6" x2="848.3" y2="632.8" stroke="#5aa9ff" stroke-width="2" stroke-linecap="round" /><line x1="842.3" y1="977.6" x2="854.3" y2="977.6" stroke="#5aa9ff" stroke-width="2"/><line x1="842.3" y1="632.8" x2="854.3" y2="632.8" stroke="#5aa9ff" stroke-width="2"/><text x="836.3" y="805.2" fill="#d9dde3" font-size="16" text-anchor="middle">5,40 m</text>
+<polygon points="659.1,667.8 661.2,666.2 756.4,789.4 754.4,790.9" fill="none" stroke="#e6e9ee" stroke-width="2" stroke-linejoin="round"/>
+<polygon points="662.1,671.4 664,669.9 753.5,785.7 751.6,787.2" fill="none" stroke="#f4f4ef" stroke-width="1.5" stroke-dasharray="6 3"/>
+<g stroke="#e6e9ee" stroke-width="1.4"><line x1="755.4" y1="790.1" x2="748.4" y2="795.1"/><line x1="755.4" y1="790.1" x2="762.4" y2="795.1"/><line x1="755.4" y1="790.1" x2="755.4" y2="782.1"/></g>
+<g stroke="#e6e9ee" stroke-width="1.4"><line x1="660.2" y1="667" x2="653.2" y2="672"/><line x1="660.2" y1="667" x2="667.2" y2="672"/><line x1="660.2" y1="667" x2="660.2" y2="659"/></g>
+<polygon points="995.8,749.5 1043.2,642.7 1045.6,643.8 998.1,750.5" fill="none" stroke="#e6e9ee" stroke-width="2" stroke-linejoin="round"/>
+<g stroke="#e6e9ee" stroke-width="1.4"><line x1="1044.4" y1="643.3" x2="1037.4" y2="648.3"/><line x1="1044.4" y1="643.3" x2="1051.4" y2="648.3"/><line x1="1044.4" y1="643.3" x2="1044.4" y2="635.3"/></g>
+<g stroke="#e6e9ee" stroke-width="1.4"><line x1="997" y1="750" x2="990" y2="755"/><line x1="997" y1="750" x2="1004" y2="755"/><line x1="997" y1="750" x2="997" y2="742"/></g>
+<polygon points="1013.4,407.5 1014.8,405.4 1079.1,449.4 1077.7,451.5" fill="#222"  stroke="#e6e9ee" stroke-width="1.5" />
+<polygon points="641,420.8 670.8,395.7 672.4,397.7 642.6,422.8" fill="#222"  stroke="#e6e9ee" stroke-width="1.5" />
+<polygon points="627.6,758.7 654,747.5 660.3,762.2 633.8,773.4" fill="#6b4a2a"  stroke="#e6e9ee" stroke-width="1.5" />
+<polygon points="1017.1,669.3 1043.6,658.1 1049.8,672.8 1023.3,684" fill="#6b4a2a"  stroke="#e6e9ee" stroke-width="1.5" />
+<polygon points="1049,797 1075.5,785.9 1081.7,800.6 1055.3,811.8" fill="#6b4a2a"  stroke="#e6e9ee" stroke-width="1.5" />
+<g transform="translate(848.3,517.8) rotate(0) scale(63.859)"><rect x="-1" y="-0.7" width="2" height="1.4" fill="#8c3b2e" fill-opacity="0.3" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" /><rect x="-0.9" y="-0.6" width="1.8" height="1.2" fill="none" fill-opacity="0" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" stroke-dasharray="4 3"/><line x1="-1.06" y1="-0.7" x2="-1" y2="-0.7" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round"/><line x1="1" y1="-0.7" x2="1.06" y2="-0.7" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round"/><line x1="-1.06" y1="-0.525" x2="-1" y2="-0.525" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round"/><line x1="1" y1="-0.525" x2="1.06" y2="-0.525" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round"/><line x1="-1.06" y1="-0.35" x2="-1" y2="-0.35" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round"/><line x1="1" y1="-0.35" x2="1.06" y2="-0.35" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round"/><line x1="-1.06" y1="-0.175" x2="-1" y2="-0.175" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round"/><line x1="1" y1="-0.175" x2="1.06" y2="-0.175" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round"/><line x1="-1.06" y1="0" x2="-1" y2="0" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round"/><line x1="1" y1="0" x2="1.06" y2="0" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round"/><line x1="-1.06" y1="0.175" x2="-1" y2="0.175" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round"/><line x1="1" y1="0.175" x2="1.06" y2="0.175" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round"/><line x1="-1.06" y1="0.35" x2="-1" y2="0.35" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round"/><line x1="1" y1="0.35" x2="1.06" y2="0.35" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round"/><line x1="-1.06" y1="0.525" x2="-1" y2="0.525" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round"/><line x1="1" y1="0.525" x2="1.06" y2="0.525" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round"/><line x1="-1.06" y1="0.7" x2="-1" y2="0.7" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round"/><line x1="1" y1="0.7" x2="1.06" y2="0.7" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round"/></g>
+<g transform="translate(848.3,441.2) rotate(0) scale(63.859)"><rect x="-1.075" y="-0.46" width="2.15" height="0.92" rx="0.08" fill="#2f6f73" fill-opacity="0.45" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/><rect x="-1.075" y="-0.46" width="2.15" height="0.22" fill="#235356" fill-opacity="0.55" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" /><rect x="-1.075" y="-0.46" width="0.18" height="0.92" fill="#235356" fill-opacity="0.55" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" /><rect x="0.895" y="-0.46" width="0.18" height="0.92" fill="#235356" fill-opacity="0.55" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" /><line x1="-0.298" y1="-0.24" x2="-0.298" y2="0.46" stroke="#1c4345" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round"/><line x1="0.298" y1="-0.24" x2="0.298" y2="0.46" stroke="#1c4345" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round"/></g>
+<g transform="translate(848.3,511.4) rotate(0) scale(63.859)"><rect x="-0.55" y="-0.3" width="1.1" height="0.6" rx="0.05" fill="#6b4426" fill-opacity="0.55" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/></g>
+<g transform="translate(995.1,505.1) rotate(45.837) scale(63.859)"><rect x="-0.425" y="-0.425" width="0.85" height="0.85" rx="0.08" fill="#c98a2b" fill-opacity="0.45" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/><rect x="-0.425" y="-0.425" width="0.85" height="0.18" fill="#976820" fill-opacity="0.55" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" /><rect x="-0.425" y="-0.425" width="0.14" height="0.85" fill="#976820" fill-opacity="0.55" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" /><rect x="0.285" y="-0.425" width="0.14" height="0.85" fill="#976820" fill-opacity="0.55" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" /></g>
+<g transform="translate(726.9,434.8) rotate(0) scale(63.859)"><circle cx="0" cy="0" r="0.225" fill="#ffe4a3" fill-opacity="0.55" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/><circle cx="0" cy="0" r="0.056" fill="#efe6d2" fill-opacity="0.9" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/></g>
+<g transform="translate(969.6,428.4) rotate(0) scale(63.859)"><circle cx="0" cy="0" r="0.225" fill="#ffe4a3" fill-opacity="0.55" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/><circle cx="0" cy="0" r="0.056" fill="#efe6d2" fill-opacity="0.9" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/></g>
+<g transform="translate(682.2,530.6) rotate(-57.296) scale(63.859)"><rect x="-0.8" y="-0.225" width="1.6" height="0.45" fill="#2c2a28" fill-opacity="0.5" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" /><rect x="-0.72" y="0.045" width="1.44" height="0.112" fill="#111317" fill-opacity="0.9" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" /></g>
+<g transform="translate(1027.1,428.4) rotate(0) scale(63.859)"><circle cx="0" cy="0" r="0.158" fill="#b8603a" fill-opacity="0.85" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/><ellipse cx="0.186" cy="0.05" rx="0.147" ry="0.056" transform="rotate(15 0.186 0.05)" fill="#4f8a3a" fill-opacity="0.6" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/><ellipse cx="0.05" cy="0.186" rx="0.147" ry="0.056" transform="rotate(75 0.05 0.186)" fill="#4f8a3a" fill-opacity="0.6" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/><ellipse cx="-0.136" cy="0.136" rx="0.147" ry="0.056" transform="rotate(135 -0.136 0.136)" fill="#4f8a3a" fill-opacity="0.6" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/><ellipse cx="-0.186" cy="-0.05" rx="0.147" ry="0.056" transform="rotate(195 -0.186 -0.05)" fill="#4f8a3a" fill-opacity="0.6" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/><ellipse cx="-0.05" cy="-0.186" rx="0.147" ry="0.056" transform="rotate(255 -0.05 -0.186)" fill="#4f8a3a" fill-opacity="0.6" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/><ellipse cx="0.136" cy="-0.136" rx="0.147" ry="0.056" transform="rotate(315 0.136 -0.136)" fill="#4f8a3a" fill-opacity="0.6" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/></g>
+<g transform="translate(586.4,377.3) rotate(0) scale(63.859)"><circle cx="0" cy="0" r="0.25" fill="#e8e4da" fill-opacity="0.75" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/></g>
+<g transform="translate(1110.1,377.3) rotate(0) scale(63.859)"><circle cx="0" cy="0" r="0.25" fill="#e8e4da" fill-opacity="0.75" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/></g>
+<g transform="translate(857.8,514.6) rotate(0) scale(63.859)"><circle cx="0" cy="0" r="0.04" fill="#2f6b3a" fill-opacity="0.85" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/></g>
+<g transform="translate(838.7,517.8) rotate(0) scale(63.859)"><circle cx="0" cy="0" r="0.04" fill="#6b1426" fill-opacity="0.5" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/></g>
+<g transform="translate(1142,492.3) rotate(137.51) scale(63.859)"><rect x="-0.875" y="-1.975" width="1.75" height="3.95" rx="0.385" fill="#b3262e" fill-opacity="0.55" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/><polygon points="-0.735,0.474 0.735,0.474 0.63,1.067 -0.63,1.067" fill="#9fc6e8" fill-opacity="0.65" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><polygon points="-0.665,-1.185 0.665,-1.185 0.7,-0.79 -0.7,-0.79" fill="#9fc6e8" fill-opacity="0.5" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><rect x="-0.7" y="-0.79" width="1.4" height="1.264" fill="#861d23" fill-opacity="0.55" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" /></g>
+<g transform="translate(848.3,620) rotate(0) scale(63.859)"><ellipse cx="0" cy="0" rx="0.228" ry="0.114" transform="rotate(0 0 0)" fill="#c2185b" fill-opacity="0.75" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/><circle cx="0" cy="0" r="0.095" fill="#e6c27a" fill-opacity="0.85" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/><line x1="0" y1="0.095" x2="0" y2="0.18" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round"/></g>
+<g transform="translate(848.3,642.4) rotate(-180.023) scale(63.859)"><circle cx="0" cy="0" r="0.25" fill="#30343a" fill-opacity="0.5" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/><line x1="0" y1="0" x2="0" y2="0.425" stroke="#8a919c" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linecap="round"/><circle cx="0" cy="0.425" r="0.04" fill="#111" fill-opacity="0.9" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/></g>
+<g transform="translate(809.9,450.8) rotate(0) scale(63.859)"><rect x="-0.177" y="0.05" width="0.354" height="0.422" rx="0.05" fill="#34302c" fill-opacity="0.55" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/><ellipse cx="0" cy="-0.08" rx="0.236" ry="0.118" transform="rotate(0 0 -0.08)" fill="#f2f0ea" fill-opacity="0.75" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/><circle cx="0" cy="-0.08" r="0.098" fill="#1e1612" fill-opacity="0.85" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/><line x1="0" y1="0.018" x2="0" y2="0.107" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round"/></g>
+<g transform="translate(758.9,473.1) rotate(-22.918) scale(63.859)"><ellipse cx="0" cy="0.088" rx="0.2" ry="0.088" transform="rotate(0 0 0.088)" fill="#c8873a" fill-opacity="0.75" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/><ellipse cx="0" cy="-0.008" rx="0.152" ry="0.06" transform="rotate(0 0 -0.008)" fill="#c8873a" fill-opacity="0.75" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/><rect x="-0.025" y="-0.2" width="0.05" height="0.152" fill="#3b2a1a" fill-opacity="0.9" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" /></g>
+<g transform="translate(720.5,575.3) rotate(-34.377) scale(63.859)"><ellipse cx="0" cy="0" rx="0.25" ry="0.125" transform="rotate(0 0 0)" fill="#2b2f36" fill-opacity="0.75" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/><circle cx="0" cy="0" r="0.104" fill="#2b1d14" fill-opacity="0.85" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/><line x1="0" y1="0.104" x2="0" y2="0.198" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round"/></g>
+<g transform="translate(1001.5,600.8) rotate(22.918) scale(63.859)"><ellipse cx="0" cy="0" rx="0.233" ry="0.117" transform="rotate(0 0 0)" fill="#7c4dff" fill-opacity="0.75" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/><circle cx="0" cy="0" r="0.097" fill="#c9a46a" fill-opacity="0.85" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/><line x1="0" y1="0.097" x2="0" y2="0.185" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round"/></g>
+<g transform="translate(663.1,626.4) rotate(-28.648) scale(63.859)"><ellipse cx="0" cy="0" rx="0.233" ry="0.117" transform="rotate(0 0 0)" fill="#00bcd4" fill-opacity="0.75" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/><circle cx="0" cy="0" r="0.097" fill="#c9a46a" fill-opacity="0.85" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/><line x1="0" y1="0.097" x2="0" y2="0.185" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round"/></g>
+<g transform="translate(1033.5,543.4) rotate(68.755) scale(63.859)"><ellipse cx="0" cy="-0.046" rx="0.1" ry="0.209" transform="rotate(0 0 -0.046)" fill="#f1ece2" fill-opacity="0.65" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/><circle cx="0" cy="0.22" r="0.064" fill="#f1ece2" fill-opacity="0.75" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/><line x1="0" y1="-0.255" x2="0.03" y2="-0.319" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round"/></g>
+<g transform="translate(995.1,505.1) rotate(45.837) scale(63.859)"><ellipse cx="0" cy="-0.051" rx="0.08" ry="0.23" transform="rotate(0 0 -0.051)" fill="#6f6a66" fill-opacity="0.65" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/><circle cx="0" cy="0.243" r="0.051" fill="#6f6a66" fill-opacity="0.75" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/><line x1="0" y1="-0.282" x2="0.024" y2="-0.352" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round"/></g>
+<g transform="translate(848.3,1015.9) rotate(-180.023) scale(63.859)"><line x1="-0.35" y1="-1.5" x2="-0.35" y2="1.5" stroke="#9aa3ae" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linecap="round"/><line x1="0.35" y1="-1.5" x2="0.35" y2="1.5" stroke="#9aa3ae" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linecap="round"/><rect x="-0.42" y="-0.45" width="0.84" height="0.9" fill="#3a3d42" fill-opacity="0.75" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" /><rect x="-0.12" y="-0.15" width="0.24" height="0.4" rx="0.03" fill="#2b2d31" fill-opacity="0.95" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/><rect x="-0.06" y="0.25" width="0.12" height="0.15" fill="#111317" fill-opacity="0.95" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" /></g><polygon points="848.3,993.6 997.1,632.7 699.1,632.8" fill="#ffad3b" opacity="0.06"/><polyline points="997.1,632.7 848.3,993.6 699.1,632.8" fill="none" stroke="#ffad3b" stroke-width="1" stroke-dasharray="6 4" opacity="0.8"/>
+<g transform="translate(554.5,837.1) rotate(-126.452) scale(63.859)"><line x1="0" y1="0" x2="0" y2="0.45" stroke="#8a919c" stroke-width="1.5" vector-effect="non-scaling-stroke" stroke-linecap="round"/><line x1="0" y1="0" x2="-0.39" y2="-0.225" stroke="#8a919c" stroke-width="1.5" vector-effect="non-scaling-stroke" stroke-linecap="round"/><line x1="0" y1="0" x2="0.39" y2="-0.225" stroke="#8a919c" stroke-width="1.5" vector-effect="non-scaling-stroke" stroke-linecap="round"/><rect x="-0.12" y="-0.2" width="0.24" height="0.42" rx="0.03" fill="#25272b" fill-opacity="0.9" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke"/><rect x="-0.06" y="0.22" width="0.12" height="0.16" fill="#111317" fill-opacity="0.95" stroke="#8a919c" stroke-width="1" vector-effect="non-scaling-stroke" /></g><polygon points="572.5,823.8 896,654.6 829.4,564.3" fill="#ffad3b" opacity="0.06"/><polyline points="896,654.6 572.5,823.8 829.4,564.3" fill="none" stroke="#ffad3b" stroke-width="1" stroke-dasharray="6 4" opacity="0.8"/>
+<polygon points="511.7,312.2 514.3,312.2 514.3,314.8 511.7,314.8" fill="#373b42" stroke="#e6e9ee" stroke-width="1.4"/>
+<polygon points="607.5,295.6 610.1,295.6 610.1,298.2 607.5,298.2" fill="#373b42" stroke="#e6e9ee" stroke-width="1.4"/>
+<polygon points="703.3,282.3 705.9,282.3 705.9,284.8 703.3,284.8" fill="#373b42" stroke="#e6e9ee" stroke-width="1.4"/>
+<polygon points="799.1,274.8 801.6,274.8 801.6,277.4 799.1,277.4" fill="#373b42" stroke="#e6e9ee" stroke-width="1.4"/>
+<polygon points="894.9,274.8 897.4,274.8 897.4,277.4 894.9,277.4" fill="#373b42" stroke="#e6e9ee" stroke-width="1.4"/>
+<polygon points="990.7,282.3 993.2,282.3 993.2,284.8 990.7,284.8" fill="#373b42" stroke="#e6e9ee" stroke-width="1.4"/>
+<polygon points="1086.5,295.6 1089,295.6 1089,298.2 1086.5,298.2" fill="#373b42" stroke="#e6e9ee" stroke-width="1.4"/>
+<polygon points="1182.2,312.2 1184.8,312.2 1184.8,314.8 1182.2,314.8" fill="#373b42" stroke="#e6e9ee" stroke-width="1.4"/>
+<polygon points="502.2,491 504.7,491 504.7,493.5 502.2,493.5" fill="#373b42" stroke="#e6e9ee" stroke-width="1.4"/>
+<polygon points="1191.8,491 1194.4,491 1194.4,493.5 1191.8,493.5" fill="#373b42" stroke="#e6e9ee" stroke-width="1.4"/>
+<polygon points="638,248 638,236.5 649.8,236.5 649.8,238.4 649.8,250 638,250" fill="#373b42" stroke="#e6e9ee" stroke-width="1.4"/>
+<polygon points="842.4,248 842.4,236.5 854.2,236.5 854.2,238.4 854.2,250 842.4,250" fill="#373b42" stroke="#e6e9ee" stroke-width="1.4"/>
+<polygon points="1046.7,248 1046.7,236.5 1058.5,236.5 1058.5,238.4 1058.5,250 1046.7,250" fill="#373b42" stroke="#e6e9ee" stroke-width="1.4"/>
+<polygon points="655.1,772.2 750,734.4 714.1,688.8" fill="#ffd27a" opacity="0.22" stroke="none"/>
+<line x1="655.1" y1="772.2" x2="735.4" y2="709" stroke="#ffd27a" stroke-width="1" stroke-dasharray="4 3" opacity="0.8"/>
+<polygon points="609.9,793.4 616.1,788.5 651.1,760.9 665.2,778.7 659,783.6 623.9,811.2" fill="#373b42" stroke="#e6e9ee" stroke-width="1.4"/>
+<polygon points="1037.2,821.2 1055.2,720.6 935,820.9" fill="#ffd27a" opacity="0.22" stroke="none"/>
+<line x1="1037.2" y1="821.2" x2="971.8" y2="742.7" stroke="#ffd27a" stroke-width="1" stroke-dasharray="4 3" opacity="0.8"/>
+<polygon points="1008.5,843.8 1064.6,797 1069.9,803.4 1071.2,804.9 1015,851.7 1009.7,845.3" fill="#373b42" stroke="#e6e9ee" stroke-width="1.4"/>
+<polygon points="805.8,449.3 890.8,449.3 890.8,509.8 805.8,509.8" fill="#373b42" stroke="#e6e9ee" stroke-width="1.4"/>
+<circle cx="848.3" cy="479.5" r="3" fill="#ffd27a"/>
+<polygon points="1088.5,330.5 1002.7,385.9 1050,425.1" fill="#ffd27a" opacity="0.22" stroke="none"/>
+<line x1="1088.5" y1="330.5" x2="1023.3" y2="409.1" stroke="#ffd27a" stroke-width="1" stroke-dasharray="4 3" opacity="0.8"/>
+<polygon points="1082.9,328.2 1100.5,307 1102.8,304.1 1111.8,311.5 1094.2,332.8 1091.8,335.6" fill="#373b42" stroke="#e6e9ee" stroke-width="1.4"/>
+<polygon points="605,338.9 648.8,431.2 693.8,389.3" fill="#ffd27a" opacity="0.22" stroke="none"/>
+<line x1="605" y1="338.9" x2="674.5" y2="413.7" stroke="#ffd27a" stroke-width="1" stroke-dasharray="4 3" opacity="0.8"/>
+<polygon points="589.5,328.2 595.5,322.6 597.4,324.6 609,337 602.9,342.7 601,340.7" fill="#373b42" stroke="#e6e9ee" stroke-width="1.4"/>
+<polygon points="1246.8,627.9 1215.7,530.5 1160.4,573.3" fill="#ffd27a" opacity="0.22" stroke="none"/>
+<line x1="1246.8" y1="627.9" x2="1184.3" y2="547" stroke="#ffd27a" stroke-width="1" stroke-dasharray="4 3" opacity="0.8"/>
+<polygon points="1243.6,628.5 1248.2,625 1255.8,634.8 1257.5,637.1 1253,640.6 1245.4,630.8" fill="#373b42" stroke="#e6e9ee" stroke-width="1.4"/>
+<polygon points="724.7,432.6 729.2,432.6 729.2,437 724.7,437" fill="#373b42" stroke="#e6e9ee" stroke-width="1.4"/>
+<polygon points="967.4,426.2 971.8,426.2 971.8,430.7 967.4,430.7" fill="#373b42" stroke="#e6e9ee" stroke-width="1.4"/>
+<polygon points="825.9,513.3 814.3,614.8 837.5,614.8" fill="#ffd27a" opacity="0.22" stroke="none"/>
+<line x1="825.9" y1="513.3" x2="825.9" y2="615.5" stroke="#ffd27a" stroke-width="1" stroke-dasharray="4 3" opacity="0.8"/>
+<polygon points="822.9,509.6 828.9,509.6 828.9,513.3 822.9,513.3" fill="#373b42" stroke="#e6e9ee" stroke-width="1.4"/>
+<polygon points="848.3,513.3 836.7,614.8 859.8,614.8" fill="#ffd27a" opacity="0.22" stroke="none"/>
+<line x1="848.3" y1="513.3" x2="848.3" y2="615.5" stroke="#ffd27a" stroke-width="1" stroke-dasharray="4 3" opacity="0.8"/>
+<polygon points="845.2,509.6 851.3,509.6 851.3,513.3 845.2,513.3" fill="#373b42" stroke="#e6e9ee" stroke-width="1.4"/>
+<polygon points="870.6,513.3 859,614.8 882.2,614.8" fill="#ffd27a" opacity="0.22" stroke="none"/>
+<line x1="870.6" y1="513.3" x2="870.6" y2="615.5" stroke="#ffd27a" stroke-width="1" stroke-dasharray="4 3" opacity="0.8"/>
+<polygon points="867.6,509.6 873.6,509.6 873.6,513.3 867.6,513.3" fill="#373b42" stroke="#e6e9ee" stroke-width="1.4"/>
+<text x="513" y="334.5" font-weight="700" font-size="11" fill="#d9dde3" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Titan cyclo 1</text>
+<text x="513" y="346.5" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#ffad3b" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fix 1 · DMX U1 · 001–003</text>
+<text x="608.8" y="271.9" font-weight="700" font-size="11" fill="#d9dde3" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Titan cyclo 2</text>
+<text x="608.8" y="283.9" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#ffad3b" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fix 2 · DMX U1 · 004–006</text>
+<text x="704.6" y="304.5" font-weight="700" font-size="11" fill="#d9dde3" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Titan cyclo 3</text>
+<text x="704.6" y="316.5" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#ffad3b" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fix 3 · DMX U1 · 007–009</text>
+<text x="749.8" y="223.5" font-weight="700" font-size="11" fill="#d9dde3" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Titan cyclo 4</text>
+<text x="749.8" y="235.5" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#ffad3b" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fix 4 · DMX U1 · 010–012</text>
+<text x="896.2" y="297.1" font-weight="700" font-size="11" fill="#d9dde3" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Titan cyclo 5</text>
+<text x="896.2" y="309.1" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#ffad3b" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fix 5 · DMX U1 · 013–015</text>
+<text x="941.3" y="332.1" font-weight="700" font-size="11" fill="#d9dde3" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Titan cyclo 6</text>
+<text x="941.3" y="344.1" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#ffad3b" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fix 6 · DMX U1 · 016–018</text>
+<text x="1087.7" y="271.9" font-weight="700" font-size="11" fill="#d9dde3" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Titan cyclo 7</text>
+<text x="1087.7" y="283.9" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#ffad3b" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fix 7 · DMX U1 · 019–021</text>
+<text x="1183.5" y="334.5" font-weight="700" font-size="11" fill="#d9dde3" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Titan cyclo 8</text>
+<text x="1183.5" y="346.5" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#ffad3b" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fix 8 · DMX U1 · 022–024</text>
+<text x="503.4" y="513.3" font-weight="700" font-size="11" fill="#d9dde3" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Hyperion jardin</text>
+<text x="503.4" y="525.3" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#ffad3b" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fix 9 · DMX U1 · 025–027</text>
+<text x="1193.1" y="513.3" font-weight="700" font-size="11" fill="#d9dde3" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Hyperion cour</text>
+<text x="1193.1" y="525.3" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#ffad3b" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fix 10 · DMX U1 · 028–030</text>
+<text x="553.9" y="241.2" font-weight="700" font-size="11" fill="#d9dde3" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">AX9 cyclo 1</text>
+<text x="553.9" y="253.2" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#ffad3b" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fix 11 · DMX U1 · 031–033</text>
+<text x="938.3" y="241.2" font-weight="700" font-size="11" fill="#d9dde3" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">AX9 cyclo 2</text>
+<text x="938.3" y="253.2" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#ffad3b" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fix 12 · DMX U1 · 034–036</text>
+<text x="1052.6" y="215.2" font-weight="700" font-size="11" fill="#d9dde3" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">AX9 cyclo 3</text>
+<text x="1052.6" y="227.2" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#ffad3b" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fix 13 · DMX U1 · 037–039</text>
+<text x="708.6" y="849.1" font-weight="700" font-size="11" fill="#d9dde3" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">L10 face</text>
+<text x="708.6" y="861.1" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#ffad3b" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fix 14 · DMX U1 · 040–047</text>
+<text x="708.6" y="873.1" font-size="9" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Pied junior · h 3,1 m</text>
+<text x="1107" y="896.8" font-weight="700" font-size="11" fill="#d9dde3" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Celeb débouchage</text>
+<text x="1107" y="908.8" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#ffad3b" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fix 15 · DMX U1 · 048–049</text>
+<text x="1107" y="920.8" font-size="9" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Baby 5K · h 1,8 m</text>
+<text x="848.3" y="408.3" font-weight="700" font-size="11" fill="#d9dde3" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">S360 zénith</text>
+<text x="848.3" y="420.3" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#ffad3b" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fix 16 · DMX U1 · 050–061</text>
+<text x="1160" y="374.6" font-weight="700" font-size="11" fill="#d9dde3" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Leo contre cour</text>
+<text x="1160" y="386.6" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#ffad3b" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fix 17 · DMX U1 · 062–064</text>
+<text x="1160" y="398.6" font-size="9" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Pied junior · h 3,6 m</text>
+<text x="540.8" y="383" font-weight="700" font-size="11" fill="#d9dde3" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Pluto contre jardin</text>
+<text x="540.8" y="395" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#ffad3b" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fix 18 · DMX U1 · 065–067</text>
+<text x="540.8" y="407" font-size="9" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Pied 1000 · h 3,4 m</text>
+<text x="1296.1" y="683.6" font-weight="700" font-size="11" fill="#d9dde3" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Hornet voiture</text>
+<text x="1296.1" y="695.6" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#ffad3b" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fix 19 · DMX U1 · 068–071</text>
+<text x="1296.1" y="707.6" font-size="9" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Pied 1000 · h 2,3 m</text>
+<text x="779" y="380.7" font-weight="700" font-size="11" fill="#d9dde3" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">NYX lampadaire jardin</text>
+<text x="779" y="392.7" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#ffad3b" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fix 20 · DMX U1 · 072–074</text>
+<line x1="969.6" y1="423" x2="969.6" y2="394.4" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="969.6" y="379.4" font-weight="700" font-size="11" fill="#d9dde3" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">NYX lampadaire cour</text>
+<text x="969.6" y="391.4" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#ffad3b" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fix 21 · DMX U1 · 075–077</text>
+<line x1="822.1" y1="515.2" x2="801.9" y2="535.4" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="756.9" y="578.4" font-weight="700" font-size="11" fill="#d9dde3" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">AX3 table basse 1</text>
+<text x="756.9" y="590.4" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#ffad3b" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fix 22 · DMX U1 · 078–080</text>
+<line x1="852.1" y1="515.2" x2="872.3" y2="535.4" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="917.3" y="578.4" font-weight="700" font-size="11" fill="#d9dde3" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">AX3 table basse 2</text>
+<text x="917.3" y="590.4" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#ffad3b" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fix 23 · DMX U1 · 081–083</text>
+<line x1="870.6" y1="516.8" x2="870.6" y2="531.4" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="870.6" y="542.4" font-weight="700" font-size="11" fill="#d9dde3" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">AX3 table basse 3</text>
+<text x="870.6" y="554.4" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#ffad3b" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fix 24 · DMX U1 · 084–086</text>
+<line x1="689.8" y1="728.6" x2="673.8" y2="728.6" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="629.8" y="726.6" font-size="10" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Cadre 8×8 · 250</text>
+<text x="629.8" y="738.6" font-size="9" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">2 × Pied junior</text>
+<text x="1091.5" y="694.6" font-size="10" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Cadre 6×6 · Noir</text>
+<text x="1091.5" y="706.6" font-size="9" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">2 × Baby 5K</text>
+<text x="1046.2" y="472.7" font-size="10" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Floppy · Noir</text>
+<text x="611" y="459" font-size="10" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Drapeau 24×36 · Noir</text>
+<text x="591.9" y="764.5" font-size="10" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Sac de sable</text>
+<text x="1085.5" y="675.1" font-size="10" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Sac de sable</text>
+<text x="1117.4" y="802.8" font-size="10" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Sac de sable</text>
+<text x="744.6" y="521.8" font-size="10" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Tapis du salon</text>
+<text x="927.1" y="445.2" font-size="10" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Canapé</text>
+<line x1="875.4" y1="511.4" x2="892.4" y2="511.4" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="925.2" y="515.4" font-size="10" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Table basse</text>
+<text x="956.2" y="470.2" font-size="10" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fauteuil</text>
+<text x="726.9" y="465.1" font-size="10" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Lampadaire jardin</text>
+<line x1="969.6" y1="414.7" x2="969.6" y2="367.1" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="969.6" y="364.1" font-size="10" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Lampadaire cour</text>
+<text x="682.2" y="483.8" font-size="10" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Téléviseur vintage</text>
+<line x1="1048.5" y1="428.4" x2="1064.9" y2="428.4" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="1083.7" y="432.4" font-size="10" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Plante</text>
+<line x1="575.6" y1="388.1" x2="564.5" y2="399.2" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="540.4" y="427.3" font-size="10" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Colonne jardin</text>
+<text x="1146.2" y="417.4" font-size="10" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Colonne cour</text>
+<line x1="860.7" y1="511.7" x2="870.9" y2="501.5" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="888" y="488.4" font-size="10" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Bouteille</text>
+<text x="838.7" y="506.3" font-size="10" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Verre 1</text>
+<text x="1142" y="610.8" font-size="10" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Voiture vintage</text>
+<text x="848.3" y="651.4" font-size="10" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Chanteuse</text>
+<text x="848.3" y="681.1" font-size="10" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Micro</text>
+<text x="772.4" y="492.3" font-size="10" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Guitariste</text>
+<text x="732.2" y="450.4" font-size="10" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Guitare</text>
+<text x="720.5" y="608.3" font-size="10" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Bassiste</text>
+<text x="1001.5" y="639" font-size="10" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Danseuse 1</text>
+<text x="717.5" y="630.4" font-size="10" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Danseur 2</text>
+<text x="1033.5" y="573.1" font-size="10" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Chien</text>
+<line x1="985" y1="515.2" x2="974" y2="526.2" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="963.9" y="540.3" font-size="10" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Chat</text>
+<text x="848.3" y="1106.7" font-size="10" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Caméra A</text>
+<text x="554.5" y="882.6" font-size="10" fill="#8a919c" stroke="#2b2f36" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Caméra B</text>
+<line x1="16" y1="1222" x2="143.7" y2="1222" stroke="#d9dde3" stroke-width="2"/><line x1="16" y1="1218" x2="16" y2="1226" stroke="#d9dde3" stroke-width="2"/><line x1="143.7" y1="1218" x2="143.7" y2="1226" stroke="#d9dde3" stroke-width="2"/>
+<text x="79.9" y="1215" fill="#d9dde3" font-size="11" text-anchor="middle">2 m</text><g><rect x="1438" y="1134" width="300" height="90" fill="#2b2f36" stroke="#d9dde3" stroke-width="1.2"/>
+<text x="1448" y="1154" font-size="14" font-weight="700" fill="#d9dde3">Projet d’exemple ARKLIGHT</text>
+<text x="1448" y="1172" font-size="11" fill="#d9dde3">demo-clip</text>
+<text x="1448" y="1188" font-size="11" font-weight="600" fill="#d9dde3">Couplet — salon › Plan 1 — large</text>
+<text x="1448" y="1204" font-size="10" fill="#8a919c"></text>
+<text x="1728" y="1216" font-size="9" fill="#8a919c" text-anchor="end">27/10/2026 · ARKLIGHT</text></g></svg>

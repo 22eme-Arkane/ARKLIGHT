@@ -9,8 +9,22 @@ scenes/
 captures/
 config.json
 
+# clés de l'assistant IA (clé d'ARKLIGHT pour AIODOS, clés d'API) : depuis le code (npm start),
+# elles sont écrites en clair à la racine du dépôt ; jamais dans un commit
+ai-keys.json
+ai-keys.json.tmp
+
 # notes de recherche (résumés de manuels de fabricants) : gardées hors du dépôt public
 docs/recherche/
 
 # réglages locaux des outils
 .claude/
+
+# documents personnels (plans de test, PDF)
+_Elements/
+
+# installeur d’AIODOS copié pour la page facultative de l’installeur (tools/aiodos/prepare-installer.mjs)
+build/aiodos/
+
+# version Rust : fichiers de compilation
+rust/target/

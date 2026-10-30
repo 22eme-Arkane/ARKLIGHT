@@ -1,0 +1,156 @@
+<rect x="0" y="0" width="640" height="480" fill="#1d2b3a"/>
+<image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==" x="295" y="203.1" width="70" height="43.8" opacity="0.45" transform="rotate(12 330 225)" preserveAspectRatio="none"/>
+<polygon points="255.4,274.9 264.6,274.9 264.6,275.1 255.4,275.1" fill="none" stroke="#e6e9ee" stroke-width="2" stroke-linejoin="round"/>
+<g stroke="#e6e9ee" stroke-width="1.4"><line x1="255.4" y1="275" x2="248.4" y2="280"/><line x1="255.4" y1="275" x2="262.4" y2="280"/><line x1="255.4" y1="275" x2="255.4" y2="267"/></g>
+<g stroke="#e6e9ee" stroke-width="1.4"><line x1="264.6" y1="275" x2="257.6" y2="280"/><line x1="264.6" y1="275" x2="271.6" y2="280"/><line x1="264.6" y1="275" x2="264.6" y2="267"/></g>
+<polygon points="279.2,277 290.7,272.8 290.8,273 279.3,277.2" fill="none" stroke="#e6e9ee" stroke-width="2" stroke-linejoin="round"/>
+<polygon points="279.6,276.9 290.3,272.9 290.4,273.1 279.7,277.1" fill="none" stroke="#f4f4ef" stroke-width="1.5" stroke-dasharray="6 3"/>
+<g stroke="#e6e9ee" stroke-width="1.4"><line x1="279.3" y1="277.1" x2="272.3" y2="282.1"/><line x1="279.3" y1="277.1" x2="286.3" y2="282.1"/><line x1="279.3" y1="277.1" x2="279.3" y2="269.1"/></g>
+<g stroke="#e6e9ee" stroke-width="1.4"><line x1="290.7" y1="272.9" x2="283.7" y2="277.9"/><line x1="290.7" y1="272.9" x2="297.7" y2="277.9"/><line x1="290.7" y1="272.9" x2="290.7" y2="264.9"/></g>
+<polygon points="302.9,280.8 316.9,269 317.1,269.2 303.1,281" fill="none" stroke="#e6e9ee" stroke-width="2" stroke-linejoin="round"/>
+<g stroke="#e6e9ee" stroke-width="1.4"><line x1="303" y1="280.9" x2="296" y2="285.9"/><line x1="303" y1="280.9" x2="310" y2="285.9"/><line x1="303" y1="280.9" x2="303" y2="272.9"/></g>
+<g stroke="#e6e9ee" stroke-width="1.4"><line x1="317" y1="269.1" x2="310" y2="274.1"/><line x1="317" y1="269.1" x2="324" y2="274.1"/><line x1="317" y1="269.1" x2="317" y2="261.1"/></g>
+<polygon points="327.3,288.2 342.5,261.7 342.7,261.8 327.5,288.3" fill="none" stroke="#e6e9ee" stroke-width="2" stroke-linejoin="round"/>
+<g stroke="#e6e9ee" stroke-width="1.4"><line x1="327.4" y1="288.2" x2="320.4" y2="293.2"/><line x1="327.4" y1="288.2" x2="334.4" y2="293.2"/><line x1="327.4" y1="288.2" x2="327.4" y2="280.2"/></g>
+<g stroke="#e6e9ee" stroke-width="1.4"><line x1="342.6" y1="261.8" x2="335.6" y2="266.8"/><line x1="342.6" y1="261.8" x2="349.6" y2="266.8"/><line x1="342.6" y1="261.8" x2="342.6" y2="253.8"/></g>
+<polygon points="359.7,276.1 360.1,273.9 360.3,273.9 359.9,276.1" fill="none"  stroke="#e6e9ee" stroke-width="1.5" stroke-dasharray="5 3"/>
+<polygon points="384.6,273.5 384.8,273.5 385.4,276.5 385.2,276.5" fill="#222"  stroke="#e6e9ee" stroke-width="1.5" />
+<polygon points="258.4,297.4 258.5,297.3 261.6,302.6 261.5,302.7" fill="#222"  stroke="#e6e9ee" stroke-width="1.5" />
+<polygon points="282.6,298.2 282.7,297.9 287.4,301.8 287.3,302.1" fill="#f4f4f0"  stroke="#e6e9ee" stroke-width="1.5" />
+<polygon points="307.6,299.3 307.7,299 312.4,300.7 312.3,301" fill="#f4f4f0"  stroke="#e6e9ee" stroke-width="1.5" />
+<polygon points="333.7,299.3 336.3,299.2 336.3,300.7 333.7,300.8" fill="#8a6a45"  stroke="#e6e9ee" stroke-width="1.5" />
+<polygon points="358.5,299.7 360.9,298.9 361.5,300.3 359.1,301.1" fill="#8a6a45"  stroke="#e6e9ee" stroke-width="1.5" />
+<polygon points="383.5,300.3 385.5,298.6 386.5,299.7 384.5,301.4" fill="#8a6a45"  stroke="#e6e9ee" stroke-width="1.5" />
+<polygon points="258.7,325.7 260,323.5 261.3,324.3 260,326.5" fill="#8a6a45"  stroke="#e6e9ee" stroke-width="1.5" />
+<polygon points="284.2,326 284.6,323.8 285.8,324 285.4,326.2" fill="#6b4a2a"  stroke="#e6e9ee" stroke-width="1.5" />
+<polygon points="308,323.6 311.4,323 312,326.4 308.6,327" fill="none"  stroke="#e6e9ee" stroke-width="1.5" />
+<g stroke="#e6e9ee" stroke-width="1.4"><line x1="310" y1="325" x2="303" y2="330"/><line x1="310" y1="325" x2="317" y2="330"/><line x1="310" y1="325" x2="310" y2="317"/></g>
+<polygon points="332.6,324.4 335.6,322.6 337.4,325.6 334.4,327.4" fill="none"  stroke="#e6e9ee" stroke-width="1.5" />
+<g stroke="#e6e9ee" stroke-width="1.4"><line x1="335" y1="325" x2="328" y2="330"/><line x1="335" y1="325" x2="342" y2="330"/><line x1="335" y1="325" x2="335" y2="317"/></g>
+<polygon points="357.5,325.3 359.7,322.5 362.5,324.7 360.3,327.5" fill="none"  stroke="#e6e9ee" stroke-width="1.5" />
+<g stroke="#e6e9ee" stroke-width="1.4"><line x1="360" y1="325" x2="353" y2="330"/><line x1="360" y1="325" x2="367" y2="330"/><line x1="360" y1="325" x2="360" y2="317"/></g>
+<polygon points="382.8,326.1 383.9,322.8 387.2,323.9 386.1,327.2" fill="none"  stroke="#e6e9ee" stroke-width="1.5" />
+<g stroke="#e6e9ee" stroke-width="1.4"><line x1="385" y1="325" x2="378" y2="330"/><line x1="385" y1="325" x2="392" y2="330"/><line x1="385" y1="325" x2="385" y2="317"/></g>
+<polygon points="258.2,348.3 261.7,348.2 261.8,351.7 258.3,351.8" fill="none"  stroke="#e6e9ee" stroke-width="1.5" />
+<g stroke="#e6e9ee" stroke-width="1.4"><line x1="260" y1="350" x2="253" y2="355"/><line x1="260" y1="350" x2="267" y2="355"/><line x1="260" y1="350" x2="260" y2="342"/></g>
+<polygon points="282.7,349 286,347.7 287.3,351 284,352.3" fill="none"  stroke="#e6e9ee" stroke-width="1.5" />
+<g stroke="#e6e9ee" stroke-width="1.4"><line x1="285" y1="350" x2="278" y2="355"/><line x1="285" y1="350" x2="292" y2="355"/><line x1="285" y1="350" x2="285" y2="342"/></g>
+<polygon points="307.5,349.8 310.2,347.5 312.5,350.2 309.8,352.5" fill="none"  stroke="#e6e9ee" stroke-width="1.5" />
+<g stroke="#e6e9ee" stroke-width="1.4"><line x1="310" y1="350" x2="303" y2="355"/><line x1="310" y1="350" x2="317" y2="355"/><line x1="310" y1="350" x2="310" y2="342"/></g>
+<polygon points="332.6,350.7 334.3,347.6 337.4,349.3 335.7,352.4" fill="none"  stroke="#e6e9ee" stroke-width="1.5" />
+<g stroke="#e6e9ee" stroke-width="1.4"><line x1="335" y1="350" x2="328" y2="355"/><line x1="335" y1="350" x2="342" y2="355"/><line x1="335" y1="350" x2="335" y2="342"/></g>
+<polygon points="362.7,255.6 367.1,244.3 367.3,244.4 362.9,255.7" fill="none" stroke="#e6e9ee" stroke-width="2" stroke-linejoin="round"/>
+<g stroke="#e6e9ee" stroke-width="1.4"><line x1="362.8" y1="255.7" x2="355.8" y2="260.7"/><line x1="362.8" y1="255.7" x2="369.8" y2="260.7"/><line x1="362.8" y1="255.7" x2="362.8" y2="247.7"/></g>
+<g stroke="#e6e9ee" stroke-width="1.4"><line x1="367.2" y1="244.3" x2="360.2" y2="249.3"/><line x1="367.2" y1="244.3" x2="374.2" y2="249.3"/><line x1="367.2" y1="244.3" x2="367.2" y2="236.3"/></g>
+<polygon points="365.4,224.9 374.6,224.9 374.6,225.1 365.4,225.1" fill="none" stroke="#e6e9ee" stroke-width="2" stroke-linejoin="round"/>
+<polygon points="365.7,224.9 374.3,224.9 374.3,225.1 365.7,225.1" fill="none" stroke="#e8934a" stroke-width="1.5" stroke-dasharray="6 3"/>
+<g stroke="#e6e9ee" stroke-width="1.4"><line x1="365.4" y1="225" x2="358.4" y2="230"/><line x1="365.4" y1="225" x2="372.4" y2="230"/><line x1="365.4" y1="225" x2="365.4" y2="217"/></g>
+<g stroke="#e6e9ee" stroke-width="1.4"><line x1="374.6" y1="225" x2="367.6" y2="230"/><line x1="374.6" y1="225" x2="381.6" y2="230"/><line x1="374.6" y1="225" x2="374.6" y2="217"/></g>
+<polygon points="320,259.6 323.7,252.5 316.3,252.5" fill="#ffd27a" opacity="0.22" stroke="none"/>
+<line x1="320" y1="259.6" x2="320" y2="251.6" stroke="#ffd27a" stroke-width="1" stroke-dasharray="4 3" opacity="0.8"/>
+<polygon points="319.6,260.4 319.6,259.6 320.4,259.6 320.4,260.4" fill="#2a3746" stroke="#e6e9ee" stroke-width="1.4"/>
+<polygon points="334.8,250.3 326.8,249.8 337.8,257.7" fill="#ffd27a" opacity="0.22" stroke="none"/>
+<line x1="334.8" y1="250.3" x2="330.2" y2="256.8" stroke="#ffd27a" stroke-width="1" stroke-dasharray="4 3" opacity="0.8"/>
+<polygon points="333.4,249.1 333.8,248.6 336.6,250.4 336.6,250.9 336.2,251.4 333.4,249.6" fill="#2a3746" stroke="#e6e9ee" stroke-width="1.4"/>
+<polygon points="304.1,249.1 305.9,249.1 305.9,250.9 304.1,250.9" fill="#2a3746" stroke="#e6e9ee" stroke-width="1.4"/>
+<circle cx="305" cy="250" r="3" fill="#ffd27a"/>
+<polygon points="307.6,235.9 312.3,233.9 312.4,234.1 307.7,236.1" fill="#2a3746" stroke="#e6e9ee" stroke-width="1.4"/>
+<text x="310" y="238" fill="#8a919c" font-size="9" text-anchor="middle">éteint</text>
+<polygon points="327.6,230.1 332.3,236.6 334.3,234.5" fill="#ffd27a" opacity="0.22" stroke="none"/>
+<line x1="327.6" y1="230.1" x2="333.4" y2="235.6" stroke="#ffd27a" stroke-width="1" stroke-dasharray="4 3" opacity="0.8"/>
+<polygon points="325.6,231.6 329.1,228.1 329.4,228.3 329.4,228.4 325.9,231.9 325.6,231.7" fill="#2a3746" stroke="#e6e9ee" stroke-width="1.4"/>
+<polygon points="339.8,224.9 340.2,224.9 340.2,225.1 339.8,225.1" fill="#2a3746" stroke="#e6e9ee" stroke-width="1.4"/>
+<polygon points="297.3,242.3 297.7,242.3 297.7,242.7 297.3,242.7" fill="#2a3746" stroke="#e6e9ee" stroke-width="1.4"/>
+<polygon points="330.9,241.9 332.3,234 323,242.6" fill="#ffd27a" opacity="0.22" stroke="none"/>
+<line x1="330.9" y1="241.9" x2="325.5" y2="236" stroke="#ffd27a" stroke-width="1" stroke-dasharray="4 3" opacity="0.8"/>
+<polygon points="330.8,242.1 331.1,241.8 331.2,241.9 330.9,242.2" fill="#2a3746" stroke="#e6e9ee" stroke-width="1.4"/>
+<polygon points="348.1,257.9 352.8,264.4 355.5,261" fill="#ffd27a" opacity="0.22" stroke="none"/>
+<line x1="348.1" y1="257.9" x2="354.4" y2="262.9" stroke="#ffd27a" stroke-width="1" stroke-dasharray="4 3" opacity="0.8"/>
+<polygon points="346.5,257.4 347.3,256.5 348.5,257.3 348.5,257.6 347.7,258.5 346.5,257.7" fill="#2a3746" stroke="#e6e9ee" stroke-width="1.4"/>
+<polygon points="289.6,262.2 289.1,254.3 282,264.8" fill="#ffd27a" opacity="0.22" stroke="none"/>
+<line x1="289.6" y1="262.2" x2="283" y2="257.8" stroke="#ffd27a" stroke-width="1" stroke-dasharray="4 3" opacity="0.8"/>
+<polygon points="287.7,263.8 291.6,258.8 292.3,259.4 292.3,261.2 288.4,266.2 287.7,265.6" fill="#2a3746" stroke="#e6e9ee" stroke-width="1.4"/>
+<text x="417.9" y="154.1" font-weight="700" font-size="11" fill="#d9dde3" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Dôme &amp; grille</text>
+<text x="417.9" y="166.1" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#ffad3b" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fix 101</text>
+<text x="417.9" y="178.1" font-size="9" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Dome 90 + 216 · Grille 40° · 204 Full CTO · Pied 1000 · h 2,2 m</text>
+<line x1="338.8" y1="253.8" x2="359" y2="274" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="457.5" y="364.5" font-weight="700" font-size="11" fill="#d9dde3" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Chimera &lt;M&gt; &quot;face&quot;</text>
+<text x="457.5" y="376.5" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#ffad3b" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fix 102</text>
+<text x="457.5" y="388.5" font-size="9" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Chimera M + sans toile · 216 Full White Diffusion · Wind-up · h 2,5 m</text>
+<line x1="299.6" y1="250" x2="271" y2="250" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="149.2" y="242" font-weight="700" font-size="11" fill="#d9dde3" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">M18 plongée</text>
+<text x="149.2" y="254" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#ffad3b" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fix 103</text>
+<text x="149.2" y="266" font-size="9" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Grille 20° · 201 Full CTB · Long John · h 4,8 m</text>
+<text x="340.8" y="208.2" font-weight="700" font-size="11" fill="#d9dde3" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Titan éteint</text>
+<line x1="331.3" y1="233.8" x2="364.3" y2="266.8" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="393.9" y="288.4" font-weight="700" font-size="11" fill="#d9dde3" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Barre AX2</text>
+<text x="393.9" y="300.4" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#ffad3b" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fix 104</text>
+<text x="393.9" y="312.4" font-size="9" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">106 Primary Red</text>
+<line x1="345.4" y1="225" x2="392" y2="225" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="422.8" y="229" font-weight="700" font-size="11" fill="#d9dde3" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">AsteraBox</text>
+<line x1="293.7" y1="246.3" x2="273.5" y2="266.5" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="238.7" y="293.3" font-weight="700" font-size="11" fill="#d9dde3" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">NYX sur pied</text>
+<text x="238.7" y="305.3" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#ffad3b" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fix 105</text>
+<text x="238.7" y="317.3" font-size="9" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Pied 1000 · h 1,8 m</text>
+<text x="395.7" y="169.3" font-weight="700" font-size="11" fill="#d9dde3" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Hydra « chimera »</text>
+<text x="395.7" y="181.3" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#ffad3b" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fix 106</text>
+<text x="395.7" y="193.3" font-size="9" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Chimera panneau · Pied 1000 · h 1,6 m</text>
+<line x1="352.9" y1="257.5" x2="399.5" y2="257.5" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="483.1" y="249.5" font-weight="700" font-size="11" fill="#d9dde3" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Baby 1K</text>
+<text x="483.1" y="261.5" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#ffad3b" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fix 107</text>
+<text x="483.1" y="273.5" font-size="9" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Grille 60° · Pied 1000 · h 2,9 m</text>
+<line x1="286.2" y1="258.7" x2="266" y2="238.5" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="231.2" y="195.7" font-weight="700" font-size="11" fill="#d9dde3" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">S360 haut</text>
+<text x="231.2" y="207.7" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#ffad3b" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Fix 108</text>
+<text x="231.2" y="219.7" font-size="9" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Long John · h 5,2 m</text>
+<line x1="257.1" y1="277.9" x2="224.3" y2="310.7" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="187.4" y="345.6" font-size="10" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Cadre 6×6 · Soie full</text>
+<text x="187.4" y="357.6" font-size="9" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">2 × Baby 5K</text>
+<text x="250.4" y="238.4" font-size="10" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Cadre 8×8 · 216</text>
+<text x="250.4" y="250.4" font-size="9" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">2 × Pied junior</text>
+<line x1="305.6" y1="270.6" x2="272.6" y2="237.6" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="239.9" y="202.9" font-size="10" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Cadre 12×12 · Noir</text>
+<text x="239.9" y="214.9" font-size="9" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">2 × Long John</text>
+<line x1="342.3" y1="282.3" x2="362.9" y2="302.9" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="395.6" y="333.6" font-size="10" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Cadre 20×20 · Vide</text>
+<text x="395.6" y="345.6" font-size="9" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">2 × Long John</text>
+<line x1="362.9" y1="277.9" x2="383" y2="298" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="426.7" y="345.7" font-size="10" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Drapeau 18×24 · Tulle simple</text>
+<line x1="387.9" y1="272.1" x2="420.7" y2="239.3" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="453.2" y="210.8" font-size="10" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Drapeau 24×36 · Noir</text>
+<line x1="262.9" y1="302.9" x2="273.1" y2="313.1" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="295.8" y="339.8" font-size="10" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Floppy · Noir</text>
+<text x="310.9" y="278.1" font-size="10" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Polystyrène</text>
+<line x1="312.9" y1="297.1" x2="345.7" y2="264.3" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="364.2" y="249.8" font-size="10" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Réflecteur</text>
+<text x="335" y="319.5" font-size="10" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Cube plein</text>
+<text x="324.3" y="304" font-size="10" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Demi-cube</text>
+<line x1="389.1" y1="300" x2="435.5" y2="300" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="473.9" y="304" font-size="10" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Quart de cube</text>
+<line x1="257.1" y1="327.9" x2="224.3" y2="360.7" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="210" y="379" font-size="10" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Galette</text>
+<text x="285" y="344.5" font-size="10" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Sac de sable</text>
+<line x1="310" y1="329.1" x2="310" y2="357.5" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="310" y="368.5" font-size="10" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Pied 1000</text>
+<line x1="337.9" y1="327.9" x2="358" y2="348" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="372.3" y="366.3" font-size="10" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Baby 5K</text>
+<line x1="364.1" y1="325" x2="392.5" y2="325" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="425.3" y="329" font-size="10" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Pied junior</text>
+<line x1="387.9" y1="322.1" x2="398.1" y2="311.9" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="412.4" y="301.6" font-size="10" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Wind-up</text>
+<line x1="257.1" y1="352.9" x2="237" y2="373" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="214.3" y="399.7" font-size="10" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Super Wind-Up</text>
+<line x1="285" y1="354.1" x2="285" y2="400.5" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="285" y="411.5" font-size="10" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Long John</text>
+<line x1="312.9" y1="352.9" x2="345.7" y2="385.7" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="360" y="404" font-size="10" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">C-stand</text>
+<line x1="337.9" y1="352.9" x2="348.1" y2="363.1" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="362.4" y="381.4" font-size="10" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Low-boy</text>
+<line x1="369.1" y1="250" x2="397.6" y2="250" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="464" y="248" font-size="10" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Cadre 8×8 · Ultrabounce</text>
+<text x="464" y="260" font-size="9" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">2 × Pied junior</text>
+<line x1="372.9" y1="222.1" x2="383.1" y2="211.9" stroke="#8a919c" stroke-width="0.8" opacity="0.7"/>
+<text x="411.6" y="181.4" font-size="10" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">Cadre 6×6 · 204</text>
+<text x="411.6" y="193.4" font-size="9" fill="#8a919c" stroke="#1d2b3a" stroke-width="3" stroke-linejoin="round" paint-order="stroke" text-anchor="middle">2 × Wind-up</text>
+<line x1="16" y1="462" x2="116" y2="462" stroke="#d9dde3" stroke-width="2"/><line x1="16" y1="458" x2="16" y2="466" stroke="#d9dde3" stroke-width="2"/><line x1="116" y1="458" x2="116" y2="466" stroke="#d9dde3" stroke-width="2"/>
+<text x="66" y="455" fill="#d9dde3" font-size="11" text-anchor="middle">20 m</text>

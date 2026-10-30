@@ -1,0 +1,16 @@
+﻿Univers;Adresse;Fin;Projecteur;Modèle;Mode;Canaux
+1;1;1;M18 rebond;ARRI ARRI M18 (HMI 1,8 kW);Ballast : gradation (1 canal);1
+1;2;13;S360 face;ARRI Skypanel S360C;P01: CCT & RGBW 8bit;12
+1;14;20;Nova débouchage;Aputure Nova P300c;CCT&RGB;7
+1;21;23;SL1 regard;DMG Lumière SL1 MIX;1: White 8-bit;3
+1;24;29;600D contre jardin;Aputure LS 600D Pro;Lighting & Effect 8-bit;6
+1;30;30;600D contre cour;Aputure LS 600D;Lighting 8-bit;1
+1;31;42;S60 lune;ARRI Skypanel S60C;P01: CCT & RGBW 8bit;12
+1;43;45;Titan enseigne 1;Astera Titan Tube;RGB;3
+1;46;48;Titan enseigne 2;Astera Titan Tube;RGB;3
+1;49;51;NYX guinguette 1;Astera NYX Bulb;RGB;3
+1;52;54;NYX guinguette 2;Astera NYX Bulb;RGB;3
+1;55;57;NYX guinguette 3;Astera NYX Bulb;RGB;3
+1;58;60;Helios voiture;Astera Helios Tube;RGB;3
+1;61;64;Wasp lampadaire;Hive Lighting Wasp 100-C;HSI;4
+1;65;65;Baby 1K porte du café;Mole-Richardson Mole Baby 1K;Gradateur (1 canal);1

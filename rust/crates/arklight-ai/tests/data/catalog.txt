@@ -1,0 +1,78 @@
+PROJECTEURS (id — marque modèle) :
+astera.quikspot — Astera QuikSpot
+astera.quikpunch — Astera QuikPunch
+astera.quikbeam — Astera QuikBeam
+astera.quikbeam-connect — Astera QuikBeam Connect
+astera.art7 — Astera AsteraBox (sans DMX)
+astera.art7-wifi — Astera AsteraBox WIFI (sans DMX)
+astera.titan — Astera Titan Tube
+astera.titan-btb — Astera Titan Tube BTB
+astera.helios — Astera Helios Tube
+astera.helios-btb — Astera Helios Tube BTB
+astera.hyperion — Astera Hyperion Tube
+astera.hyperion-btb — Astera Hyperion Tube BTB
+astera.ax1 — Astera AX1 PixelTube
+astera.ax1-btb — Astera AX1 PixelTube BTB
+astera.ax2-100 — Astera AX2 PixelBar 100
+astera.ax2-50 — Astera AX2 PixelBar 50
+astera.hydrapanel — Astera HydraPanel
+astera.pixelbrick — Astera PixelBrick
+astera.ax10 — Astera AX10 SpotMax
+astera.ax9 — Astera AX9 PowerPAR
+astera.nyx — Astera NYX Bulb
+astera.solabulb — Astera SolaBulb
+astera.lunabulb — Astera LunaBulb
+astera.pluto — Astera Pluto (PlutoFresnel)
+astera.leo — Astera Leo (LeoFresnel)
+astera.ax3 — Astera AX3 Lightdrop
+astera.ax3-btb — Astera AX3 Lightdrop BTB
+astera.ax5 — Astera AX5 TriplePAR
+astera.ax5-btb — Astera AX5 TriplePAR BTB
+astera.ax7 — Astera AX7 SpotLite
+arri.skypanel-s30c — ARRI Skypanel S30C
+arri.skypanel-s60c — ARRI Skypanel S60C
+arri.skypanel-s120c — ARRI Skypanel S120C
+arri.skypanel-s360c — ARRI Skypanel S360C
+arri.l5-c — ARRI L5-C
+arri.l7-c — ARRI L7-C
+arri.l10-c — ARRI L10-C
+arri.broadcaster-2-plus — ARRI Broadcaster 2 Plus
+aputure.ls-600d-pro — Aputure LS 600D Pro
+aputure.ls-600d — Aputure LS 600D
+aputure.ls-600x-pro — Aputure LS 600X Pro
+aputure.ls-1200d-pro — Aputure LS 1200D Pro
+aputure.ls-300x — Aputure LS 300x
+aputure.c300d — Aputure LS C300d
+aputure.nova-p300c — Aputure Nova P300c
+dedolight.dled4-bi — Dedolight DLED4-BI
+dedolight.dled7-bi — Dedolight DLED7-BI
+dmg-lumiere.sl1-mix — DMG Lumière SL1 MIX
+dmg-lumiere.maxi-mix — DMG Lumière MAXI MIX
+dmg-lumiere.mini-mix — DMG Lumière MINI MIX
+kino-flo.celeb-250-led-dmx — Kino Flo Celeb 250 LED DMX
+kino-flo.celeb-450-led-dmx — Kino Flo Celeb 450 LED DMX
+kino-flo.celeb-led-201-dmx — Kino Flo Celeb LED 201 DMX
+litegear.litemat-plus-2 — LiteGear LiteMat Plus 2
+litegear.litemat-plus-4 — LiteGear LiteMat Plus 4
+litegear.s2-litemat-2 — LiteGear S2 LiteMat 2
+litegear.s2-litemat-4 — LiteGear S2 LiteMat 4
+hive.wasp-100-c — Hive Lighting Wasp 100-C
+hive.hornet-200-c — Hive Lighting Hornet 200-C
+hive.super-hornet-575-c — Hive Lighting Super Hornet 575-C
+arri.650-plus — ARRI ARRI 650 Plus
+mole.tweenie-ii — Mole-Richardson Mole Tweenie II 650 W
+mole.baby-1k — Mole-Richardson Mole Baby 1K
+mole.baby-junior-2k — Mole-Richardson Mole Baby Junior 2K
+dedolight.dlh4 — Dedolight Dedolight DLH4 150 W
+dedolight.dlh650 — Dedolight Dedolight DLH650
+ianiro.redhead-800 — Ianiro Ianiro Redhead 800 W
+ianiro.blonde-2000 — Ianiro Ianiro Blonde 2000 W
+generic.par64-cp62 — PAR64 PAR64 1000 W (lampe CP62)
+generic.par64-cp60 — PAR64 PAR64 1000 W (lampe CP60)
+mole.molefay-9 — Mole-Richardson Mole 9-Light Molefay
+arri.m18 — ARRI ARRI M18 (HMI 1,8 kW)
+k5600.joker2-800 — K5600 K5600 Joker² 800 (HMI)
+
+DÉCOR, PERSONNAGES, VÉHICULES (id — nom) : person-man — Homme; person-woman — Femme; person-child — Enfant; person-walking — Marcheur; person-sitting — Assis; person-lying — Allongé; person-crossed — Bras croisés; person-phone — Au téléphone; person-pointing — Montre; person-handsup — Bras levés; dog — Chien; dog-small — Petit chien; cat — Chat; horse — Cheval; donkey — Âne; cow — Vache; sheep — Mouton; goat — Chèvre; pig — Cochon; deer — Cerf; chicken — Poule; duck — Canard; pigeon — Pigeon; car-city — Citadine; car-sedan — Berline; car-suv — SUV; car-pickup — Pick-up; van — Utilitaire; van-large — Fourgon; truck — Camion; generator — Groupe; caravan — Loge; motorbike — Moto; scooter — Scooter; bicycle — Vélo; chair — Chaise; stool — Tabouret; bar-stool — Tabouret de bar; armchair — Fauteuil; sofa-2 — Canapé; sofa-3 — Canapé; table-rect — Table; table-round — Table ronde; coffee-table — Table basse; desk — Bureau; bed-single — Lit; bed-double — Lit double; nightstand — Chevet; wardrobe — Armoire; dresser — Commode; bookcase — Bibliothèque; bar-counter — Comptoir; kitchen — Cuisine; fridge — Frigo; tv — Télé; piano — Piano; floor-lamp — Lampadaire; plant — Plante; rug — Tapis; coat-rack — Porte-manteau; screen-divider — Paravent; wall-flat — Mur; wall-door — Mur porte; wall-window — Mur fenêtre; door — Porte; window — Fenêtre; stairs — Escalier; riser — Praticable; column — Colonne; drape — Borniol; tree — Arbre; pine — Sapin; palm — Palmier; bush — Buisson; rock — Rocher; streetlamp — Réverbère; bench — Banc; bin — Poubelle; barrier — Barrière; traffic-cone — Cône; road-sign — Panneau; traffic-light — Feu; suitcase — Valise; cardboard — Carton; crate — Caisse; flightcase — Flight case; bottle — Bouteille; wine-glass — Verre; mug — Tasse; books — Livres; laptop — Portable; guitar — Guitare; mic-stand — Micro; camera-tripod — Caméra; camera-dolly — Travelling; director-chair — Chaise réal; monitor-stand — Moniteur; boom-stand — Perche
+
+GRIP ET PIEDS (id — nom) : frame-6x6 — Cadre 6×6; frame-8x8 — Cadre 8×8; frame-12x12 — Cadre 12×12; frame-20x20 — Cadre 20×20; flag-18x24 — Drapeau 18×24; flag-24x36 — Drapeau 24×36; floppy — Floppy; poly-4x8 — Polystyrène; reflector-1m — Réflecteur; applebox-full — Cube plein; applebox-half — Demi-cube; applebox-quarter — Quart de cube; applebox-pancake — Galette; sandbag — Sac de sable; stand-1000 — Pied 1000; stand-baby-5k — Baby 5K; stand-junior — Pied junior; windup — Wind-up; super-windup — Super Wind-Up; long-john — Long John; cstand — C-stand; lowboy — Low-boy

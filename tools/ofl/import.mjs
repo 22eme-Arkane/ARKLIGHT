@@ -68,6 +68,9 @@ function channelDef(name, ch, maxValue) {
   const types = new Set(caps.map((c) => c.type));
   const n = name.toLowerCase();
   const def = { label: name };
+  // teinte et saturation d'abord : certains profils décrivent la saturation comme une « Intensity » (Nova P300c)
+  if (/^hue$|^hue \d$/.test(n)) return { ...def, f: 'hue' };
+  if (/^saturation$|^saturation \d$/.test(n)) return { ...def, f: 'sat' };
   if (caps.length && caps.every((c) => c.type === 'Intensity')) return { ...def, f: 'dimmer' };
   const color = caps.find((c) => c.type === 'ColorIntensity');
   if (color && caps.every((c) => c.type === 'ColorIntensity' || c.type === 'NoFunction')) return { ...def, f: COLOR_FN[color.color] || 'none' };
@@ -89,8 +92,6 @@ function channelDef(name, ch, maxValue) {
     return { ...def, f: 'tint', ...(neutral ? { neutral: +(neutral.dmxRange[1] / maxValue).toFixed(4) } : {}) };
   }
   if (/cross ?fade|crossfade|cct ?<-> ?(rgb|hsi)/.test(n)) return { ...def, f: 'crossfade' };
-  if (/^hue$|^hue \d$/.test(n)) return { ...def, f: 'hue' };
-  if (/^saturation$|^saturation \d$/.test(n)) return { ...def, f: 'sat' };
   if (/^(cie )?x$|colorspace x/.test(n)) return { ...def, f: 'x', range: [0, 1] };
   if (/^(cie )?y$|colorspace y/.test(n)) return { ...def, f: 'y', range: [0, 1] };
   return { ...def, f: 'none' };

@@ -89,8 +89,10 @@ const beamFragment = /* glsl */ `
     return k;
   }
   void main() {
-    float edge = pow(abs(dot(vNormalV, vViewV)), 1.6);
-    float along = pow(1.0 - vAlong, 1.4) * smoothstep(0.0, 0.04, vAlong);
+    // bornes avant pow() : au bord du cône, l'interpolation donne parfois vAlong = 1,0000001 ;
+    // pow() d'un nombre négatif est indéfini (NaN) et dessinait des cercles pointillés noirs
+    float edge = pow(clamp(abs(dot(vNormalV, vViewV)), 0.0, 1.0), 1.6);
+    float along = pow(clamp(1.0 - vAlong, 0.0, 1.0), 1.4) * smoothstep(0.0, 0.04, vAlong);
     float a = uIntensity * edge * along;
     if (uOccCount > 0) a *= occlusion();
     gl_FragColor = vec4(uColor * a, 1.0);

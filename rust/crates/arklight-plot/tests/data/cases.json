@@ -1,0 +1,1796 @@
+{
+ "date": "27/10/2026",
+ "svg": [
+  {
+   "name": "night-export",
+   "project": "demo-night.json",
+   "kind": "export",
+   "options": {
+    "names": true,
+    "fixtures": true,
+    "addresses": true,
+    "supports": true,
+    "beams": true,
+    "grid": true,
+    "underlay": true,
+    "stands": true,
+    "grip": true,
+    "sandbags": false,
+    "studio": false,
+    "annotations": false,
+    "people": false,
+    "animals": false,
+    "vehicles": false,
+    "furniture": false,
+    "set": false,
+    "outdoor": false,
+    "props": false,
+    "filmset": false
+   },
+   "file": "night-export.svg"
+  },
+  {
+   "name": "clip-export-dark",
+   "project": "demo-clip.json",
+   "kind": "export",
+   "options": {
+    "names": true,
+    "fixtures": true,
+    "addresses": true,
+    "supports": true,
+    "beams": true,
+    "grid": true,
+    "underlay": true,
+    "stands": true,
+    "grip": true,
+    "sandbags": true,
+    "studio": true,
+    "annotations": true,
+    "people": true,
+    "animals": true,
+    "vehicles": true,
+    "furniture": true,
+    "set": true,
+    "outdoor": true,
+    "props": true,
+    "filmset": true
+   },
+   "plot": {
+    "background": "#2b2f36"
+   },
+   "file": "clip-export-dark.svg"
+  },
+  {
+   "name": "catalogue-export",
+   "project": "catalogue.json",
+   "kind": "export",
+   "options": {
+    "names": true,
+    "fixtures": true,
+    "addresses": true,
+    "supports": true,
+    "beams": true,
+    "grid": true,
+    "underlay": true,
+    "stands": true,
+    "grip": true,
+    "sandbags": true,
+    "studio": true,
+    "annotations": true,
+    "people": true,
+    "animals": true,
+    "vehicles": true,
+    "furniture": true,
+    "set": true,
+    "outdoor": true,
+    "props": true,
+    "filmset": true
+   },
+   "file": "catalogue-export.svg"
+  },
+  {
+   "name": "night-screen",
+   "project": "demo-night.json",
+   "kind": "render",
+   "theme": "screen",
+   "view": {
+    "cx": -1,
+    "cz": 0.5,
+    "s": 38,
+    "W": 1280,
+    "H": 760
+   },
+   "options": {
+    "names": true,
+    "fixtures": true,
+    "addresses": true,
+    "supports": true,
+    "beams": true,
+    "grid": true,
+    "underlay": true,
+    "stands": true,
+    "grip": true,
+    "sandbags": true,
+    "studio": true,
+    "annotations": true,
+    "people": true,
+    "animals": true,
+    "vehicles": true,
+    "furniture": true,
+    "set": true,
+    "outdoor": true,
+    "props": true,
+    "filmset": true
+   },
+   "plot": {
+    "items": [
+     {
+      "id": "pmvqtb56siwh1",
+      "kind": "rect",
+      "points": [
+       [
+        -8.4,
+        -3.7
+       ],
+       [
+        -2.9,
+        0.9
+       ]
+      ],
+      "text": "Terrasse du café",
+      "style": {
+       "stroke": "#c792ea",
+       "fill": "none",
+       "width": 2,
+       "dash": true,
+       "size": 16
+      },
+      "height": 0
+     },
+     {
+      "id": "pmvqtb56s5ysg",
+      "kind": "arrow",
+      "points": [
+       [
+        -7.5,
+        3.1
+       ],
+       [
+        5.5,
+        3.1
+       ]
+      ],
+      "text": "Passage des figurants",
+      "style": {
+       "stroke": "#3ddc84",
+       "fill": "none",
+       "width": 2,
+       "dash": false,
+       "size": 16
+      },
+      "height": 0
+     },
+     {
+      "id": "pmvqtb56s324d",
+      "kind": "measure",
+      "points": [
+       [
+        0.2,
+        4.4
+       ],
+       [
+        0,
+        0.3
+       ]
+      ],
+      "text": "",
+      "style": {
+       "stroke": "#5aa9ff",
+       "fill": "none",
+       "width": 2,
+       "dash": false,
+       "size": 16
+      },
+      "height": 0
+     },
+     {
+      "id": "pmvqtb56s9dlg",
+      "kind": "text",
+      "points": [
+       [
+        7.6,
+        -7.2
+       ]
+      ],
+      "text": "Régie",
+      "style": {
+       "stroke": "#9aa3ae",
+       "fill": "none",
+       "width": 2,
+       "dash": false,
+       "size": 18
+      },
+      "height": 0
+     },
+     {
+      "id": "pmvqtb56suwtf",
+      "kind": "text",
+      "points": [
+       [
+        9.2,
+        5.6
+       ]
+      ],
+      "text": "Groupe à 50 m",
+      "style": {
+       "stroke": "#9aa3ae",
+       "fill": "none",
+       "width": 2,
+       "dash": false,
+       "size": 14
+      },
+      "height": 0
+     },
+     {
+      "id": "x-ell",
+      "kind": "ellipse",
+      "points": [
+       [
+        1,
+        -6
+       ],
+       [
+        4,
+        -4.5
+       ]
+      ],
+      "text": "Kiosque",
+      "style": {
+       "stroke": "#0f1216",
+       "fill": "#5aa9ff",
+       "width": 3,
+       "dash": false,
+       "size": 18
+      },
+      "height": 3
+     },
+     {
+      "id": "x-poly",
+      "kind": "polygon",
+      "points": [
+       [
+        -8,
+        5
+       ],
+       [
+        -6,
+        6
+       ],
+       [
+        -7,
+        7.5
+       ]
+      ],
+      "text": "Zone",
+      "style": {
+       "stroke": "#ffad3b",
+       "fill": "none",
+       "width": 2,
+       "dash": true
+      },
+      "height": 0
+     },
+     {
+      "id": "x-free",
+      "kind": "freehand",
+      "points": [
+       [
+        2,
+        5
+       ],
+       [
+        2.5,
+        5.2
+       ],
+       [
+        3,
+        5.1
+       ]
+      ],
+      "text": "trace",
+      "style": {
+       "stroke": "#c792ea",
+       "fill": "#c792ea",
+       "width": 1
+      }
+     },
+     {
+      "id": "x-line",
+      "kind": "line",
+      "points": [
+       [
+        6,
+        -2
+       ],
+       [
+        8,
+        1
+       ]
+      ],
+      "text": "Câble 32 A",
+      "style": {
+       "stroke": "red"
+      }
+     }
+    ],
+    "underlay": {
+     "url": "uploads/plan.png",
+     "x": 1,
+     "z": -2,
+     "width": 12,
+     "aspect": 1.5,
+     "rotation": 15,
+     "opacity": 0.5
+    }
+   },
+   "sel": {
+    "fixtures": [
+     "fmvqtb56p6whj",
+     "fmvqtb56qlhl0"
+    ],
+    "objectId": "omvqtb56rrniq",
+    "plotId": "pmvqtb56siwh1"
+   },
+   "preview": {
+    "kind": "polygon",
+    "points": [
+     [
+      0,
+      0
+     ],
+     [
+      1.5,
+      0.5
+     ],
+     [
+      1,
+      2
+     ]
+    ],
+    "style": {
+     "stroke": "#ffad3b",
+     "fill": "none",
+     "width": 2,
+     "dash": false,
+     "size": 14
+    }
+   },
+   "handles": [
+    {
+     "kind": "rotate",
+     "x": 0.5,
+     "z": 4.2
+    },
+    {
+     "kind": "vertex",
+     "x": -2,
+     "z": 1
+    }
+   ],
+   "outputs": {
+    "fmvqtb56p6whj": [
+     0,
+     0,
+     0
+    ],
+    "fmvqtb56qal1h": [
+     0.74,
+     0.06,
+     0.42
+    ],
+    "fmvqtb56qi9uf": [
+     0.11,
+     0.59,
+     0.13
+    ],
+    "fmvqtb56qum8m": [
+     0.85,
+     0.65,
+     0.55
+    ],
+    "fmvqtb56qbjhb": [
+     0.22,
+     0.18,
+     0.26
+    ],
+    "fmvqtb56qrixl": [
+     0.96,
+     0.24,
+     0.68,
+     0.07,
+     0.31,
+     0.71,
+     0.18,
+     0.38,
+     0.74,
+     0.29,
+     0.45,
+     0.77,
+     0.4,
+     0.52,
+     0.8,
+     0.51,
+     0.59,
+     0.83,
+     0.62,
+     0.66,
+     0.86,
+     0.73,
+     0.73,
+     0.89,
+     0.84,
+     0.8,
+     0.92,
+     0.95,
+     0.87,
+     0.95,
+     0.06,
+     0.94,
+     0.98,
+     0.17,
+     0.01,
+     0.01,
+     0.28,
+     0.08,
+     0.04,
+     0.39,
+     0.15,
+     0.07,
+     0.5,
+     0.22,
+     0.1,
+     0.61,
+     0.29,
+     0.13
+    ],
+    "fmvqtb56q3uku": [
+     0,
+     0,
+     0.001
+    ],
+    "fmvqtb56qfyf0": [
+     0.07,
+     0.83,
+     0.81
+    ],
+    "fmvqtb56q8b20": [
+     0.44,
+     0.36,
+     0.52,
+     0.55,
+     0.43,
+     0.55,
+     0.66,
+     0.5,
+     0.58,
+     0.77,
+     0.57,
+     0.61,
+     0.88,
+     0.64,
+     0.64,
+     0.99,
+     0.71,
+     0.67,
+     0.1,
+     0.78,
+     0.7,
+     0.21,
+     0.85,
+     0.73
+    ],
+    "fmvqtb56q604r": [
+     0,
+     0,
+     0.001
+    ]
+   },
+   "file": "night-screen.svg"
+  },
+  {
+   "name": "clip-light",
+   "project": "demo-clip.json",
+   "kind": "render",
+   "theme": "print",
+   "view": {
+    "cx": 0,
+    "cz": -2,
+    "s": 22,
+    "W": 900,
+    "H": 700
+   },
+   "options": {
+    "names": false,
+    "fixtures": false,
+    "addresses": true,
+    "supports": false,
+    "beams": false,
+    "grid": false,
+    "underlay": true,
+    "stands": true,
+    "grip": true,
+    "sandbags": false,
+    "studio": true,
+    "annotations": true,
+    "people": true,
+    "animals": false,
+    "vehicles": true,
+    "furniture": false,
+    "set": false,
+    "outdoor": false,
+    "props": false,
+    "filmset": false
+   },
+   "plot": {
+    "background": "#c9ccd1"
+   },
+   "file": "clip-light.svg"
+  },
+  {
+   "name": "catalogue-small",
+   "project": "catalogue.json",
+   "kind": "render",
+   "theme": "screen",
+   "view": {
+    "cx": 0,
+    "cz": 0,
+    "s": 5,
+    "W": 640,
+    "H": 480
+   },
+   "options": {
+    "names": true,
+    "fixtures": true,
+    "addresses": false,
+    "supports": true,
+    "beams": true,
+    "grid": true,
+    "underlay": true,
+    "stands": true,
+    "grip": true,
+    "sandbags": true,
+    "studio": false,
+    "annotations": false,
+    "people": false,
+    "animals": false,
+    "vehicles": false,
+    "furniture": false,
+    "set": false,
+    "outdoor": false,
+    "props": false,
+    "filmset": false
+   },
+   "plot": {
+    "background": "#1d2b3a"
+   },
+   "file": "catalogue-small.svg"
+  }
+ ],
+ "titleBlocks": [
+  {
+   "W": 1754,
+   "H": 1240,
+   "title": {
+    "production": "Pub « Été »",
+    "scene": "Cuisine & salon",
+    "author": "Lou",
+    "plan": "Séq. 2 › Plan 3"
+   },
+   "theme": "print",
+   "background": null,
+   "date": "27/10/2026",
+   "svg": "<g><rect x=\"1438\" y=\"1134\" width=\"300\" height=\"90\" fill=\"#ffffff\" stroke=\"#111418\" stroke-width=\"1.2\"/>\n<text x=\"1448\" y=\"1154\" font-size=\"14\" font-weight=\"700\" fill=\"#111418\">Pub « Été »</text>\n<text x=\"1448\" y=\"1172\" font-size=\"11\" fill=\"#111418\">Cuisine &amp; salon</text>\n<text x=\"1448\" y=\"1188\" font-size=\"11\" font-weight=\"600\" fill=\"#111418\">Séq. 2 › Plan 3</text>\n<text x=\"1448\" y=\"1204\" font-size=\"10\" fill=\"#5d6470\">Chef électro : Lou</text>\n<text x=\"1728\" y=\"1216\" font-size=\"9\" fill=\"#5d6470\" text-anchor=\"end\">27/10/2026 · ARKLIGHT</text></g>"
+  },
+  {
+   "W": 800,
+   "H": 600,
+   "title": {
+    "scene": ""
+   },
+   "theme": "screen",
+   "background": "#000000",
+   "date": "27/10/2026",
+   "svg": "<g><rect x=\"484\" y=\"510\" width=\"300\" height=\"74\" fill=\"#000000\" stroke=\"#d9dde3\" stroke-width=\"1.2\"/>\n<text x=\"494\" y=\"530\" font-size=\"14\" font-weight=\"700\" fill=\"#d9dde3\">Plan de feu</text>\n<text x=\"494\" y=\"548\" font-size=\"11\" fill=\"#d9dde3\"></text>\n<text x=\"494\" y=\"564\" font-size=\"10\" fill=\"#8a919c\"></text>\n<text x=\"774\" y=\"576\" font-size=\"9\" fill=\"#8a919c\" text-anchor=\"end\">27/10/2026 · ARKLIGHT</text></g>"
+  },
+  {
+   "W": 1000,
+   "H": 700,
+   "title": {
+    "production": "",
+    "scene": "Nuit",
+    "author": ""
+   },
+   "theme": "print",
+   "background": "#c9ccd1",
+   "date": "27/10/2026",
+   "svg": "<g><rect x=\"684\" y=\"610\" width=\"300\" height=\"74\" fill=\"#c9ccd1\" stroke=\"#111418\" stroke-width=\"1.2\"/>\n<text x=\"694\" y=\"630\" font-size=\"14\" font-weight=\"700\" fill=\"#111418\">Plan de feu</text>\n<text x=\"694\" y=\"648\" font-size=\"11\" fill=\"#111418\">Nuit</text>\n<text x=\"694\" y=\"664\" font-size=\"10\" fill=\"#5d6470\"></text>\n<text x=\"974\" y=\"676\" font-size=\"9\" fill=\"#5d6470\" text-anchor=\"end\">27/10/2026 · ARKLIGHT</text></g>"
+  }
+ ],
+ "csv": [
+  {
+   "project": "demo-night.json",
+   "equipment": "night-equipment.csv",
+   "patch": "night-patch.csv"
+  },
+  {
+   "project": "demo-clip.json",
+   "equipment": "clip-equipment.csv",
+   "patch": "clip-patch.csv"
+  },
+  {
+   "project": "catalogue.json",
+   "equipment": "catalogue-equipment.csv",
+   "patch": "catalogue-patch.csv"
+  }
+ ],
+ "geometry": {
+  "rotateYaw": [
+   {
+    "rotation": [
+     0,
+     0,
+     0
+    ],
+    "delta": 0.5,
+    "out": [
+     0,
+     0.5,
+     0
+    ]
+   },
+   {
+    "rotation": [
+     0.3,
+     -0.6,
+     0.9
+    ],
+    "delta": -1.2,
+    "out": [
+     2.349,
+     -1.221,
+     3.108
+    ]
+   },
+   {
+    "rotation": [
+     -2.756,
+     -1.181,
+     -2.782
+    ],
+    "delta": 0.08726646259971647,
+    "out": [
+     -2.655,
+     -1.26,
+     -2.675
+    ]
+   },
+   {
+    "rotation": [
+     1.5707963267948966,
+     0,
+     0
+    ],
+    "delta": 2,
+    "out": [
+     1.571,
+     0,
+     -2
+    ]
+   },
+   {
+    "rotation": [
+     0,
+     1.5707963267948966,
+     0
+    ],
+    "delta": 0.1,
+    "out": [
+     -3.142,
+     1.471,
+     -3.142
+    ]
+   }
+  ],
+  "distToSegment": [
+   {
+    "p": [
+     0.5,
+     1
+    ],
+    "a": [
+     0,
+     0
+    ],
+    "b": [
+     1,
+     0
+    ],
+    "d": 1
+   },
+   {
+    "p": [
+     -2,
+     0.3
+    ],
+    "a": [
+     0,
+     0
+    ],
+    "b": [
+     1,
+     0
+    ],
+    "d": 2.0223748416156684
+   },
+   {
+    "p": [
+     3,
+     4
+    ],
+    "a": [
+     1,
+     1
+    ],
+    "b": [
+     1,
+     1
+    ],
+    "d": 3.6055512754639896
+   },
+   {
+    "p": [
+     0.25,
+     -0.75
+    ],
+    "a": [
+     -1.5,
+     2
+    ],
+    "b": [
+     2.5,
+     -3
+    ],
+    "d": 0.35139096424936384
+   }
+  ],
+  "fixturePlans": [
+   {
+    "project": "demo-night.json",
+    "id": "fmvqtb56p6whj",
+    "plan": {
+     "poly": [
+      [
+       -1.2698544806177212,
+       5.089958910529792
+      ],
+      [
+       -1.1418041658326672,
+       4.753502234382689
+      ],
+      [
+       -1.09366520400459,
+       4.771666265197216
+      ],
+      [
+       -0.7301455193822788,
+       4.910041089470208
+      ],
+      [
+       -0.8581958341673328,
+       5.246497765617311
+      ],
+      [
+       -0.9063347959954099,
+       5.228333734802784
+      ]
+     ],
+     "center": [
+      -1,
+      5
+     ],
+     "dir": [
+      -0.9345808127963061,
+      -0.355750902111289
+     ],
+     "down": false,
+     "front": [
+      -1.1817598423111557,
+      4.930812587863504
+     ],
+     "height": 3
+    }
+   },
+   {
+    "project": "demo-night.json",
+    "id": "fmvqtb56q0726",
+    "plan": {
+     "poly": [
+      [
+       5.258794521646229,
+       5.024607028023884
+      ],
+      [
+       6.062788627560666,
+       3.9638741944411007
+      ],
+      [
+       6.208718380107903,
+       4.0744654466130195
+      ],
+      [
+       6.34120547835377,
+       4.175392971976115
+      ],
+      [
+       5.537211372439334,
+       5.236125805558899
+      ],
+      [
+       5.391281619892097,
+       5.12553455338698
+      ]
+     ],
+     "center": [
+      5.8,
+      4.6
+     ],
+     "dir": [
+      -0.7969911676614474,
+      -0.6039909590959475
+     ],
+     "down": false,
+     "front": [
+      5.727035123726382,
+      4.5447043739140405
+     ],
+     "height": 2.7
+    }
+   },
+   {
+    "project": "demo-night.json",
+    "id": "fmvqtb56qal1h",
+    "plan": {
+     "poly": [
+      [
+       -3.081131526342611,
+       3.4992319461410846
+      ],
+      [
+       -2.9759793054023547,
+       3.371458855923921
+      ],
+      [
+       -2.952801047068696,
+       3.3436315915254666
+      ],
+      [
+       -2.5188684736573888,
+       3.7007680538589156
+      ],
+      [
+       -2.624020694597645,
+       3.828541144076079
+      ],
+      [
+       -2.6471989529313036,
+       3.8563684084745335
+      ]
+     ],
+     "center": [
+      -2.8,
+      3.6
+     ],
+     "dir": [
+      0.6354455111712449,
+      -0.7721457131476643
+     ],
+     "down": false,
+     "front": [
+      -2.7474238895298715,
+      3.5361134548914186
+     ],
+     "height": 1.8
+    }
+   },
+   {
+    "project": "demo-night.json",
+    "id": "fmvqtb56qi9uf",
+    "plan": {
+     "poly": [
+      [
+       0.37554046168714506,
+       2.594686018244575
+      ],
+      [
+       1.406860271129029,
+       2.1630574044423003
+      ],
+      [
+       1.4211323178631727,
+       2.197156975878866
+      ],
+      [
+       1.4244595383128549,
+       2.205313981755425
+      ],
+      [
+       0.39313972887097093,
+       2.6369425955576995
+      ],
+      [
+       0.3788676821368272,
+       2.602843024121134
+      ]
+     ],
+     "center": [
+      0.9,
+      2.4
+     ],
+     "dir": [
+      -0.3860876201599739,
+      -0.9224621128042104
+     ],
+     "down": false,
+     "front": [
+      0.8928639766329282,
+      2.382950214281717
+     ],
+     "height": 1.7
+    }
+   },
+   {
+    "project": "demo-night.json",
+    "id": "fmvqtb56qo1ky",
+    "plan": {
+     "poly": [
+      [
+       -1.6918821121304166,
+       -4.474234322714244
+      ],
+      [
+       -1.5560168031210113,
+       -4.509628924104612
+      ],
+      [
+       -1.5434818093247016,
+       -4.461513882675364
+      ],
+      [
+       -1.5081178878695836,
+       -4.325765677285757
+      ],
+      [
+       -1.6439831968789889,
+       -4.290371075895389
+      ],
+      [
+       -1.6565181906752986,
+       -4.338486117324637
+      ]
+     ],
+     "center": [
+      -1.6,
+      -4.4
+     ],
+     "dir": [
+      0.2520971457095149,
+      0.9677019319630997
+     ],
+     "down": false,
+     "front": [
+      -1.5823180392724412,
+      -4.332125897305197
+     ],
+     "height": 3.4
+    }
+   },
+   {
+    "project": "demo-night.json",
+    "id": "fmvqtb56qum8m",
+    "plan": {
+     "poly": [
+      [
+       2.8985177998185687,
+       -4.162169935523083
+      ],
+      [
+       2.9531011713690876,
+       -4.260102056488835
+      ],
+      [
+       2.9788540767189113,
+       -4.306200387067343
+      ],
+      [
+       3.1014822001814313,
+       -4.237830064476918
+      ],
+      [
+       3.0468988286309124,
+       -4.139897943511166
+      ],
+      [
+       3.0211459232810887,
+       -4.093799612932657
+      ]
+     ],
+     "center": [
+      3,
+      -4.2
+     ],
+     "dir": [
+      -0.4868463808107503,
+      0.8734876080926813
+     ],
+     "down": false,
+     "front": [
+      2.9727083142247404,
+      -4.1510339395171245
+     ],
+     "height": 3.6
+    }
+   },
+   {
+    "project": "demo-night.json",
+    "id": "fmvqtb56qbjhb",
+    "plan": {
+     "poly": [
+      [
+       4.913411963680067,
+       -3.2224102831007966
+      ],
+      [
+       5.019065619460709,
+       -3.292836411497779
+      ],
+      [
+       5.105009828833171,
+       -3.350077328994473
+      ],
+      [
+       5.486588036319933,
+       -2.7775897168992034
+      ],
+      [
+       5.3809343805392915,
+       -2.707163588502221
+      ],
+      [
+       5.2949901711668295,
+       -2.649922671005527
+      ]
+     ],
+     "center": [
+      5.2,
+      -3
+     ],
+     "dir": [
+      -0.8320853407324511,
+      0.5546476230348065
+     ],
+     "down": false,
+     "front": [
+      5.14717317210968,
+      -2.964786935801509
+     ],
+     "height": 3.2
+    }
+   },
+   {
+    "project": "demo-night.json",
+    "id": "fmvqtb56qlhl0",
+    "plan": {
+     "poly": [
+      [
+       -3.92,
+       -3.27
+      ],
+      [
+       -3.88,
+       -3.27
+      ],
+      [
+       -3.88,
+       -3.23
+      ],
+      [
+       -3.92,
+       -3.23
+      ]
+     ],
+     "center": [
+      -3.9,
+      -3.25
+     ],
+     "dir": null,
+     "down": false,
+     "front": [
+      -3.9,
+      -3.23
+     ],
+     "height": 2.4
+    }
+   },
+   {
+    "project": "demo-night.json",
+    "id": "fmvqtb56qrixl",
+    "plan": {
+     "poly": [
+      [
+       -5.619999999999999,
+       -3.27
+      ],
+      [
+       -5.58,
+       -3.27
+      ],
+      [
+       -5.58,
+       -3.23
+      ],
+      [
+       -5.619999999999999,
+       -3.23
+      ]
+     ],
+     "center": [
+      -5.6,
+      -3.25
+     ],
+     "dir": null,
+     "down": false,
+     "front": [
+      -5.6,
+      -3.23
+     ],
+     "height": 2.4
+    }
+   },
+   {
+    "project": "demo-night.json",
+    "id": "fmvqtb56q3uku",
+    "plan": {
+     "poly": [
+      [
+       -3.935,
+       -1.635
+      ],
+      [
+       -3.8649999999999998,
+       -1.635
+      ],
+      [
+       -3.8649999999999998,
+       -1.5650000000000002
+      ],
+      [
+       -3.935,
+       -1.5650000000000002
+      ]
+     ],
+     "center": [
+      -3.9,
+      -1.6
+     ],
+     "dir": null,
+     "down": false,
+     "front": [
+      -3.9,
+      -1.5650000000000002
+     ],
+     "height": 2.6
+    }
+   },
+   {
+    "project": "demo-night.json",
+    "id": "fmvqtb56qdiii",
+    "plan": {
+     "poly": [
+      [
+       -4.9350000000000005,
+       -1.035
+      ],
+      [
+       -4.865,
+       -1.035
+      ],
+      [
+       -4.865,
+       -0.965
+      ],
+      [
+       -4.9350000000000005,
+       -0.965
+      ]
+     ],
+     "center": [
+      -4.9,
+      -1
+     ],
+     "dir": null,
+     "down": false,
+     "front": [
+      -4.9,
+      -0.965
+     ],
+     "height": 2.6
+    }
+   },
+   {
+    "project": "demo-night.json",
+    "id": "fmvqtb56qfyf0",
+    "plan": {
+     "poly": [
+      [
+       -5.9350000000000005,
+       -0.43500000000000005
+      ],
+      [
+       -5.865,
+       -0.43500000000000005
+      ],
+      [
+       -5.865,
+       -0.365
+      ],
+      [
+       -5.9350000000000005,
+       -0.365
+      ]
+     ],
+     "center": [
+      -5.9,
+      -0.4
+     ],
+     "dir": null,
+     "down": false,
+     "front": [
+      -5.9,
+      -0.365
+     ],
+     "height": 2.6
+    }
+   },
+   {
+    "project": "demo-night.json",
+    "id": "fmvqtb56q8b20",
+    "plan": {
+     "poly": [
+      [
+       0.28019596768124627,
+       -1.9197959668598872
+      ],
+      [
+       0.31979596685988737,
+       -1.9198040323187535
+      ],
+      [
+       0.3198040323187537,
+       -1.8802040331401126
+      ],
+      [
+       0.2802040331401126,
+       -1.8801959676812463
+      ]
+     ],
+     "center": [
+      0.3,
+      -1.9
+     ],
+     "dir": null,
+     "down": false,
+     "front": [
+      0.31979999958932054,
+      -1.900004032729433
+     ],
+     "height": 1.15
+    }
+   },
+   {
+    "project": "demo-night.json",
+    "id": "fmvqtb56qmjlm",
+    "plan": {
+     "poly": [
+      [
+       2.555,
+       -2.546269515534274
+      ],
+      [
+       2.645,
+       -2.546269515534274
+      ],
+      [
+       2.645,
+       -2.453730484465726
+      ],
+      [
+       2.555,
+       -2.453730484465726
+      ]
+     ],
+     "center": [
+      2.6,
+      -2.5
+     ],
+     "dir": null,
+     "down": true,
+     "front": [
+      2.6,
+      -2.498726800231462
+     ],
+     "height": 4
+    }
+   },
+   {
+    "project": "demo-night.json",
+    "id": "fmvqtb56q604r",
+    "plan": {
+     "poly": [
+      [
+       -7.011088768812734,
+       -1.314719201008517
+      ],
+      [
+       -6.962080084104433,
+       -1.5598684255112516
+      ],
+      [
+       -6.823444688747673,
+       -1.5322213785121659
+      ],
+      [
+       -6.588911231187265,
+       -1.485280798991483
+      ],
+      [
+       -6.637919915895567,
+       -1.2401315744887482
+      ],
+      [
+       -6.776555311252326,
+       -1.267778621487834
+      ]
+     ],
+     "center": [
+      -6.8,
+      -1.4
+     ],
+     "dir": [
+      0.9805534198257188,
+      0.19625236525475973
+     ],
+     "down": false,
+     "front": [
+      -6.682733271219796,
+      -1.3765297102396583
+     ],
+     "height": 2.2
+    }
+   },
+   {
+    "project": "catalogue.json",
+    "id": "f-dome",
+    "plan": {
+     "poly": [
+      [
+       -0.07020000000000001,
+       4.075
+      ],
+      [
+       -0.07019999999999998,
+       3.925
+      ],
+      [
+       0.07020000000000001,
+       3.925
+      ],
+      [
+       0.07019999999999998,
+       4.075
+      ]
+     ],
+     "center": [
+      0,
+      4
+     ],
+     "dir": [
+      1.2246467991473532e-16,
+      -1
+     ],
+     "down": false,
+     "front": [
+      9.184850993605149e-18,
+      3.925
+     ],
+     "height": 2.2
+    }
+   },
+   {
+    "project": "catalogue.json",
+    "id": "f-chimera",
+    "plan": {
+     "poly": [
+      [
+       2.678535823990301,
+       1.815599009851006
+      ],
+      [
+       2.7536332729518405,
+       1.7107320704341542
+      ],
+      [
+       3.321464176009699,
+       2.081855478437509
+      ],
+      [
+       3.321464176009699,
+       2.184400990148994
+      ],
+      [
+       3.2463667270481595,
+       2.289267929565846
+      ],
+      [
+       2.678535823990301,
+       1.9181445215624908
+      ]
+     ],
+     "center": [
+      3,
+      2
+     ],
+     "dir": [
+      -0.5822259630978884,
+      0.8130270154765685
+     ],
+     "down": false,
+     "front": [
+      2.9624512755192303,
+      2.052433469708426
+     ],
+     "height": 2.5
+    }
+   },
+   {
+    "project": "catalogue.json",
+    "id": "f-down",
+    "plan": {
+     "poly": [
+      [
+       -3.18,
+       1.82
+      ],
+      [
+       -2.82,
+       1.82
+      ],
+      [
+       -2.82,
+       2.18
+      ],
+      [
+       -3.18,
+       2.18
+      ]
+     ],
+     "center": [
+      -3,
+      2
+     ],
+     "dir": null,
+     "down": true,
+     "front": [
+      -3,
+      2
+     ],
+     "height": 4.8
+    }
+   },
+   {
+    "project": "catalogue.json",
+    "id": "f-off",
+    "plan": {
+     "poly": [
+      [
+       -2.4844374312426662,
+       -0.816897227735331
+      ],
+      [
+       -1.53113930244968,
+       -1.2199452120247845
+      ],
+      [
+       -1.515562568757334,
+       -1.183102772264669
+      ],
+      [
+       -2.46886069755032,
+       -0.7800547879752157
+      ]
+     ],
+     "center": [
+      -2,
+      -1
+     ],
+     "dir": null,
+     "down": false,
+     "front": [
+      -1.992211633153827,
+      -0.9815787801199423
+     ],
+     "height": 1.4
+    }
+   },
+   {
+    "project": "catalogue.json",
+    "id": "f-bar",
+    "plan": {
+     "poly": [
+      [
+       1.1283325723721829,
+       -1.6842721008213681
+      ],
+      [
+       1.8250392817193481,
+       -2.387328829922834
+      ],
+      [
+       1.8716674276278171,
+       -2.3429455974975553
+      ],
+      [
+       1.8716674276278171,
+       -2.315727899178632
+      ],
+      [
+       1.1749607182806519,
+       -1.6126711700771659
+      ],
+      [
+       1.1283325723721829,
+       -1.6570544025024447
+      ]
+     ],
+     "center": [
+      1.5,
+      -2
+     ],
+     "dir": [
+      0.7243281688942637,
+      0.6894553674794932
+     ],
+     "down": false,
+     "front": [
+      1.5233140729542345,
+      -1.9778083837873606
+     ],
+     "height": 0.3
+    }
+   },
+   {
+    "project": "catalogue.json",
+    "id": "f-box",
+    "plan": {
+     "poly": [
+      [
+       3.961,
+       -3.0109
+      ],
+      [
+       4.039,
+       -3.0109
+      ],
+      [
+       4.039,
+       -2.9891
+      ],
+      [
+       3.961,
+       -2.9891
+      ]
+     ],
+     "center": [
+      4,
+      -3
+     ],
+     "dir": null,
+     "down": false,
+     "front": [
+      4,
+      -2.9891
+     ],
+     "height": 1
+    }
+   },
+   {
+    "project": "catalogue.json",
+    "id": "f-bulb",
+    "plan": {
+     "poly": [
+      [
+       -4.535,
+       0.46499999999999997
+      ],
+      [
+       -4.465,
+       0.46499999999999997
+      ],
+      [
+       -4.465,
+       0.535
+      ],
+      [
+       -4.535,
+       0.535
+      ]
+     ],
+     "center": [
+      -4.5,
+      0.5
+     ],
+     "dir": null,
+     "down": false,
+     "front": [
+      -4.5,
+      0.535
+     ],
+     "height": 1.8
+    }
+   },
+   {
+    "project": "catalogue.json",
+    "id": "f-hydra",
+    "plan": {
+     "poly": [
+      [
+       2.15396944291251,
+       0.41266887186040185
+      ],
+      [
+       2.2166479087335156,
+       0.35525450151355403
+      ],
+      [
+       2.2460305570874906,
+       0.3873311281395982
+      ],
+      [
+       2.1833520912664848,
+       0.444745498486446
+      ]
+     ],
+     "center": [
+      2.2,
+      0.4
+     ],
+     "dir": [
+      -0.6754631805511511,
+      -0.7373937155412456
+     ],
+     "down": false,
+     "front": [
+      2.1853086758230127,
+      0.38396168668697794
+     ],
+     "height": 1.6
+    }
+   },
+   {
+    "project": "catalogue.json",
+    "id": "f-baby",
+    "plan": {
+     "poly": [
+      [
+       5.308716352070181,
+       3.482793621725333
+      ],
+      [
+       5.464118844137848,
+       3.290865490812942
+      ],
+      [
+       5.691283647929819,
+       3.4675390455759016
+      ],
+      [
+       5.691283647929819,
+       3.517206378274667
+      ],
+      [
+       5.535881155862152,
+       3.709134509187058
+      ],
+      [
+       5.308716352070181,
+       3.5324609544240984
+      ]
+     ],
+     "center": [
+      5.5,
+      3.5
+     ],
+     "dir": [
+      0.789369362523904,
+      0.6139185691185804
+     ],
+     "down": false,
+     "front": [
+      5.613582401895985,
+      3.5883367773814796
+     ],
+     "height": 2.9
+    }
+   },
+   {
+    "project": "catalogue.json",
+    "id": "f-sky",
+    "plan": {
+     "poly": [
+      [
+       -6.466837659088655,
+       4.760781071130281
+      ],
+      [
+       -5.683542672021789,
+       3.769619309833658
+      ],
+      [
+       -5.533162340911345,
+       3.870439758703427
+      ],
+      [
+       -5.533162340911345,
+       4.239218928869719
+      ],
+      [
+       -6.316457327978211,
+       5.230380690166342
+      ],
+      [
+       -6.466837659088655,
+       5.129560241296573
+      ]
+     ],
+     "center": [
+      -6,
+      4.5
+     ],
+     "dir": [
+      -0.830602322085055,
+      -0.5568660364458534
+     ],
+     "down": false,
+     "front": [
+      -6.075190165555222,
+      4.449589775565116
+     ],
+     "height": 5.2
+    }
+   }
+  ],
+  "slugs": [
+   {
+    "project": "demo-night.json",
+    "slug": "demo-night"
+   },
+   {
+    "project": "demo-clip.json",
+    "slug": "demo-clip-couplet-salon-plan-1-large"
+   },
+   {
+    "project": "catalogue.json",
+    "slug": "catalogue-essai-tests-seq-1-nuit-plan-2-fin"
+   }
+  ]
+ }
+}

@@ -1,0 +1,17 @@
+ARKLIGHT
+Copyright 2026 22eme ARKANE
+
+Ce logiciel est distribué sous la licence Apache, version 2.0 (fichier LICENSE).
+This software is distributed under the Apache License, Version 2.0 (LICENSE file).
+
+Composants tiers / Third-party components:
+
+- Slint (https://slint.dev), interface : Slint Royalty-free Desktop, Mobile, and Web Applications
+  License 2.0. Attribution « Made with Slint » dans la fenêtre « À propos » d'ARKLIGHT.
+- Open Fixture Library (https://open-fixture-library.org), profils DMX des autres marques : MIT.
+- wgpu, zune-heic, image, resvg et les autres bibliothèques Rust : licences MIT, Apache-2.0, BSD,
+  Zlib, ISC ou équivalentes, indiquées dans chacune d'elles (rust/Cargo.lock).
+- three.js et les bibliothèques de la version JavaScript : voir package-lock.json.
+
+ARKLIGHT n'est affilié à aucun des fabricants cités ; leurs marques leur appartiennent.
+ARKLIGHT is not affiliated with the manufacturers mentioned; their trademarks belong to them.

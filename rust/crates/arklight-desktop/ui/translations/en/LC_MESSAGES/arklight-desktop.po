@@ -1,0 +1,1404 @@
+# ARKLIGHT (version Rust) : traduction anglaise de l'interface (textes français dans ui/app.slint).
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: en\n"
+
+msgid "Fichier"
+msgstr "File"
+
+msgid "Ouvrir un projet…"
+msgstr "Open a project…"
+
+msgid "Projets d'exemple"
+msgstr "Sample projects"
+
+msgid "Tournage de nuit (rue, terrasse de café)"
+msgstr "Night shoot (street, café terrace)"
+
+msgid "Clip (studio, cyclo)"
+msgstr "Music video (studio, cyc)"
+
+msgid "Enregistrer sous…"
+msgstr "Save as…"
+
+msgid "Quitter"
+msgstr "Quit"
+
+msgid "Affichage"
+msgstr "View"
+
+msgid "Revenir à la vue de départ"
+msgstr "Back to the starting view"
+
+msgid "Sol"
+msgstr "Floor"
+
+msgid "Cyclo"
+msgstr "Cyc"
+
+msgid "Langue"
+msgstr "Language"
+
+msgid "Automatique — langue de l’ordinateur"
+msgstr "Automatic — computer language"
+
+msgid "Aide"
+msgstr "Help"
+
+msgid "À propos d’ARKLIGHT…"
+msgstr "About ARKLIGHT…"
+
+
+msgid "{} projecteurs · {} objets"
+msgstr "{} fixtures · {} objects"
+
+
+msgid "{} ms par image"
+msgstr "{} ms per frame"
+
+
+msgid "Version {} : moteur 3D wgpu, interface Slint."
+msgstr "Version {}: wgpu 3D engine, Slint interface."
+
+msgid "Clic pour fermer"
+msgstr "Click to close"
+
+msgid "Nouveau projet"
+msgstr "New project"
+
+msgid "Enregistrer"
+msgstr "Save"
+
+msgid "Édition"
+msgstr "Edit"
+
+msgid "Annuler"
+msgstr "Undo"
+
+msgid "Annuler {}"
+msgstr "Undo {}"
+
+msgid "Rétablir"
+msgstr "Redo"
+
+msgid "Rétablir {}"
+msgstr "Redo {}"
+
+msgid "Dupliquer"
+msgstr "Duplicate"
+
+msgid "Supprimer"
+msgstr "Delete"
+
+msgid "Tout sélectionner"
+msgstr "Select all"
+
+msgid "Désélectionner"
+msgstr "Deselect"
+
+msgid "Pieds de projecteur"
+msgstr "Fixture stands"
+
+msgid "Halo des sources lumineuses"
+msgstr "Glow of light sources"
+
+msgid "Brume"
+msgstr "Haze"
+
+msgid "Exposition"
+msgstr "Exposure"
+
+msgid "{} IL"
+msgstr "{} EV"
+
+msgid "Ambiance"
+msgstr "Ambient"
+
+msgid "Pieds"
+msgstr "Stands"
+
+msgid "Halo"
+msgstr "Glow"
+
+msgid "Bibliothèque"
+msgstr "Library"
+
+msgid "Scène"
+msgstr "Scene"
+
+msgid "Rechercher (projecteur, marque, objet…)"
+msgstr "Search (fixture, brand, object…)"
+
+msgid "Clic : ajouter au centre de la vue"
+msgstr "Click: add at the centre of the view"
+
+msgid "Clic : choisir · glisser un élément : le déplacer (Maj : en hauteur) · glisser ailleurs : tourner · clic droit glissé : décaler · molette : zoom"
+msgstr "Click: select · drag an item: move it (Shift: up and down) · drag elsewhere: orbit · right-drag: pan · wheel: zoom"
+
+msgid "INSPECTEUR"
+msgstr "INSPECTOR"
+
+msgid "Console (panneau du bas)"
+msgstr "Console (bottom panel)"
+
+msgid "Console"
+msgstr "Console"
+
+msgid "Relâcher"
+msgstr "Release"
+
+msgid "Projets récents"
+msgstr "Recent projects"
+
+msgid "Séquences et plans"
+msgstr "Sequences and shots"
+
+msgid "Nouveau plan (copie du plan actuel)"
+msgstr "New shot (copy of the current one)"
+
+msgid "Nouveau plan (même décor, sans lumière)"
+msgstr "New shot (same set, no lighting)"
+
+msgid "Nouvelle séquence"
+msgstr "New sequence"
+
+msgid "Plan suivant"
+msgstr "Next shot"
+
+msgid "Plan précédent"
+msgstr "Previous shot"
+
+msgid "Supprimer le plan"
+msgstr "Delete the shot"
+
+msgid "Moniteur DMX"
+msgstr "DMX monitor"
+
+msgid "Sélection"
+msgstr "Selection"
+
+msgid "Cadrer"
+msgstr "Frame"
+
+msgid "Dupliquer la sélection"
+msgstr "Duplicate the selection"
+
+msgid "Allumer"
+msgstr "Turn on"
+
+msgid "Éteindre"
+msgstr "Turn off"
+
+msgid "Viser"
+msgstr "Aim"
+
+msgid "Le personnage (ou le centre du plateau)"
+msgstr "The actor (or the centre of the set)"
+
+msgid "Poser au sol"
+msgstr "Put on the floor"
+
+msgid "Liaison CRMX"
+msgstr "CRMX link"
+
+msgid "Lier (touche LINK)"
+msgstr "Link (LINK button)"
+
+msgid "Délier"
+msgstr "Unlink"
+
+msgid "Grouper la sélection"
+msgstr "Group the selection"
+
+msgid "Créer un groupe"
+msgstr "Create a group"
+
+msgid "Ajouter au groupe"
+msgstr "Add to group"
+
+msgid "Retirer du groupe"
+msgstr "Remove from group"
+
+msgid "Adresser la sélection à la suite…"
+msgstr "Address the selection in sequence…"
+
+msgid "Ré-adresser…"
+msgstr "Readdress…"
+
+msgid "Numéroter les fixtures à la suite…"
+msgstr "Number the fixtures in sequence…"
+
+msgid "Numéro de fixture…"
+msgstr "Fixture number…"
+
+msgid "Sélectionner un groupe"
+msgstr "Select a group"
+
+msgid "Inverser la sélection"
+msgstr "Invert selection"
+
+msgid "Patch"
+msgstr "Patch"
+
+msgid "Ré-adressage automatique…"
+msgstr "Automatic readdressing…"
+
+msgid "Groupes"
+msgstr "Groups"
+
+msgid "+ Grouper la sélection"
+msgstr "+ Group the selection"
+
+msgid "Sélectionne des projecteurs puis « Grouper » (Ctrl+G)."
+msgstr "Select fixtures, then “Group” (Ctrl+G)."
+
+msgid "Sélectionner le groupe"
+msgstr "Select the group"
+
+msgid "Ajouter à la sélection"
+msgstr "Add to the selection"
+
+msgid "Ajouter la sélection au groupe"
+msgstr "Add the selection to the group"
+
+msgid "Retirer la sélection du groupe"
+msgstr "Remove the selection from the group"
+
+msgid "Allumer / éteindre le groupe"
+msgstr "Turn the group on / off"
+
+msgid "Adresser le groupe à la suite…"
+msgstr "Address the group in sequence…"
+
+msgid "Renommer…"
+msgstr "Rename…"
+
+msgid "Supprimer le groupe (les projecteurs restent)"
+msgstr "Delete the group (the fixtures stay)"
+
+msgid "Valider"
+msgstr "OK"
+
+msgid "Ré-adressage automatique"
+msgstr "Automatic readdressing"
+
+msgid "Calcule un nouveau patch sans chevauchement. Rien n’est modifié avant « Appliquer ». Pense à reporter les nouvelles adresses dans l’appli ou la console."
+msgstr "Computes a new patch with no overlap. Nothing changes before “Apply”. Remember to copy the new addresses to the app or console."
+
+msgid "Projecteurs"
+msgstr "Fixtures"
+
+msgid "Ordre"
+msgstr "Order"
+
+msgid "Univers"
+msgstr "Universes"
+
+msgid "Chaque projecteur garde son univers"
+msgstr "Each fixture keeps its universe"
+
+msgid "Tout à la suite, à partir de l’univers de départ"
+msgstr "Everything in sequence, from the start universe"
+
+msgid "Départ"
+msgstr "Start"
+
+msgid "univers"
+msgstr "universe"
+
+msgid "adresse"
+msgstr "address"
+
+msgid "Adresses"
+msgstr "Addresses"
+
+msgid "Univers plein"
+msgstr "Full universe"
+
+msgid "passer à l’univers suivant"
+msgstr "go to the next universe"
+
+msgid "Appliquer ({})"
+msgstr "Apply ({})"
+
+msgid "Appliquer"
+msgstr "Apply"
+
+msgctxt "bouton"
+msgid "Annuler"
+msgstr "Cancel"
+
+msgid "Arrêter"
+msgstr "Stop"
+
+msgid "Apprendre…"
+msgstr "Learn…"
+
+msgid "Faders 1 → 8"
+msgstr "Faders 1 → 8"
+
+msgid "Touches → groupes"
+msgstr "Buttons → groups"
+
+msgid "Touches → projecteurs"
+msgstr "Buttons → fixtures"
+
+msgid "Tout effacer"
+msgstr "Clear all"
+
+msgid "Dernier message : {}"
+msgstr "Last message: {}"
+
+msgid "Aucune correspondance : choisis un préréglage pour ta console, ou « Apprendre… » puis bouge un fader du contrôleur."
+msgstr "No mapping: choose a preset for your console, or “Learn…” then move a fader on the controller."
+
+msgid "Bouge un fader ou appuie sur une touche…"
+msgstr "Move a fader or press a button…"
+
+msgid "Réapprendre"
+msgstr "Relearn"
+
+msgid "Plan"
+msgstr "Plot"
+
+msgid "Revenir à la vue 3D"
+msgstr "Back to the 3D view"
+
+msgid "Plan de feu 2D"
+msgstr "2D lighting plot"
+
+msgid "Tout voir"
+msgstr "Fit all"
+
+msgid "Matériel seulement"
+msgstr "Equipment only"
+
+msgid "Tout montrer"
+msgstr "Show everything"
+
+msgid "Noms"
+msgstr "Names"
+
+msgid "Numéros de fixture (Fix)"
+msgstr "Fixture numbers (Fix)"
+
+msgid "Adresses DMX"
+msgstr "DMX addresses"
+
+msgid "Pieds, hauteurs et accessoires"
+msgstr "Stands, heights and accessories"
+
+msgid "Faisceaux"
+msgstr "Beams"
+
+msgid "Grille"
+msgstr "Grid"
+
+msgid "Image de fond"
+msgstr "Background image"
+
+msgid "Pieds seuls"
+msgstr "Stands"
+
+msgid "Grip"
+msgstr "Grip"
+
+msgid "Sacs de sable"
+msgstr "Sandbags"
+
+msgid "Formes, textes, flèches"
+msgstr "Shapes, texts, arrows"
+
+msgid "Décor"
+msgstr "Set"
+
+msgid "Personnages"
+msgstr "People"
+
+msgid "Animaux"
+msgstr "Animals"
+
+msgid "Véhicules"
+msgstr "Vehicles"
+
+msgid "Mobilier"
+msgstr "Furniture"
+
+msgid "Décor et architecture"
+msgstr "Set and architecture"
+
+msgid "Extérieur et nature"
+msgstr "Outdoor and nature"
+
+msgid "Accessoires"
+msgstr "Props"
+
+msgid "Plateau (caméra, son…)"
+msgstr "Film set (camera, sound…)"
+
+msgid "Exporter le plan en SVG…"
+msgstr "Export the plot as SVG…"
+
+msgid "Exporter le plan en PNG…"
+msgstr "Export the plot as PNG…"
+
+msgid "Liste du matériel (CSV)…"
+msgstr "Equipment list (CSV)…"
+
+msgid "Patch DMX (CSV)…"
+msgstr "DMX patch (CSV)…"
+
+msgid "Export MVR (Blackout, consoles)…"
+msgstr "MVR export (Blackout, consoles)…"
+
+msgid "Plan 2D"
+msgstr "2D plot"
+
+msgid "Clic : choisir · glisser : déplacer · clic droit glissé : se déplacer · molette : zoom · P : vue 3D"
+msgstr "Click: select · drag: move · right-drag: pan · wheel: zoom · P: 3D view"
+
+msgid "Projecteur"
+msgstr "Fixture"
+
+msgid "Assistant IA"
+msgstr "AI Assistant"
+
+msgid "Choisis un projecteur qui a des commandes embarquées (Astera, ARRI, Aputure, Kino Flo…) : sa face avant s’affiche ici, écran, touches et molettes compris."
+msgstr "Select a fixture with on-board controls (Astera, ARRI, Aputure, Kino Flo…): its front panel shows here, screen, buttons and knobs included."
+
+msgid "Actualiser"
+msgstr "Refresh"
+
+msgid "clé enregistrée"
+msgstr "key saved"
+
+msgid "clé API"
+msgstr "API key"
+
+msgid "Se connecter à AIODOS"
+msgstr "Connect to AIODOS"
+
+msgid "Nouvelle conversation"
+msgstr "New conversation"
+
+msgid "Demande par exemple : « ajoute 4 Titan en contre, en bleu » ou « oriente la face vers le comédien ». Chaque action de l’assistant s’annule avec Ctrl+Z."
+msgstr "Ask for example: “add 4 Titans as backlight, in blue” or “aim the key light at the actor”. Each action of the assistant can be undone with Ctrl+Z."
+
+msgid "Toi"
+msgstr "You"
+
+msgid "Assistant"
+msgstr "Assistant"
+
+msgid "Erreur"
+msgstr "Error"
+
+msgid "Écris ta demande, puis Entrée"
+msgstr "Type your request, then Enter"
+
+msgid "Envoyer"
+msgstr "Send"
+
+msgid "Faire un don…"
+msgstr "Donate…"
+
+msgid "Code source (GitHub)"
+msgstr "Source code (GitHub)"
+
+msgid "Signaler un problème"
+msgstr "Report a problem"
+
+msgid "ARKLIGHT {} est disponible"
+msgstr "ARKLIGHT {} is available"
+
+msgid "Voir"
+msgstr "View"
+
+msgid "Raccourcis clavier…"
+msgstr "Keyboard shortcuts…"
+
+msgid "Raccourcis clavier"
+msgstr "Keyboard shortcuts"
+
+msgid "Appuie sur la touche (ou la combinaison) pour « {} »… Échap : annuler."
+msgstr "Press the key (or combination) for “{}”… Esc: cancel."
+
+msgid "« Changer » puis appuie sur la touche voulue ; une touche déjà prise passe à la nouvelle commande. Seules les touches changées sont mémorisées."
+msgstr "“Change”, then press the key you want; a key already in use moves to the new command. Only changed keys are remembered."
+
+msgid "Changer"
+msgstr "Change"
+
+msgid "Par défaut"
+msgstr "Default"
+
+msgid "Fermer"
+msgstr "Close"
+
+msgid "Écran des projets…"
+msgstr "Projects screen…"
+
+msgid "Projets"
+msgstr "Projects"
+
+msgid "Ouvrir un fichier…"
+msgstr "Open a file…"
+
+msgid "Exemple — nuit"
+msgstr "Sample — night"
+
+msgid "Exemple — clip"
+msgstr "Sample — music video"
+
+msgid "Aucun projet dans ce dossier : commence par « Nouveau projet » ou un exemple."
+msgstr "No project in this folder: start with “New project” or a sample."
+
+msgid "pas de vignette"
+msgstr "no thumbnail"
+
+msgid "Étiquettes des projecteurs"
+msgstr "Fixture labels"
+
+msgid "● À l’écoute…"
+msgstr "● Listening…"
+
+msgid "Parler (F8)"
+msgstr "Talk (F8)"
+
+msgid "Écris ou dicte ta demande, puis Entrée"
+msgstr "Type or dictate your request, then Enter"
+
+msgid "Déplacer (W)"
+msgstr "Move (W)"
+
+msgid "Tourner (E)"
+msgstr "Rotate (E)"
+
+msgid "Tourner : glisser un anneau (axe X, Y ou Z) ou l’élément lui-même — horizontalement le pan, verticalement le tilt (par 5°, Maj : libre) · W : déplacer"
+msgstr "Rotate: drag a ring (X, Y or Z axis) or the item itself — horizontally pan, vertically tilt (5° steps, Shift: free) · W: move"
+
+msgid "Arrêter (le PC n’est plus visible)"
+msgstr "Stop (the PC is no longer visible)"
+
+msgid "Rendre le PC visible en Bluetooth"
+msgstr "Make the PC visible over Bluetooth"
+
+msgid "Relire l’adaptateur"
+msgstr "Read the adapter"
+
+msgid "Vider le journal"
+msgstr "Clear the log"
+
+msgid "Journal des échanges avec le téléphone (écritures, lectures, notifications)."
+msgstr "Log of the exchanges with the phone (writes, reads, notifications)."
+
+msgid "Exporter le plan en PDF…"
+msgstr "Export the plot as PDF…"
+
+msgid "Rectangle"
+msgstr "Rectangle"
+
+msgid "Ellipse"
+msgstr "Ellipse"
+
+msgid "Forme"
+msgstr "Shape"
+
+msgid "Main levée"
+msgstr "Freehand"
+
+msgid "Ligne"
+msgstr "Line"
+
+msgid "Flèche"
+msgstr "Arrow"
+
+msgid "Texte"
+msgstr "Text"
+
+msgid "Mesure"
+msgstr "Measure"
+
+msgid "texte"
+msgstr "text"
+
+msgid "Rempli"
+msgstr "Filled"
+
+msgid "Image de fond (photo ou plan)…"
+msgstr "Background image (photo or plot)…"
+
+msgid "Caler l’image de fond (deux points)…"
+msgstr "Calibrate the background image (two points)…"
+
+msgid "Retirer l’image de fond"
+msgstr "Remove the background image"
+
+msgid "Replier le panneau du bas"
+msgstr "Fold the bottom panel"
+
+msgid "❤ Faire un don"
+msgstr "❤ Donate"
+
+msgid "Choisis un projecteur ou un objet dans la vue 3D ou dans la liste Scène."
+msgstr "Pick a fixture or an object in the 3D view or in the Scene list."
+
+msgid "vide"
+msgstr "empty"
+
+msgid "Viser le personnage"
+msgstr "Aim at the actor"
+
+msgid "BIBLIOTHÈQUE"
+msgstr "LIBRARY"
+
+msgid "Rechercher un projecteur…"
+msgstr "Search fixtures…"
+
+msgid "Rechercher un pied…"
+msgstr "Search stands…"
+
+msgid "Rechercher dans le grip…"
+msgstr "Search grip…"
+
+msgid "Personnage, chien, voiture, canapé…"
+msgstr "Person, dog, car, sofa…"
+
+msgid "Par marque"
+msgstr "By brand"
+
+msgid "Par type (panneaux, fresnels, tubes…)"
+msgstr "By type (panels, fresnels, tubes…)"
+
+msgid "Par nom (A → Z)"
+msgstr "By name (A → Z)"
+
+msgid "Par puissance (lux à 1 m)"
+msgstr "By output (lux at 1 m)"
+
+msgid "Marque"
+msgstr "Brand"
+
+msgid "Type"
+msgstr "Type"
+
+msgid "Nom"
+msgstr "Name"
+
+msgid "Puissance"
+msgstr "Output"
+
+msgid "Trier les projecteurs"
+msgstr "Sort the fixtures"
+
+msgid "Lumières"
+msgstr "Lights"
+
+msgid "SCÈNE"
+msgstr "SCENE"
+
+msgid "Rechercher dans la scène…"
+msgstr "Search the scene…"
+
+msgid "Ordre d’ajout"
+msgstr "Order added"
+
+msgid "Nom (A → Z)"
+msgstr "Name (A → Z)"
+
+msgid "Adresse DMX (univers, adresse)"
+msgstr "DMX address (universe, address)"
+
+msgid "Modèle"
+msgstr "Model"
+
+msgid "Numéro de fixture (Fix)"
+msgstr "Fixture number (Fix)"
+
+msgid "Ajout"
+msgstr "Added"
+
+msgid "DMX"
+msgstr "DMX"
+
+msgid "Fix"
+msgstr "Fix"
+
+msgid "Clic : choisir · glisser un élément ou ses axes : le déplacer (Maj : en hauteur) · glisser ailleurs : tourner · clic droit glissé : décaler · molette : zoom"
+msgstr "Click: select · drag an item or its axes: move it (Shift: height) · drag elsewhere: orbit · right-drag: pan · wheel: zoom"
+
+msgid " i/s"
+msgstr " fps"
+
+msgid "Lumière d’ambiance"
+msgstr "Ambient light"
+
+msgid "Tourner : pan / tilt (E)"
+msgstr "Rotate: pan / tilt (E)"
+
+msgid "Aimant : pas de 10 cm et de 5° (M) — Maj pour s’en passer"
+msgstr "Snap: 10 cm and 5° steps (M) — Shift to ignore"
+
+msgid "Vue 3D (1)"
+msgstr "3D view (1)"
+
+msgid "Vue de face (2)"
+msgstr "Front view (2)"
+
+msgid "Vue de dessus (3)"
+msgstr "Top view (3)"
+
+msgid "Vue de côté (4)"
+msgstr "Side view (4)"
+
+msgid "Cadrer la sélection (F)"
+msgstr "Frame the selection (F)"
+
+msgid "Noms des projecteurs dans la vue (N)"
+msgstr "Fixture names in the view (N)"
+
+msgid "Cyclo (fond)"
+msgstr "Cyc (backdrop)"
+
+msgid "Noms des projecteurs"
+msgstr "Fixture names"
+
+msgid "Aide en bas de la vue"
+msgstr "Help at the bottom of the view"
+
+msgid "Images par seconde"
+msgstr "Frames per second"
+
+msgid "Forme (double-clic pour finir)"
+msgstr "Shape (double-click to finish)"
+
+msgid "Plan en PDF…"
+msgstr "Plot as PDF…"
+
+msgid "Plan en SVG…"
+msgstr "Plot as SVG…"
+
+msgid "Plan en PNG…"
+msgstr "Plot as PNG…"
+
+msgid "Exporter"
+msgstr "Export"
+
+msgid "Revenir aux panneaux (Maj+F11)"
+msgstr "Back to the panels (Shift+F11)"
+
+msgid "Vue en plein écran (Maj+F11)"
+msgstr "Full-screen view (Shift+F11)"
+
+msgid "PROJETS RÉCENTS"
+msgstr "RECENT PROJECTS"
+
+msgid "Replier la bibliothèque"
+msgstr "Fold the library"
+
+msgid "Déplier la bibliothèque"
+msgstr "Unfold the library"
+
+msgid "Replier l’inspecteur"
+msgstr "Fold the inspector"
+
+msgid "Déplier l’inspecteur"
+msgstr "Unfold the inspector"
+
+msgid "Voulez-vous vraiment quitter ARKLIGHT ?"
+msgstr "Do you really want to quit ARKLIGHT?"
+
+msgid "Enregistrer les modifications de « {} » ?"
+msgstr "Save the changes to “{}”?"
+
+msgid "Elles seront perdues si tu ne les enregistres pas avant de continuer."
+msgstr "They will be lost if you don’t save them before going on."
+
+msgid "Le projet « {} » a des modifications non enregistrées. Il est gardé automatiquement et sera rouvert au prochain lancement ; « Enregistrer et quitter » l’enregistre aussi dans ton dossier de projets."
+msgstr "The project “{}” has unsaved changes. It is kept automatically and will be reopened next time; “Save and quit” also saves it in your projects folder."
+
+msgid "Le projet « {} » est enregistré. Il sera rouvert au prochain lancement."
+msgstr "The project “{}” is saved. It will be reopened next time."
+
+msgid "❤  ARKLIGHT est gratuit. Il fonctionne grâce au soutien de la communauté."
+msgstr "❤  ARKLIGHT is free. It lives thanks to the community’s support."
+
+msgid "Si ce logiciel t’est utile, un don, même modeste, nous aide à continuer à le développer."
+msgstr "If this software is useful to you, a donation, even a small one, helps us keep developing it."
+
+msgid "❤  Faire un don  →"
+msgstr "❤  Donate  →"
+
+msgid "Quitter sans enregistrer"
+msgstr "Quit without saving"
+
+msgid "Ne pas enregistrer"
+msgstr "Don’t save"
+
+msgid "Enregistrer et quitter"
+msgstr "Save and quit"
+
+msgid "✓ Copié"
+msgstr "✓ Copied"
+
+msgid "Copier l’adresse"
+msgstr "Copy the address"
+
+msgid "Faire un don"
+msgstr "Donate"
+
+msgid "ARKLIGHT · simulateur lumière libre"
+msgstr "ARKLIGHT · free lighting simulator"
+
+msgid "ARKLIGHT est libre, gratuit et sans publicité. Il est développé par 22eme ARKANE pour l’électro et la lumière, sur le temps libre et à ses frais."
+msgstr "ARKLIGHT is free, open and ad-free. It is developed by 22eme ARKANE for gaffers and lighting crews, in spare time and at personal expense."
+
+msgid "Si ce logiciel t’est utile, un don, même modeste, aide à continuer à le développer. C’est totalement facultatif : rien n’est bloqué, rien n’est limité."
+msgstr "If this software is useful to you, a donation, even a small one, helps keep it going. It is entirely optional: nothing is locked, nothing is limited."
+
+msgid "Don rapide en euros : carte bancaire ou compte PayPal"
+msgstr "Quick donation in euros: bank card or PayPal account"
+
+msgid "Cryptomonnaie"
+msgstr "Cryptocurrency"
+
+msgid "Bitcoin (Taproot) · USDC (réseau Sonic)"
+msgstr "Bitcoin (Taproot) · USDC (Sonic network)"
+
+msgid "Réseau Bitcoin · Taproot"
+msgstr "Bitcoin network · Taproot"
+
+msgid "Réseau Sonic"
+msgstr "Sonic network"
+
+msgid "Merci pour votre soutien. — 22eme ARKANE"
+msgstr "Thank you for your support. — 22eme ARKANE"
+
+msgid "Déplier le panneau du bas"
+msgstr "Unfold the bottom panel"
+
+msgid "Couper"
+msgstr "Cut"
+
+msgid "Copier"
+msgstr "Copy"
+
+msgid "Coller"
+msgstr "Paste"
+
+msgid "Journal"
+msgstr "Log"
+
+msgid "Réseau"
+msgstr "Network"
+
+msgid "Rien pour le moment : ouvertures, enregistrements, sources DMX et erreurs s’afficheront ici."
+msgstr "Nothing yet: openings, saves, DMX sources and errors will show up here."
+
+msgid "CONNECTER UNE APPLICATION"
+msgstr "CONNECT AN APP"
+
+msgid "Le PC et le téléphone ou la tablette doivent être sur le même réseau Wi-Fi. Dans l’application (Luminair, Blackout, console…), choisis Art-Net ou sACN et vise cette adresse :"
+msgstr "The PC and the phone or tablet must be on the same Wi-Fi network. In the app (Luminair, Blackout, console…), choose Art-Net or sACN and target this address:"
+
+msgid "pas de réseau"
+msgstr "no network"
+
+msgid "Art-Net : le simulateur répond à la découverte (ArtPoll) sous le nom « ARKLIGHT ». sACN : multicast ou unicast, port 5568. Rien ne s’affiche dans « Sources DMX actives » alors que l’appli émet ? Le pare-feu Windows bloque sans doute ARKLIGHT : autorise-le pour les réseaux privés, et vérifie que le Wi-Fi est en profil « Privé »."
+msgstr "Art-Net: the simulator answers discovery (ArtPoll) as “ARKLIGHT”. sACN: multicast or unicast, port 5568. Nothing in “Active DMX sources” while the app is sending? Windows Firewall is probably blocking ARKLIGHT: allow it on private networks, and check that the Wi-Fi uses the “Private” profile."
+
+msgid "Numérotation Art-Net"
+msgstr "Art-Net numbering"
+
+msgid "Art-Net 0 = Univers 0"
+msgstr "Art-Net 0 = Universe 0"
+
+msgid "Art-Net 0 = Univers 1"
+msgstr "Art-Net 0 = Universe 1"
+
+msgid "SOURCES DMX ACTIVES"
+msgstr "ACTIVE DMX SOURCES"
+
+msgid "Protocole"
+msgstr "Protocol"
+
+msgid "Adresse"
+msgstr "Address"
+
+msgid "Aucune source pour le moment"
+msgstr "No source yet"
+
+msgid "Ré-adressage auto…"
+msgstr "Auto readdress…"
+
+msgid "Plein feu"
+msgstr "Full"
+
+msgid "Noir"
+msgstr "Black"
+
+msgid "Arc-en-ciel"
+msgstr "Rainbow"
+
+msgid "Afficher les valeurs DMX brutes (0–255) plutôt qu’en %, K ou °"
+msgstr "Show raw DMX values (0–255) instead of %, K or °"
+
+msgid "Vue 3D (perspective)"
+msgstr "3D view (perspective)"
+
+msgid "Vue de face"
+msgstr "Front view"
+
+msgid "Vue de dessus"
+msgstr "Top view"
+
+msgid "Vue de côté"
+msgstr "Side view"
+
+msgid "Cadrer la sélection"
+msgstr "Frame the selection"
+
+msgid "Voir par la caméra"
+msgstr "Look through the camera"
+
+msgid "Surbrillance (voir tout dans le noir)"
+msgstr "Highlight (see everything in the dark)"
+
+msgid "Images par seconde (i/s)"
+msgstr "Frames per second (fps)"
+
+msgid "Studio"
+msgstr "Studio"
+
+msgid "Inspecteur"
+msgstr "Inspector"
+
+msgid "Panneau du bas"
+msgstr "Bottom panel"
+
+msgid "Vue 3D / plan en plein écran"
+msgstr "Full-screen 3D view / plan"
+
+msgid "Outils"
+msgstr "Tools"
+
+msgid "Déplacer (poignée)"
+msgstr "Move (handle)"
+
+msgid "Pivoter (poignée)"
+msgstr "Rotate (handle)"
+
+msgid "Aimant (10 cm / 5°)"
+msgstr "Snap (10 cm / 5°)"
+
+msgid "Rechercher dans la bibliothèque"
+msgstr "Search the library"
+
+msgid "Décor (personnages, véhicules, mobilier…)"
+msgstr "Set dressing (people, vehicles, furniture…)"
+
+msgid "Télécommande infrarouge"
+msgstr "Infrared remote"
+
+msgid "Contrôleur MIDI…"
+msgstr "MIDI controller…"
+
+msgid "Blackout (tout dans le noir)"
+msgstr "Blackout (everything dark)"
+
+msgid "Réseau (Art-Net, sACN)"
+msgstr "Network (Art-Net, sACN)"
+
+msgid "Bluetooth (fausse AsteraBox)"
+msgstr "Bluetooth (fake AsteraBox)"
+
+msgid "Console : plein feu sur la sélection"
+msgstr "Console: full on the selection"
+
+msgid "Console : noir sur la sélection"
+msgstr "Console: black on the selection"
+
+msgid "Console : relâcher la sélection"
+msgstr "Console: release the selection"
+
+msgid "Console : tout relâcher"
+msgstr "Console: release all"
+
+msgid "Vise : projecteurs sélectionnés"
+msgstr "Target: selected fixtures"
+
+msgid "Vise : tous les projecteurs Astera"
+msgstr "Target: all Astera fixtures"
+
+msgid "Voir par la caméra (C) — Échap pour sortir"
+msgstr "Look through the camera (C) — Esc to exit"
+
+msgid "Surbrillance : voir tout dans le noir (H)"
+msgstr "Highlight: see everything in the dark (H)"
+
+msgid "Télécommande infrarouge (R)"
+msgstr "Infrared remote (R)"
+
+msgid "Revenir à la version enregistrée"
+msgstr "Revert to the saved version"
+
+msgid "Renommer le projet"
+msgstr "Rename the project"
+
+msgid "Dossier des projets…"
+msgstr "Projects folder…"
+
+msgid "Voir par cette caméra"
+msgstr "Look through this camera"
+
+msgid "Tourner de 90°"
+msgstr "Rotate 90°"
+
+msgid "Pointillés"
+msgstr "Dashed"
+
+msgid "Taille"
+msgstr "Size"
+
+msgid "Trait"
+msgstr "Line"
+
+msgid "Hauteur 3D (m)"
+msgstr "3D height (m)"
+
+msgid "Fond et cartouche (couleur, image de fond, production)…"
+msgstr "Background and title block (colour, background image, production)…"
+
+msgid "FOND ET CARTOUCHE"
+msgstr "BACKGROUND AND TITLE BLOCK"
+
+msgid "Couleur du fond"
+msgstr "Background colour"
+
+msgid "Auto"
+msgstr "Auto"
+
+msgid "Gris foncé"
+msgstr "Dark grey"
+
+msgid "Gris clair"
+msgstr "Light grey"
+
+msgid "Blanc"
+msgstr "White"
+
+msgid "Auto : sombre à l’écran, blanc à l’export. Une couleur choisie sert aussi à l’export."
+msgstr "Auto: dark on screen, white when exported. A chosen colour is also used for export."
+
+msgid "Photo ou plan vu de dessus. Cale-le à l’échelle avec deux points dont tu connais la distance."
+msgstr "Photo or top-view plan. Scale it with two points whose distance you know."
+
+msgid "Changer d’image…"
+msgstr "Change image…"
+
+msgid "Importer une image…"
+msgstr "Import an image…"
+
+msgid "Caler l’échelle"
+msgstr "Set the scale"
+
+msgid "Largeur (m)"
+msgstr "Width (m)"
+
+msgid "Rotation (°)"
+msgstr "Rotation (°)"
+
+msgid "Opacité"
+msgstr "Opacity"
+
+msgid "Centrer sur la vue"
+msgstr "Centre on the view"
+
+msgid "Retirer l’image"
+msgstr "Remove the image"
+
+msgid "Cartouche (impression, PDF)"
+msgstr "Title block (print, PDF)"
+
+msgid "Production"
+msgstr "Production"
+
+msgid "Chef électro"
+msgstr "Gaffer"
+
+msgid "Plein écran"
+msgstr "Full screen"
+
+msgid "Fond et cartouche…"
+msgstr "Background and title block…"
+
+msgid "Supprimer (Suppr)"
+msgstr "Delete (Del)"
+
+msgid "Lier le groupe (touche LINK)"
+msgstr "Link the group (LINK key)"
+
+msgid "Délier le groupe"
+msgstr "Unlink the group"
+
+msgid "Séquences et plans…"
+msgstr "Sequences and shots…"
+
+msgid "Copie du plan actuel"
+msgstr "Copy of the current shot"
+
+msgid "Même décor, sans lumière"
+msgstr "Same set, no lighting"
+
+msgid "Plan vide"
+msgstr "Empty shot"
+
+msgid "1 plan"
+msgstr "1 shot"
+
+msgid "{} plans"
+msgstr "{} shots"
+
+msgid "Nouveau plan"
+msgstr "New shot"
+
+msgid "Monter"
+msgstr "Move up"
+
+msgid "Descendre"
+msgstr "Move down"
+
+msgid "Supprimer la séquence…"
+msgstr "Delete the sequence…"
+
+msgid "Ouvrir ce plan"
+msgstr "Open this shot"
+
+msgid "Déplacer vers la gauche"
+msgstr "Move left"
+
+msgid "Déplacer vers la droite"
+msgstr "Move right"
+
+msgid "Déplacer dans la séquence"
+msgstr "Move to sequence"
+
+msgid "Supprimer le plan…"
+msgstr "Delete the shot…"
+
+msgid "Clic : ouvrir le plan · double-clic sur un nom : le renommer · clic droit : options"
+msgstr "Click: open the shot · double-click a name: rename it · right-click: options"
+
+msgid "Imprimer / PDF (plan + liste + patch)"
+msgstr "Print / PDF (plot + list + patch)"
+
+msgid "Afficher au sol dans la vue 3D"
+msgstr "Show on the floor in the 3D view"
+
+msgid "Version alpha : des choses bougent et cassent encore."
+msgstr "Alpha version: things still move and break."
+
+msgid "Simulateur d’entraînement pour l’électro et la lumière : projecteurs et leurs menus, DMX (Art-Net, sACN), plan de feu, liste du matériel."
+msgstr "Training simulator for lighting crews: fixtures and their menus, DMX (Art-Net, sACN), lighting plot, equipment list."
+
+msgid "Logiciel libre sous licence Apache-2.0, par 22eme ARKANE. Profils DMX des autres marques : Open Fixture Library (MIT). Non affilié aux fabricants cités. Moteur 3D wgpu, interface réalisée avec Slint."
+msgstr "Free software under the Apache-2.0 licence, by 22eme ARKANE. DMX profiles of other brands: Open Fixture Library (MIT). Not affiliated with the manufacturers mentioned. wgpu 3D engine, interface made with Slint."
+
+msgid "Code source"
+msgstr "Source code"
+
+msgid "Rechercher une mise à jour"
+msgstr "Check for updates"
+
+msgid "ARKLIGHT {} est disponible (tu as {})."
+msgstr "ARKLIGHT {} is available (you have {})."
+
+msgid "Télécharger →"
+msgstr "Download →"
+
+msgid "Nouveautés"
+msgstr "What’s new"
+
+msgid "Fausse AsteraBox (Bluetooth)"
+msgstr "Fake AsteraBox (Bluetooth)"
+
+msgid "Canal 1"
+msgstr "Channel 1"
+
+msgid "Canal 2"
+msgstr "Channel 2"
+
+msgid "Canal 3"
+msgstr "Channel 3"
+
+msgid "Canal 4"
+msgstr "Channel 4"
+
+msgid "Canal 5"
+msgstr "Channel 5"
+
+msgid "Canal 6"
+msgstr "Channel 6"
+
+msgid "Canal 7"
+msgstr "Channel 7"
+
+msgid "Canal 8"
+msgstr "Channel 8"
+
+msgid "Canal 9"
+msgstr "Channel 9"
+
+msgid "Canal 10"
+msgstr "Channel 10"
+
+msgid "Canal 11"
+msgstr "Channel 11"
+
+msgid "Canal 12"
+msgstr "Channel 12"
+
+msgid "Canal 13"
+msgstr "Channel 13"
+
+msgid "Canal 14"
+msgstr "Channel 14"
+
+msgid "Canal 15"
+msgstr "Channel 15"
+
+msgid "Canal 16"
+msgstr "Channel 16"
+
+msgid "Supprimer ce préréglage enregistré"
+msgstr "Delete this saved preset"
+
+msgid "Enregistrer comme préréglage…"
+msgstr "Save as preset…"
+
+msgid "Exporter…"
+msgstr "Export…"
+
+msgid "Importer…"
+msgstr "Import…"
+
+msgid "Préréglage"
+msgstr "Preset"
+
+msgid "Rechercher une commande ou une touche…"
+msgstr "Search a command or a key…"
+
+msgid "Aussi en fond du plan 2D"
+msgstr "Also as the 2D plot background"
+
+msgid "Joindre une photo (plan de feu dessiné à la main, repérage…)"
+msgstr "Attach a photo (hand-drawn lighting plot, location scout…)"
+
+msgid "Reconstruis le plan de feu de cette photo (joins la photo d’un plan dessiné)"
+msgstr "Rebuild the lighting plot from this photo (attach the photo of a drawn plan)"
+
+msgid "Ajoute une face et un contre sur le comédien"
+msgstr "Add a key light and a backlight on the actor"
+
+msgid "Ré-adresse tous les projecteurs à partir de 1, de gauche à droite"
+msgstr "Readdress all fixtures from 1, left to right"
+
+msgid "Mets les tubes en bleu à 50 %"
+msgstr "Set the tubes to blue at 50 %"
+
+msgid "Crée un nouveau plan pour le contrechamp"
+msgstr "Create a new shot for the reverse angle"
+
+msgid "Exemples"
+msgstr "Examples"
+
+msgid "Réinterpréter un plan dessiné…"
+msgstr "Reinterpret a drawn plan…"
+
+msgid "Déplacer"
+msgstr "Move"
+
+msgid "Tourner : pan / tilt"
+msgstr "Rotate: pan / tilt"
+
+msgid "Aimant : pas de 10 cm et de 5°"
+msgstr "Snap: 10 cm and 5° steps"
+
+msgid " — Maj pour s’en passer"
+msgstr " — Shift to bypass it"
+
+msgid "Vue 3D"
+msgstr "3D view"
+
+msgid " — Échap pour sortir"
+msgstr " — Esc to leave"
+
+msgid "Surbrillance : voir tout dans le noir"
+msgstr "Highlight: see everything in the dark"
+
+msgid "Revenir aux panneaux"
+msgstr "Back to the panels"
+
+msgid "Vue en plein écran"
+msgstr "Full-screen view"
+
+msgid "Clavier"
+msgstr "Keyboard"
+
+msgid "Rechercher une mise à jour…"
+msgstr "Check for updates…"
+
+msgid "Masquer les noms, numéros et adresses DMX"
+msgstr "Hide names, numbers and DMX addresses"
+
+msgid "Tout masquer (projecteurs seuls)"
+msgstr "Hide everything (fixtures only)"
+
+msgid "Montrer ou masquer les éléments du plan : noms, adresses DMX, grille…"
+msgstr "Show or hide plot elements: names, DMX addresses, grid…"
+
+msgid "L’assistant fonctionne avec AIODOS, qui n’est pas encore installé sur cet ordinateur."
+msgstr "The assistant runs on AIODOS, which is not installed on this computer yet."
+
+msgid "AIODOS est installé mais arrêté."
+msgstr "AIODOS is installed but stopped."
+
+msgid "Dans la fenêtre d’AIODOS, vérifie que le code est le même, puis autorise ARKLIGHT :"
+msgstr "In the AIODOS window, check that the code is the same, then allow ARKLIGHT:"
+
+msgid "Connecte ARKLIGHT à AIODOS pour utiliser l’assistant : les demandes sont calculées sur cet ordinateur."
+msgstr "Connect ARKLIGHT to AIODOS to use the assistant: requests are computed on this computer."
+
+msgid "Installer AIODOS"
+msgstr "Install AIODOS"
+
+msgid "Lancer AIODOS"
+msgstr "Start AIODOS"
+
+msgid "Vérifier à nouveau"
+msgstr "Check again"
+
+msgid "Importer un plan dessiné…"
+msgstr "Import a drawn plan…"
+
+msgid "Photo d’un plan de feu dessiné sur papier : l’assistant le lit et place les projecteurs, le grip, le décor et les formes (maison…), sur le plan et dans la 3D"
+msgstr "Photo of a lighting plot drawn on paper: the assistant reads it and places the fixtures, grip, set and shapes (house…) on the plot and in 3D"
+
+msgid "Plan dessiné…"
+msgstr "Drawn plan…"
+
+msgid "Nouveautés d’ARKLIGHT…"
+msgstr "What’s new in ARKLIGHT…"
+
+msgid "Nouveautés d’ARKLIGHT"
+msgstr "What’s new in ARKLIGHT"
+
+msgid "Ne plus afficher jusqu’à la prochaine version"
+msgstr "Don’t show again until the next version"
+
+msgid "Télécharger et installer"
+msgstr "Download and install"
+
+msgid "Installer maintenant"
+msgstr "Install now"

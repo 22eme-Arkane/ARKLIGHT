@@ -1,8 +1,8 @@
 {
   "name": "arklight",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.5",
   "private": true,
-  "description": "ARKLIGHT — simulateur d'entraînement lumière (projecteurs, DMX, plan de feu). Logiciel libre GPL-3.0.",
+  "description": "ARKLIGHT — simulateur d'entraînement lumière (projecteurs, DMX, plan de feu). Logiciel libre Apache-2.0.",
   "homepage": "https://github.com/22eme-Arkane/ARKLIGHT",
   "repository": {
     "type": "git",
@@ -15,25 +15,26 @@
     "start": "node server/index.js",
     "dev": "node --watch server/index.js",
     "desktop": "electron .",
-    "dist": "electron-builder --win nsis --publish never",
+    "dist": "node tools/aiodos/prepare-installer.mjs && electron-builder --win nsis --publish never",
     "test": "node --test \"test/**/*.test.mjs\""
   },
   "engines": {
     "node": ">=20"
   },
   "dependencies": {
+    "aiodos-client": "file:vendor/aiodos-client-0.2.0.tgz",
     "three": "^0.186.1",
     "ws": "^8.22.0"
   },
   "author": "22eme ARKANE",
-  "license": "GPL-3.0-or-later",
+  "license": "Apache-2.0",
   "arklight": {
     "updateRepo": "22eme-Arkane/ARKLIGHT"
   },
   "build": {
     "appId": "com.arkane.arklight.pc",
     "productName": "ARKLIGHT",
-    "copyright": "22eme ARKANE — logiciel libre GPL-3.0",
+    "copyright": "Copyright © 2026 22eme ARKANE — logiciel libre Apache-2.0",
     "directories": {
       "output": "dist",
       "buildResources": "build"
@@ -67,7 +68,12 @@
       "shortcutName": "ARKLIGHT",
       "uninstallDisplayName": "ARKLIGHT",
       "artifactName": "ARKLIGHT-Setup-${version}.${ext}",
-      "license": "LICENSE"
+      "license": "LICENSE",
+      "installerLanguages": [
+        "en_US",
+        "fr_FR"
+      ],
+      "include": "build/installer.nsh"
     },
     "publish": [
       {

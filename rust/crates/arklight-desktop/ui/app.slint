@@ -1,0 +1,1003 @@
+// ARKLIGHT (version Rust) : fenêtre principale, composée comme la version JavaScript (web/index.html) :
+// barre du haut (logo, menus, projet et plan, voyants, don), barre d'outils de la vue, panneau de
+// gauche (bibliothèque, scène), vue 3D ou plan 2D, inspecteur, tiroir du bas. Chaque zone est dans
+// son fichier ; l'état et les actions sont dans le global App (common.slint), relié à Rust.
+import { AboutSlint, ListView, ScrollView, LineEdit, Slider, ComboBox, Switch, Button, CheckBox } from "std-widgets.slint";
+import { Theme, Tip, TextButton, Choice, Check, FieldEdit, FoldHandle, FoldStrip, Splitter } from "theme.slint";
+import { App, Dictation, VoiceEdit, FormRow } from "common.slint";
+import { Header } from "header.slint";
+import { Viewbar } from "viewbar.slint";
+import { LeftPanel } from "left.slint";
+import { ViewPanel } from "view.slint";
+import { InspectorPanel } from "inspector.slint";
+import { Drawer } from "drawer.slint";
+import { AskDialog, SupportDialog } from "dialogs.slint";
+import { PlansDialog } from "plans.slint";
+import { NewsDialog } from "news.slint";
+export { App, Dictation, LibRow, SceneRow, Field, FieldGroup, Gizmo, GizmoDot, CtxItem, CtxSub, CtxMenu, PlanCard, SeqRow, NewsEntry, NewsLine, ConsoleFader, MonitorCell, GroupRow, MoveRow, FaceItem, FaceCell, FaceRow, LogLine, NetSource, MonitorLabel, RemoteKey, AiLine, BleLine, MidiRow, Label3D, ProjectCard, ProjectRow, ShortcutRow, KbKey } from "common.slint";
+
+export component AppWindow inherits Window {
+    // les panneaux demandent à la fenêtre de rendre la main à ses raccourcis clavier
+    property <int> refocus: App.refocus;
+    changed refocus => {
+        keys.focus();
+    }
+    title: (App.dirty ? "• " : "") + (App.project-name == "" ? "ARKLIGHT" : App.project-name + " — ARKLIGHT");
+    icon: @image-url("../assets/arklight-256.png");
+    // (taille avant l'agrandissement : tient sur un petit écran)
+    preferred-width: 1280px;
+    preferred-height: 760px;
+    min-width: 900px;
+    min-height: 560px;
+    background: Theme.bg;
+    default-font-size: 13px;
+
+    // taille de la vue 3D (Rust y dessine à cette taille)
+    out property <length> view-width: view.view-width;
+    out property <length> view-height: view.view-height;
+    // position de la vue dans la fenêtre (dépôt d'un élément glissé de la bibliothèque)
+    out property <length> view-x: view.absolute-position.x;
+    out property <length> view-y: view.absolute-position.y;
+
+    // raccourcis clavier (quand aucun champ de saisie n'a la main)
+    keys := FocusScope {
+        // toutes les touches passent par Rust (raccourcis personnalisables)
+        key-pressed(e) => {
+            if (App.key(e.text, e.modifiers.control, e.modifiers.shift, e.modifiers.alt)) {
+                return accept;
+            }
+            reject
+        }
+        key-released(e) => {
+            App.key-up(e.text, e.modifiers.control, e.modifiers.shift, e.modifiers.alt);
+            reject
+        }
+
+        VerticalLayout {
+            Header { }
+            HorizontalLayout {
+                if App.show-left && !App.full-view: LeftPanel {
+                    width: App.left-w;
+                }
+                // replié : une bande « BIBLIOTHÈQUE » ; un clic le déplie
+                if !App.show-left && !App.full-view: FoldStrip {
+                    width: 30px;
+                    letters: App.left-strip;
+                    clicked => {
+                        App.show-left = true;
+                    }
+                }
+                // bords à tirer (panneaux dépliés) ; sinon un simple trait
+                if !App.full-view && App.show-left: Splitter {
+                    width: 5px;
+                    dragged(d) => {
+                        App.left-w = clamp(App.left-w + d, 200px, min(520px, root.width * 0.35));
+                    }
+                    released => {
+                        App.refocus += 1;
+                    }
+                }
+                if !App.full-view && !App.show-left: Rectangle {
+                    width: 1px;
+                    background: Theme.line;
+                }
+                VerticalLayout {
+                    Viewbar { }
+                    view := ViewPanel { }
+                }
+                if !App.full-view && App.show-right: Splitter {
+                    width: 5px;
+                    dragged(d) => {
+                        App.right-w = clamp(App.right-w - d, 280px, min(620px, root.width * 0.4));
+                    }
+                    released => {
+                        App.refocus += 1;
+                    }
+                }
+                if !App.full-view && !App.show-right: Rectangle {
+                    width: 1px;
+                    background: Theme.line;
+                }
+                if !App.show-right && !App.full-view: FoldStrip {
+                    width: 30px;
+                    letters: App.right-strip;
+                    clicked => {
+                        App.show-right = true;
+                    }
+                }
+                if App.show-right && !App.full-view: InspectorPanel {
+                    width: App.right-w;
+                }
+            }
+            if !App.full-view && App.show-console: Splitter {
+                vertical: false;
+                height: 5px;
+                dragged(d) => {
+                    App.bottom-h = clamp(App.bottom-h - d, 140px, max(140px, root.height * 0.6));
+                }
+                released => {
+                    App.refocus += 1;
+                }
+            }
+            if !App.full-view: Drawer {
+                height: App.show-console ? App.bottom-h : 36px;
+            }
+        }
+    }
+
+    // ---------------------------------------------------------------- poignées des panneaux
+    // au milieu du bord intérieur de chaque panneau (comme `.panel-handle` de la version JavaScript)
+    property <length> mid-y: 44px + (root.height - 44px - (App.full-view ? 0px : App.show-console ? App.bottom-h + 5px : 36px)) / 2 - 18px;
+    if !App.full-view && !App.projects-open: FoldHandle {
+        x: (App.show-left ? App.left-w + 3px : 30px + 1px);
+        y: root.mid-y;
+        width: 24px;
+        height: 36px;
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+        icon: App.show-left ? "chevron-left" : "chevron-right";
+        tip: App.show-left ? @tr("Replier la bibliothèque") : @tr("Déplier la bibliothèque");
+        clicked => {
+            App.show-left = !App.show-left;
+            App.refocus += 1;
+        }
+    }
+    if !App.full-view && !App.projects-open: FoldHandle {
+        x: root.width - (App.show-right ? App.right-w + 3px : 30px + 1px) - self.width;
+        y: root.mid-y;
+        width: 24px;
+        height: 36px;
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+        icon: App.show-right ? "chevron-right" : "chevron-left";
+        tip: App.show-right ? @tr("Replier l’inspecteur") : @tr("Déplier l’inspecteur");
+        clicked => {
+            App.show-right = !App.show-right;
+            App.refocus += 1;
+        }
+    }
+
+    // ---------------------------------------------------------------- écran des projets
+    if App.projects-open: Rectangle {
+        background: #0b0d10;
+        clip: true;
+        TouchArea { }
+        // lueurs orange et bleue du fond, comme l'écran des projets de la version JavaScript
+        Rectangle {
+            x: parent.width * 0.2 - 700px;
+            y: -420px;
+            width: 1400px;
+            height: 840px;
+            background: @radial-gradient(circle, #ffad3b14 0%, #ffad3b00 50%);
+        }
+        Rectangle {
+            x: parent.width * 0.9 - 500px;
+            y: -200px;
+            width: 1000px;
+            height: 600px;
+            background: @radial-gradient(circle, #5aa9ff10 0%, #5aa9ff00 50%);
+        }
+        VerticalLayout {
+            // ---- en-tête : logo, « Projets », actions
+            Rectangle {
+                height: 68px;
+                background: #14171cd9;
+                Rectangle {
+                    y: parent.height - 1px;
+                    height: 1px;
+                    background: Theme.line;
+                }
+                HorizontalLayout {
+                    padding-left: 28px;
+                    padding-right: 28px;
+                    spacing: 18px;
+                    HorizontalLayout {
+                        horizontal-stretch: 0;
+                        spacing: 10px;
+                        VerticalLayout {
+                            alignment: center;
+                            Rectangle {
+                                width: 34px;
+                                height: 34px;
+                                border-radius: 8px;
+                                clip: true;
+                                Image {
+                                    width: 34px;
+                                    height: 34px;
+                                    source: @image-url("../assets/arklight-256.png");
+                                }
+                            }
+                        }
+                        HorizontalLayout {
+                            alignment: start;
+                            horizontal-stretch: 0;
+                            Text {
+                                text: "ARK";
+                                color: Theme.text;
+                                font-size: 19px;
+                                font-weight: 700;
+                                letter-spacing: 2px;
+                                vertical-alignment: center;
+                            }
+                            Text {
+                                text: "LIGHT";
+                                color: Theme.accent;
+                                font-size: 19px;
+                                font-weight: 700;
+                                letter-spacing: 2px;
+                                vertical-alignment: center;
+                            }
+                        }
+                    }
+                    VerticalLayout {
+                        horizontal-stretch: 0;
+                        alignment: center;
+                        HorizontalLayout {
+                            spacing: 12px;
+                            Rectangle {
+                                width: 1px;
+                                height: 20px;
+                                background: Theme.line-2;
+                            }
+                            Text {
+                                text: @tr("Projets");
+                                color: Theme.muted;
+                                font-size: 15px;
+                                vertical-alignment: center;
+                            }
+                        }
+                    }
+                    HorizontalLayout {
+                        horizontal-stretch: 0;
+                        spacing: 8px;
+                        padding-left: 10px;
+                        VerticalLayout {
+                            alignment: center;
+                            TextButton {
+                                height: 36px;
+                                text: @tr("Nouveau projet");
+                                primary: true;
+                                clicked => {
+                                    App.projects("new", 0);
+                                }
+                            }
+                        }
+                        VerticalLayout {
+                            alignment: center;
+                            TextButton {
+                                height: 36px;
+                                text: @tr("Ouvrir un fichier…");
+                                clicked => {
+                                    App.projects("file", 0);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            // ---- projets, au centre de l'écran
+            if App.project-rows.length == 0: Text {
+                text: @tr("Aucun projet dans ce dossier : commence par « Nouveau projet » ou un exemple.");
+                color: Theme.muted;
+                font-size: 14px;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+                vertical-stretch: 1;
+            }
+            if App.project-rows.length > 0: hub-scroll := ScrollView {
+                vertical-stretch: 1;
+                VerticalLayout {
+                    min-height: hub-scroll.visible-height;
+                    width: hub-scroll.visible-width;
+                    padding: 28px;
+                    spacing: 18px;
+                    alignment: center;
+                    Text {
+                        text: @tr("PROJETS RÉCENTS");
+                        color: Theme.dim;
+                        font-family: Theme.mono;
+                        font-size: 11px;
+                        font-weight: 700;
+                        letter-spacing: 2px;
+                        horizontal-alignment: center;
+                    }
+                    for row in App.project-rows: HorizontalLayout {
+                        spacing: 18px;
+                        alignment: center;
+                        for c in row.cards: Rectangle {
+                            width: 320px;
+                            height: 248px;
+                            border-radius: 12px;
+                            clip: true;
+                            background: Theme.panel;
+                            border-width: 1px;
+                            border-color: card-touch.has-hover ? Theme.accent : Theme.line-2;
+                            card-touch := TouchArea {
+                                mouse-cursor: pointer;
+                                clicked => {
+                                    App.projects("card", c.index);
+                                }
+                            }
+                            VerticalLayout {
+                                Rectangle {
+                                    height: 180px;
+                                    background: #090b0e;
+                                    if c.has-thumb: Image {
+                                        width: parent.width;
+                                        height: parent.height;
+                                        source: c.thumb;
+                                        image-fit: cover;
+                                    }
+                                    if !c.has-thumb: Text {
+                                        text: @tr("pas de vignette");
+                                        color: #3a414c;
+                                        horizontal-alignment: center;
+                                        vertical-alignment: center;
+                                    }
+                                }
+                                VerticalLayout {
+                                    padding: 12px;
+                                    padding-top: 10px;
+                                    spacing: 3px;
+                                    Text {
+                                        text: c.name;
+                                        color: Theme.text;
+                                        font-size: 15px;
+                                        font-weight: 700;
+                                        overflow: elide;
+                                    }
+                                    Text {
+                                        text: c.sub;
+                                        color: Theme.muted;
+                                        font-size: 12px;
+                                        overflow: elide;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    Text {
+                        text: App.projects-folder;
+                        color: Theme.dim;
+                        font-family: Theme.mono;
+                        font-size: 11px;
+                        horizontal-alignment: center;
+                        overflow: elide;
+                    }
+                }
+            }
+        }
+    }
+
+    // ---------------------------------------------------------------- raccourcis clavier
+    property <length> kb-unit-h: 34px;
+    if App.shortcuts-open: Rectangle {
+        background: #000000b0;
+        TouchArea { }
+        shortcut-keys := FocusScope {
+            key-pressed(e) => {
+                if (App.key(e.text, e.modifiers.control, e.modifiers.shift, e.modifiers.alt)) {
+                    return accept;
+                }
+                reject
+            }
+            Rectangle {
+                width: min(root.width - 40px, 900px);
+                height: min(root.height - 60px, 860px);
+                background: #171a20;
+                border-radius: 10px;
+                border-width: 1px;
+                border-color: Theme.line-2;
+                VerticalLayout {
+                    padding: 20px;
+                    spacing: 10px;
+                    Text {
+                        text: @tr("Raccourcis clavier");
+                        color: Theme.text;
+                        font-size: 16px;
+                        font-weight: 700;
+                    }
+                    Text {
+                        text: App.shortcut-capture != "" ? @tr("Appuie sur la touche (ou la combinaison) pour « {} »… Échap : annuler.", App.shortcut-capture) : @tr("« Changer » puis appuie sur la touche voulue ; une touche déjà prise passe à la nouvelle commande. Seules les touches changées sont mémorisées.");
+                        color: App.shortcut-capture != "" ? #ffad3b : Theme.muted;
+                        font-size: 12px;
+                        wrap: word-wrap;
+                    }
+                    HorizontalLayout {
+                        spacing: 8px;
+                        shortcut-search := LineEdit {
+                            placeholder-text: @tr("Rechercher une commande ou une touche…");
+                            edited(t) => {
+                                App.shortcut("filter", t);
+                            }
+                        }
+                        Check {
+                            text: @tr("Clavier");
+                            checked: App.kb-shown;
+                            toggled(on) => {
+                                App.kb-shown = on;
+                            }
+                        }
+                    }
+                    // clavier AZERTY : touches prises en couleur ; Ctrl / Alt / Maj : touches prises
+                    // avec ce modificateur ; clic sur une touche : ses commandes
+                    if App.kb-shown: kb := Rectangle {
+                        property <length> unit: self.width / 18.5;
+                        height: 6 * root.kb-unit-h;
+                        for key in App.kb-keys: Rectangle {
+                            x: key.x * kb.unit + 1px;
+                            y: key.row * root.kb-unit-h + 1px;
+                            width: key.w * kb.unit - 2px;
+                            height: root.kb-unit-h - 2px;
+                            border-radius: 4px;
+                            background: key.picked ? #ffad3b40 : key.mod-on ? #2d6cdf60 : key.bound ? #ffad3b1f : key.dead ? #0f1115 : #1d2128;
+                            border-width: 1px;
+                            border-color: key.picked ? Theme.accent : key.mod-on ? #5b8ee6 : key.bound ? #ffad3b80 : #2a2f37;
+                            key-touch := TouchArea {
+                                enabled: !key.dead;
+                                clicked => {
+                                    App.shortcut("kb", key.token);
+                                }
+                            }
+                            property <bool> hovering: key-touch.has-hover;
+                            changed hovering => {
+                                if (self.hovering && key.tip != "") {
+                                    Tip.text = key.tip;
+                                    Tip.x = self.absolute-position.x;
+                                    Tip.y = self.absolute-position.y + self.height + 4px;
+                                    Tip.visible = true;
+                                } else if (!self.hovering) {
+                                    Tip.visible = false;
+                                }
+                            }
+                            Text {
+                                x: 4px;
+                                y: 2px;
+                                text: key.sub;
+                                color: Theme.dim;
+                                font-size: 8px;
+                            }
+                            Text {
+                                x: 4px;
+                                y: key.sub != "" ? 11px : 3px;
+                                text: key.cap;
+                                color: key.dead ? #4a515c : key.bound || key.mod-on ? Theme.text : Theme.muted;
+                                font-size: 10px;
+                                font-weight: key.bound ? 700 : 400;
+                            }
+                            if key.action != "": Text {
+                                x: 3px;
+                                y: parent.height - self.height - 2px;
+                                width: parent.width - 6px;
+                                text: key.action;
+                                color: #ffc46e;
+                                font-size: 7.5px;
+                                overflow: elide;
+                            }
+                        }
+                    }
+                    ListView {
+                        for r in App.shortcut-rows: HorizontalLayout {
+                            height: 32px;
+                            spacing: 8px;
+                            Text {
+                                text: r.label;
+                                color: Theme.text;
+                                vertical-alignment: center;
+                                horizontal-stretch: 1;
+                                overflow: elide;
+                            }
+                            Text {
+                                width: 150px;
+                                text: r.keys;
+                                color: r.changed ? #ffad3b : #8fb8ff;
+                                font-family: "Consolas";
+                                vertical-alignment: center;
+                            }
+                            TextButton {
+                                text: @tr("Changer");
+                                clicked => {
+                                    App.shortcut("capture", r.id);
+                                    shortcut-keys.focus();
+                                }
+                            }
+                            TextButton {
+                                text: @tr("Par défaut");
+                                enabled: r.changed;
+                                clicked => {
+                                    App.shortcut("default", r.id);
+                                }
+                            }
+                            TextButton {
+                                text: "×";
+                                enabled: r.keys != "";
+                                clicked => {
+                                    App.shortcut("clear", r.id);
+                                }
+                            }
+                        }
+                    }
+                    HorizontalLayout {
+                        alignment: end;
+                        TextButton {
+                            text: @tr("Fermer");
+                            primary: true;
+                            clicked => {
+                                App.shortcut("close", "");
+                                keys.focus();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // ---------------------------------------------------------------- séquences et plans
+    if App.plans-open: PlansDialog { }
+
+    // ---------------------------------------------------------------- nouveautés
+    if App.news-open: NewsDialog { }
+
+    // ---------------------------------------------------------------- saisie (numéro, nom)
+    if App.prompt-open: Rectangle {
+        background: #000000b0;
+        TouchArea { }
+        Rectangle {
+            width: 440px;
+            height: prompt-layout.preferred-height;
+            background: #171a20;
+            border-radius: 10px;
+            border-width: 1px;
+            border-color: Theme.line-2;
+            prompt-layout := VerticalLayout {
+                padding: 20px;
+                spacing: 10px;
+                Text {
+                    text: App.prompt-title;
+                    color: Theme.text;
+                    font-size: 16px;
+                    font-weight: 700;
+                    wrap: word-wrap;
+                }
+                Text {
+                    text: App.prompt-label;
+                    color: Theme.muted;
+                    font-size: 12px;
+                }
+                VoiceEdit {
+                    field: "prompt";
+                    autofocus: true;
+                    text <=> App.prompt-value;
+                    accepted => {
+                        App.prompt-ok(App.prompt-value);
+                    }
+                }
+                if App.prompt-note != "": Text {
+                    text: App.prompt-note;
+                    color: Theme.dim;
+                    font-size: 11px;
+                    wrap: word-wrap;
+                }
+                HorizontalLayout {
+                    alignment: end;
+                    spacing: 8px;
+                    TextButton {
+                        text: @tr("bouton" => "Annuler");
+                        clicked => {
+                            App.prompt-open = false;
+                            keys.focus();
+                        }
+                    }
+                    TextButton {
+                        text: @tr("Valider");
+                        primary: true;
+                        clicked => {
+                            App.prompt-ok(App.prompt-value);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // ---------------------------------------------------------------- ré-adressage automatique
+    if App.readdress-open: Rectangle {
+        background: #000000b0;
+        TouchArea { }
+        Rectangle {
+            width: 620px;
+            height: min(root.height - 60px, 640px);
+            background: #171a20;
+            border-radius: 10px;
+            border-width: 1px;
+            border-color: Theme.line-2;
+            VerticalLayout {
+                padding: 20px;
+                spacing: 10px;
+                Text {
+                    text: @tr("Ré-adressage automatique");
+                    color: Theme.text;
+                    font-size: 16px;
+                    font-weight: 700;
+                }
+                Text {
+                    text: @tr("Calcule un nouveau patch sans chevauchement. Rien n’est modifié avant « Appliquer ». Pense à reporter les nouvelles adresses dans l’appli ou la console.");
+                    color: Theme.muted;
+                    font-size: 12px;
+                    wrap: word-wrap;
+                }
+                VerticalLayout {
+                    spacing: 8px;
+                    FormRow {
+                        label: @tr("Projecteurs");
+                        Choice {
+                            model: App.ra-scopes;
+                            current-index: App.ra-scope;
+                            selected(idx) => {
+                                App.ra-scope = idx;
+                                App.readdress-scope(idx);
+                            }
+                        }
+                    }
+                    if !App.ra-conflicts-only: FormRow {
+                        label: @tr("Ordre");
+                        Choice {
+                            model: App.ra-orders;
+                            current-index: App.ra-order;
+                            selected(idx) => {
+                                App.ra-order = idx;
+                                App.readdress-changed();
+                            }
+                        }
+                    }
+                    if !App.ra-conflicts-only && !App.ra-universe-scope: FormRow {
+                        label: @tr("Univers");
+                        Choice {
+                            model: [@tr("Chaque projecteur garde son univers"), @tr("Tout à la suite, à partir de l’univers de départ")];
+                            current-index: App.ra-pack;
+                            selected(idx) => {
+                                App.ra-pack = idx;
+                                App.readdress-changed();
+                            }
+                        }
+                    }
+                    if !App.ra-conflicts-only: FormRow {
+                        label: @tr("Départ");
+                        HorizontalLayout {
+                            spacing: 8px;
+                            Text {
+                                text: @tr("univers");
+                                color: Theme.muted;
+                                vertical-alignment: center;
+                            }
+                            FieldEdit {
+                                width: 90px;
+                                mono: true;
+                                enabled: App.ra-pack == 1;
+                                text: App.ra-universe;
+                                edited(t) => {
+                                    App.ra-universe = t;
+                                    App.readdress-changed();
+                                }
+                            }
+                            Text {
+                                text: @tr("adresse");
+                                color: Theme.muted;
+                                vertical-alignment: center;
+                            }
+                            FieldEdit {
+                                width: 90px;
+                                mono: true;
+                                text: App.ra-address;
+                                edited(t) => {
+                                    App.ra-address = t;
+                                    App.readdress-changed();
+                                }
+                            }
+                            Rectangle { }
+                        }
+                    }
+                    FormRow {
+                        label: @tr("Adresses");
+                        Choice {
+                            model: App.ra-aligns;
+                            current-index: App.ra-align;
+                            selected(idx) => {
+                                App.ra-align = idx;
+                                App.readdress-changed();
+                            }
+                        }
+                    }
+                    FormRow {
+                        label: @tr("Univers plein");
+                        Check {
+                            text: @tr("passer à l’univers suivant");
+                            checked: App.ra-overflow;
+                            toggled(on) => {
+                                App.ra-overflow = on;
+                                App.readdress-changed();
+                            }
+                        }
+                    }
+                }
+                Text {
+                    text: App.ra-summary;
+                    color: Theme.text;
+                    wrap: word-wrap;
+                }
+                if App.ra-status != "": Text {
+                    text: App.ra-status;
+                    color: App.ra-warn ? #ffb454 : #6fd08c;
+                    wrap: word-wrap;
+                }
+                if App.ra-unplaced != "": Text {
+                    text: App.ra-unplaced;
+                    color: #ffb454;
+                    wrap: word-wrap;
+                }
+                Rectangle {
+                    background: #111419;
+                    border-radius: 6px;
+                    ListView {
+                        for m in App.ra-moves: HorizontalLayout {
+                            padding-left: 10px;
+                            padding-right: 10px;
+                            height: 24px;
+                            spacing: 10px;
+                            Text {
+                                text: m.name;
+                                color: Theme.text;
+                                overflow: elide;
+                                horizontal-stretch: 1;
+                                vertical-alignment: center;
+                            }
+                            Text {
+                                width: 130px;
+                                text: m.before;
+                                color: Theme.muted;
+                                font-family: "Consolas";
+                                vertical-alignment: center;
+                            }
+                            Text {
+                                text: "→";
+                                color: Theme.dim;
+                                vertical-alignment: center;
+                            }
+                            Text {
+                                width: 130px;
+                                text: m.after;
+                                color: #8fb8ff;
+                                font-family: "Consolas";
+                                vertical-alignment: center;
+                            }
+                        }
+                    }
+                }
+                HorizontalLayout {
+                    alignment: end;
+                    spacing: 8px;
+                    TextButton {
+                        text: @tr("bouton" => "Annuler");
+                        clicked => {
+                            App.readdress-open = false;
+                            keys.focus();
+                        }
+                    }
+                    TextButton {
+                        text: App.ra-count > 0 ? @tr("Appliquer ({})", App.ra-count) : @tr("Appliquer");
+                        primary: true;
+                        enabled: App.ra-count > 0;
+                        clicked => {
+                            App.readdress-apply();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // ---------------------------------------------------------------- À propos
+    if App.about-open: Rectangle {
+        background: #000000b0;
+        TouchArea {
+            clicked => {
+                App.about-open = false;
+            }
+        }
+        Rectangle {
+            width: 570px;
+            height: about-col.preferred-height;
+            background: #171a20;
+            border-radius: 10px;
+            border-width: 1px;
+            border-color: Theme.line-2;
+            TouchArea { }
+            about-col := VerticalLayout {
+                padding: 22px;
+                spacing: 10px;
+                // logo, nom et version
+                HorizontalLayout {
+                    spacing: 14px;
+                    Rectangle {
+                        width: 52px;
+                        height: 52px;
+                        border-radius: 12px;
+                        clip: true;
+                        Image {
+                            width: 52px;
+                            height: 52px;
+                            source: @image-url("../assets/arklight-256.png");
+                        }
+                    }
+                    VerticalLayout {
+                        alignment: center;
+                        spacing: 2px;
+                        HorizontalLayout {
+                            spacing: 8px;
+                            alignment: start;
+                            HorizontalLayout {
+                                Text {
+                                    text: "ARK";
+                                    color: Theme.text;
+                                    font-size: 20px;
+                                    font-weight: 800;
+                                    letter-spacing: 1.8px;
+                                }
+                                Text {
+                                    text: "LIGHT";
+                                    color: Theme.accent;
+                                    font-size: 20px;
+                                    font-weight: 800;
+                                    letter-spacing: 1.8px;
+                                }
+                            }
+                            Text {
+                                text: App.version;
+                                color: Theme.muted;
+                                font-size: 14px;
+                                vertical-alignment: center;
+                            }
+                        }
+                        if App.prerelease: Text {
+                            text: @tr("Version alpha : des choses bougent et cassent encore.");
+                            color: Theme.dim;
+                            font-size: Theme.small;
+                        }
+                    }
+                }
+                Text {
+                    text: @tr("Simulateur d’entraînement pour l’électro et la lumière : projecteurs et leurs menus, DMX (Art-Net, sACN), plan de feu, liste du matériel.");
+                    color: Theme.text;
+                    wrap: word-wrap;
+                }
+                Text {
+                    text: @tr("Logiciel libre sous licence Apache-2.0, par 22eme ARKANE. Profils DMX des autres marques : Open Fixture Library (MIT). Non affilié aux fabricants cités. Moteur 3D wgpu, interface réalisée avec Slint.");
+                    color: Theme.muted;
+                    font-size: Theme.small;
+                    wrap: word-wrap;
+                }
+                // attribution demandée par la licence Royalty-free de Slint
+                HorizontalLayout {
+                    alignment: start;
+                    AboutSlint {
+                        width: 180px;
+                        height: 84px;
+                    }
+                }
+                Text {
+                    text: "Copyright © 2026 22eme ARKANE";
+                    color: Theme.dim;
+                    font-size: Theme.small;
+                }
+                if App.about-status != "": Text {
+                    text: App.about-status;
+                    color: Theme.accent;
+                    font-size: Theme.small;
+                    wrap: word-wrap;
+                }
+                HorizontalLayout {
+                    padding-top: 6px;
+                    spacing: 8px;
+                    TextButton {
+                        text: @tr("Code source");
+                        clicked => {
+                            App.open-url("https://github.com/22eme-Arkane/ARKLIGHT");
+                        }
+                    }
+                    TextButton {
+                        text: @tr("Rechercher une mise à jour");
+                        clicked => {
+                            App.about-check();
+                        }
+                    }
+                    Rectangle {
+                        horizontal-stretch: 1;
+                    }
+                    TextButton {
+                        text: @tr("❤ Faire un don");
+                        clicked => {
+                            App.support-open = true;
+                        }
+                    }
+                    TextButton {
+                        primary: true;
+                        text: @tr("Fermer");
+                        clicked => {
+                            App.about-open = false;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // ---------------------------------------------------------------- aide au survol des micros
+    if Dictation.tip-visible: Rectangle {
+        width: 380px;
+        height: tip-layout.preferred-height;
+        x: max(8px, min(Dictation.tip-x - 180px, root.width - self.width - 8px));
+        y: Dictation.tip-y + 6px + self.height > root.height ? Dictation.tip-y - self.height - 32px : Dictation.tip-y + 6px;
+        background: #1d2128f5;
+        border-radius: 6px;
+        border-width: 1px;
+        border-color: #3c434e;
+        tip-layout := VerticalLayout {
+            padding: 8px;
+            Text {
+                text: Dictation.tooltip;
+                color: Theme.text;
+                font-size: 11px;
+                wrap: word-wrap;
+            }
+        }
+    }
+
+    // ---------------------------------------------------------------- bulle d'aide des boutons
+    if Tip.visible && Tip.text != "": Rectangle {
+        x: max(4px, min(Tip.x, root.width - self.width - 4px));
+        y: Tip.y + self.height > root.height ? Tip.y - self.height - 40px : Tip.y;
+        width: min(420px, tip-text.preferred-width + 16px);
+        height: tip-text.preferred-height + 10px;
+        background: #1d2128f5;
+        border-radius: 5px;
+        border-width: 1px;
+        border-color: Theme.line-2;
+        tip-text := Text {
+            x: 8px;
+            width: parent.width - 16px;
+            text: Tip.text;
+            color: Theme.text;
+            font-size: Theme.small;
+            wrap: word-wrap;
+            vertical-alignment: center;
+        }
+    }
+
+    // ---------------------------------------------------------------- élément glissé de la bibliothèque
+    if App.drag-label != "": Rectangle {
+        x: App.drag-x + 14px;
+        y: App.drag-y + 10px;
+        width: drag-text.preferred-width + 20px;
+        height: 26px;
+        border-radius: 13px;
+        background: #ffad3be6;
+        drag-text := Text {
+            text: "+ " + App.drag-label;
+            color: Theme.accent-ink;
+            font-weight: 600;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+        }
+    }
+
+    // ---------------------------------------------------------------- quitter, enregistrer, faire un don
+    if App.ask-open: AskDialog {
+        width: root.width;
+        height: root.height;
+    }
+    if App.support-open: SupportDialog {
+        width: root.width;
+        height: root.height;
+    }
+}

@@ -1,5 +1,5 @@
 // Petites fenêtres de dialogue : saisie d'un nom (Electron n'a pas window.prompt), enregistrement
-// des modifications avant d'ouvrir ou de créer une autre scène.
+// des modifications avant d'ouvrir ou de créer un autre projet.
 import { h } from './dom.js';
 
 function modal(cls) {
@@ -38,6 +38,29 @@ export function askText({ title, label = '', value = '', ok = 'OK', note = '' })
     d.showModal();
     input.focus();
     input.select();
+  });
+}
+
+/** Demande une confirmation. Renvoie true si on confirme. */
+export function askConfirm({ title, note = '', ok = 'OK', danger = false }) {
+  return new Promise((resolve) => {
+    const d = modal('ask');
+    let result = false;
+    d.addEventListener('close', () => resolve(result));
+    const okBtn = h(
+      'button',
+      {
+        class: danger ? 'danger-btn' : 'primary',
+        onclick: () => {
+          result = true;
+          d.close();
+        },
+      },
+      ok,
+    );
+    d.append(h('h3', {}, title), note ? h('p', { class: 'note' }, note) : null, h('div', { class: 'dialog-actions' }, h('button', { onclick: () => d.close() }, 'Annuler'), okBtn));
+    d.showModal();
+    okBtn.focus();
   });
 }
 

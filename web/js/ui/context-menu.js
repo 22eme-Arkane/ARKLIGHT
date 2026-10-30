@@ -138,7 +138,7 @@ export function openContextMenu(x, y, items, opts = {}) {
   if (opts.className) menu.classList.add(opts.className);
   menu.style.left = '0px';
   menu.style.top = '0px';
-  document.body.append(menu);
+  (document.fullscreenElement || document.body).append(menu);
   const r = menu.getBoundingClientRect();
   const left = Math.max(4, Math.min(x, window.innerWidth - r.width - 4));
   const top = Math.max(4, Math.min(y, window.innerHeight - r.height - 4));

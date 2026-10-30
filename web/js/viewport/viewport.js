@@ -4,7 +4,6 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { TransformControls } from 'three/addons/controls/TransformControls.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { CSS2DObject, CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
@@ -16,26 +15,61 @@ import { SUPPORTS, resolveSupport } from '/shared/fixtures/supports.js';
 import { DRAG_TYPE, GRIP_DRAG_TYPE } from '../ui/library.js';
 import { GripModel, buildPlotVolumes, buildUnderlayFloor } from './grip-models.js';
 import { GripLighting } from './light-grip.js';
-import { getGripType } from '/shared/grip.js';
-import { patchLabel } from '../ui/patch.js';
+import { PropModel } from './prop-models.js';
+import { buildFixtureAccessories } from './fixture-accessories.js';
+import { SourceBloomPass } from './source-bloom.js';
+import { getObjectType, isProp } from '/shared/objects.js';
+import { cameraFov } from '/shared/props.js';
+import { patchLine } from '../ui/patch.js';
 
-const ACTOR_HEAD = new THREE.Vector3(0, 1.6, 0);
+const DEFAULT_AIM = new THREE.Vector3(0, 1.6, 0); // centre du plateau, hauteur d'un visage
+const SNAP_DEG = 5; // crans de rotation de l'aimant (Maj : rotation libre)
 const r3 = (v) => Math.round(v * 1000) / 1000;
 
+// Surbrillance : projecteurs, pieds, grip et décor redessinés par-dessus l'image, sans éclairage,
+// pour les retrouver dans une scène très sombre. Les maillages concernés sont aussi sur le calque 1.
+const HIGHLIGHT_LAYER = 1;
+const HighlightShader = {
+  uniforms: { color: { value: new THREE.Color(0xffc56b) } },
+  vertexShader: `varying vec3 vN; varying vec3 vV;
+    void main() {
+      vec4 mv = modelViewMatrix * vec4(position, 1.0);
+      vN = normalize(normalMatrix * normal);
+      vV = normalize(-mv.xyz);
+      gl_Position = projectionMatrix * mv;
+    }`,
+  fragmentShader: `uniform vec3 color; varying vec3 vN; varying vec3 vV;
+    void main() {
+      float rim = clamp(1.0 - abs(dot(normalize(vN), normalize(vV))), 0.0, 1.0);
+      gl_FragColor = vec4(color * (0.2 + 0.7 * rim), 0.05 + 0.55 * pow(rim, 1.6));
+    }`,
+};
+
+/** Réglages qui changent le modèle d'un projecteur (zoom, accessoires) : il est alors reconstruit. */
+const modelKey = (f) => [f.settings.zoom, f.settings.modifier, f.settings.front, f.settings.grid, f.settings.gel].join('|');
+
+/** Met les maillages d'un modèle sur le calque de surbrillance (pas les faisceaux). */
+function markHighlight(root) {
+  root.traverse((o) => {
+    if (o.isMesh && !o.userData.isBeam) o.layers.enable(HIGHLIGHT_LAYER);
+  });
+}
+
 /**
- * Passe de sécurité avant le halo : un projecteur très puissant (HMI, 2K…) à quelques centimètres
- * d'une surface (son pied, par exemple) dépasse la précision des tampons d'image ; la valeur devient
- * infinie ou indéfinie et le halo l'étale en taches noires qui clignotent quand la caméra bouge.
- * On remplace les valeurs indéfinies par du noir et on plafonne les autres.
+ * Passe de sécurité : un projecteur très puissant (HMI, 2K…) à quelques centimètres d'une surface
+ * (son pied, par exemple) dépasse la précision des tampons d'image ; la valeur devient infinie ou
+ * indéfinie et apparaît en taches noires qui clignotent quand la caméra bouge. On remplace les valeurs
+ * indéfinies par du noir et on plafonne les autres, puis on applique l'exposition de la caméra
+ * (le halo des sources, calculé à part, suit la même exposition : voir source-bloom.js).
  */
 const SanitizeShader = {
-  uniforms: { tDiffuse: { value: null }, uMax: { value: 4000 } },
+  uniforms: { tDiffuse: { value: null }, uMax: { value: 4000 }, uExposure: { value: 1 } },
   vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
-  fragmentShader: `uniform sampler2D tDiffuse; uniform float uMax; varying vec2 vUv;
+  fragmentShader: `uniform sampler2D tDiffuse; uniform float uMax; uniform float uExposure; varying vec2 vUv;
     void main() {
       vec4 c = texture2D(tDiffuse, vUv);
       if (any(isnan(c))) c = vec4(0.0, 0.0, 0.0, 1.0);
-      c.rgb = clamp(c.rgb, 0.0, uMax);
+      c.rgb = clamp(c.rgb, 0.0, uMax) * uExposure;
       gl_FragColor = c;
     }`,
 };
@@ -50,6 +84,7 @@ export class Viewport extends EventTarget {
     this.net = net;
     this.models = new Map(); // id -> { model, out: Float32Array, source }
     this.draggingIds = new Set(); // projecteurs déplacés par la poignée pendant un glisser
+    this.identifying = new Set(); // projecteurs identifiés par une appli (RDM) : ils clignotent
     this.objects = new Map(); // grip : id -> { model, type }
     this.draggingObjectId = null;
     this.plot3d = new THREE.Group(); // volumes du plan de feu et image au sol
@@ -90,10 +125,15 @@ export class Viewport extends EventTarget {
     this.camera = new THREE.PerspectiveCamera(50, 1, 0.05, 200);
     this.camera.position.set(5.5, 3.2, 7.5);
 
-    this.composer = new EffectComposer(r);
+    // image en HDR avec anticrénelage (4 échantillons) : les contours restent nets malgré les effets
+    const target = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 4 });
+    this.composer = new EffectComposer(r, target);
     this.composer.addPass(new RenderPass(this.scene, this.camera));
-    this.composer.addPass(new ShaderPass(SanitizeShader));
-    this.bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), 0.42, 0.3, 0.95);
+    this.sanitize = new ShaderPass(SanitizeShader);
+    this.composer.addPass(this.sanitize);
+    // halo des sources lumineuses, discret et serré : seules les faces émettrices rayonnent (une peau
+    // ou un décor surexposés ne « diffusent » pas) ; il apparaît en douceur quand la source approche du blanc
+    this.bloom = new SourceBloomPass(this.scene, this.camera, { strength: 0.28, radius: 0.12, threshold: 0.8, knee: 0.6 });
     this.composer.addPass(this.bloom);
     this.composer.addPass(new OutputPass());
 
@@ -148,33 +188,10 @@ export class Viewport extends EventTarget {
     this.cyc = cyc;
     s.add(cyc);
 
-    // Personnage (silhouette simple pour juger l'éclairage d'un sujet)
-    this.actor = this._buildActor();
-    this.actor.traverse((o) => {
-      if (o.isMesh) o.castShadow = o.receiveShadow = true;
-    });
-    s.add(this.actor);
-  }
-
-  _buildActor() {
-    const g = new THREE.Group();
-    const skin = new THREE.MeshStandardMaterial({ color: 0xb59a86, roughness: 0.6 });
-    const cloth = new THREE.MeshStandardMaterial({ color: 0x4a5566, roughness: 0.85 });
-    const add = (geo, mat, x, y, z, rx = 0, rz = 0) => {
-      const m = new THREE.Mesh(geo, mat);
-      m.position.set(x, y, z);
-      m.rotation.set(rx, 0, rz);
-      g.add(m);
-      return m;
-    };
-    add(new THREE.SphereGeometry(0.11, 24, 18), skin, 0, 1.62, 0);
-    add(new THREE.CylinderGeometry(0.05, 0.055, 0.1, 12), skin, 0, 1.48, 0);
-    add(new THREE.CapsuleGeometry(0.17, 0.42, 6, 14), cloth, 0, 1.15, 0);
-    add(new THREE.CapsuleGeometry(0.075, 0.68, 6, 10), cloth, -0.1, 0.48, 0);
-    add(new THREE.CapsuleGeometry(0.075, 0.68, 6, 10), cloth, 0.1, 0.48, 0);
-    add(new THREE.CapsuleGeometry(0.05, 0.5, 6, 10), cloth, -0.24, 1.12, 0, 0, 0.12);
-    add(new THREE.CapsuleGeometry(0.05, 0.5, 6, 10), cloth, 0.24, 1.12, 0, 0, -0.12);
-    return g;
+    // Surbrillance (désactivée au départ)
+    this.highlight = false;
+    this.blackout = false; // blackout général (voir setBlackout)
+    this.hlMat = new THREE.ShaderMaterial({ ...HighlightShader, transparent: true, depthTest: false, depthWrite: false, blending: THREE.AdditiveBlending });
   }
 
   _initControls() {
@@ -188,7 +205,16 @@ export class Viewport extends EventTarget {
     const t = new TransformControls(this.camera, dom);
     t.setSize(0.8);
     t.setTranslationSnap(0.1);
-    t.setRotationSnap(THREE.MathUtils.degToRad(15));
+    t.setRotationSnap(THREE.MathUtils.degToRad(SNAP_DEG));
+    // Maj enfoncée : déplacement et rotation libres (sans aimant), pour les réglages fins
+    this.snapOn = true;
+    const free = (on) => {
+      this.transform.setTranslationSnap(this.snapOn && !on ? 0.1 : null);
+      this.transform.setRotationSnap(this.snapOn && !on ? THREE.MathUtils.degToRad(SNAP_DEG) : null);
+    };
+    window.addEventListener('keydown', (e) => e.key === 'Shift' && free(true));
+    window.addEventListener('keyup', (e) => e.key === 'Shift' && free(false));
+    window.addEventListener('blur', () => free(false));
     this.transform = t;
     this.scene.add(t.getHelper(), this.pivot, this.plot3d);
     t.addEventListener('dragging-changed', (e) => {
@@ -291,8 +317,8 @@ export class Viewport extends EventTarget {
       e.preventDefault();
       marker.visible = false;
       const p = this._floorPoint(e);
-      const grip = getGripType(e.dataTransfer.getData(GRIP_DRAG_TYPE));
-      if (grip && p) return this.dispatchEvent(new CustomEvent('drop-object', { detail: { type: grip, ...this.gripPlacementAt(grip, p.x, p.z) } }));
+      const obj = getObjectType(e.dataTransfer.getData(GRIP_DRAG_TYPE));
+      if (obj && p) return this.dispatchEvent(new CustomEvent('drop-object', { detail: { type: obj, ...this.gripPlacementAt(obj, p.x, p.z) } }));
       const type = getFixtureType(e.dataTransfer.getData(DRAG_TYPE));
       if (type && p) this.dispatchEvent(new CustomEvent('drop-fixture', { detail: { type, ...this.placementAt(type, p.x, p.z) } }));
     });
@@ -360,7 +386,7 @@ export class Viewport extends EventTarget {
     const ray = new THREE.Raycaster();
     ray.setFromCamera(ndc, this.camera);
     const targets = [];
-    for (const { model } of this.models.values()) targets.push(...model.pickables);
+    for (const { model } of this.models.values()) targets.push(...model.pickables, ...(model.accPickables || []));
     for (const { model } of this.objects.values()) targets.push(...model.pickables);
     const hit = ray.intersectObjects(targets, false)[0];
     if (!hit) return null;
@@ -425,9 +451,10 @@ export class Viewport extends EventTarget {
 
   // ---------------------------------------------------------------- grip et plan de feu en 3D
   _addObject(o) {
-    const type = getGripType(o.type);
+    const type = getObjectType(o.type);
     if (!type || this.objects.has(o.id)) return;
-    const model = new GripModel(type, o.props || {});
+    const model = isProp(type) ? new PropModel(type, o.props || {}) : new GripModel(type, o.props || {});
+    markHighlight(model.root);
     model.root.userData.objectId = o.id;
     model.body.userData.objectId = o.id; // la poignée s'accroche au corps
     this.scene.add(model.root);
@@ -440,12 +467,14 @@ export class Viewport extends EventTarget {
     const entry = this.objects.get(o.id);
     if (!entry) return this._addObject(o);
     entry.model.update(o.props || {});
+    markHighlight(entry.model.root);
     if (this.draggingObjectId !== o.id) entry.model.setTransform(o.position, o.rotation);
   }
 
   _removeObject(id) {
     const entry = this.objects.get(id);
     if (!entry) return;
+    if (this.lookId === id) this.lookThrough(null);
     if (this.transform.object === entry.model.body) this.transform.detach();
     this.scene.remove(entry.model.root);
     entry.model.dispose();
@@ -476,8 +505,9 @@ export class Viewport extends EventTarget {
     if (floor) this.plot3d.add(floor);
   }
 
-  /** Élément de grip posé au point (x, z) du sol, tourné vers le personnage. */
+  /** Objet posé au point (x, z) du sol : décor dans son orientation habituelle, grip tourné vers le centre. */
   gripPlacementAt(type, x, z) {
+    if (isProp(type)) return { position: [r3(x), 0, r3(z)], rotation: [0, r3(type.yaw || 0), 0] };
     const y = { frame: type.h / 2 + 0.6, flag: 1.6, bounce: (type.h || 1) / 2 + 0.3, box: (type.size?.[1] || 0.1) / 2, bag: (type.size?.[1] || 0.1) / 2, stand: 0 }[type.family] ?? 0;
     const faces = ['frame', 'flag', 'bounce'].includes(type.family);
     const yaw = faces ? Math.atan2(-x, -z) : 0; // face +Z vers le centre du plateau
@@ -500,6 +530,19 @@ export class Viewport extends EventTarget {
     st.addEventListener('env', (e) => this.applyEnvironment(e.detail));
   }
 
+  /** Place libre proposée pour un nouvel objet de décor (bouton « + ») : autour du centre, sans chevauchement. */
+  suggestObjectPlacement(type) {
+    const taken = [...(this.store.scene?.objects || []), ...(this.store.scene?.fixtures || [])].map((o) => o.position);
+    for (let i = 0; i < 80; i++) {
+      const a = i * 2.39996; // angle d'or : points bien répartis
+      const r = 0.9 * Math.sqrt(i);
+      const x = Math.sin(a) * r;
+      const z = 1.2 + Math.cos(a) * r * 0.7;
+      if (taken.every((p) => Math.hypot(p[0] - x, p[2] - z) > 0.9)) return this.gripPlacementAt(type, x, z);
+    }
+    return this.gripPlacementAt(type, 0, 2);
+  }
+
   _rebuild(scene) {
     for (const id of [...this.models.keys()]) this._removeModel(id);
     for (const f of scene.fixtures) this._addModel(f);
@@ -512,9 +555,28 @@ export class Viewport extends EventTarget {
   _addModel(f) {
     const type = getFixtureType(f.type);
     if (!type || this.models.has(f.id)) return;
-    const model = createFixtureModel(effectiveType(type, f), { quality: this.quality });
+    const eff = effectiveType(type, f);
+    const model = createFixtureModel(eff, { quality: this.quality });
     model.root.userData.fixtureId = f.id;
     model.setHaze(this.store.scene?.environment?.haze ?? 0.25);
+    // accessoires (boîte à lumière, dôme, louver, gélatine) : la source passe sur la toile avant
+    const acc = buildFixtureAccessories(eff);
+    if (acc) {
+      model.root.add(acc.group);
+      model.accPickables = [];
+      acc.group.traverse((o) => {
+        if (!o.isMesh) return;
+        o.userData.pickRoot = model.root;
+        model.accPickables.push(o);
+      });
+      if (model.spot) {
+        model.spot.position.z = acc.lightZ;
+        model.spot.target.position.z = acc.lightZ + 1;
+        if (acc.soft) model.spot.penumbra = 1;
+        model.spot.userData.soft = acc.soft;
+      }
+    }
+    markHighlight(model.root);
     this.scene.add(model.root);
     const stand = new THREE.Group(); // pied : construit selon le support retenu (_updateStand)
     this.scene.add(stand);
@@ -522,7 +584,7 @@ export class Viewport extends EventTarget {
     label.element.className = 'fx-label';
     label.visible = this._labelsOn;
     this.scene.add(label);
-    const entry = { model, type, stand, label, zoom: f.settings.zoom, out: new Float32Array(type.pixels * 3), source: 'manual' };
+    const entry = { model, type, eff, acc, key: modelKey(f), stand, label, out: new Float32Array(type.pixels * 3), source: 'manual' };
     this.models.set(f.id, entry);
     this._updateLabel(f, entry);
     this._applyTransform(f);
@@ -535,7 +597,7 @@ export class Viewport extends EventTarget {
     name.textContent = f.name;
     const patch = document.createElement('div');
     patch.className = 'p';
-    patch.textContent = patchLabel(f);
+    patch.textContent = patchLine(f);
     el.replaceChildren(name, patch);
     el.classList.toggle('off', f.state?.power === false);
     el.classList.toggle('sel', this.store.isSelected(f.id));
@@ -558,7 +620,10 @@ export class Viewport extends EventTarget {
       entry.standModel?.dispose();
       stand.clear();
       entry.standModel = look ? new StandModel(look) : null;
-      if (entry.standModel) stand.add(entry.standModel.group);
+      if (entry.standModel) {
+        stand.add(entry.standModel.group);
+        markHighlight(entry.standModel.group);
+      }
       entry.standLook = look;
     }
     const visible = env?.stands !== false && !!entry.standModel;
@@ -578,8 +643,8 @@ export class Viewport extends EventTarget {
 
   _updateModel(f) {
     const entry = this.models.get(f.id);
-    if (entry?.type.zoom && entry.zoom !== f.settings.zoom) {
-      // zoom mécanique modifié : le faisceau est reconstruit
+    if (entry && entry.key !== modelKey(f)) {
+      // zoom ou accessoire modifié : le modèle et son faisceau sont reconstruits
       this._removeModel(f.id);
       this._addModel(f);
       this._onSelection();
@@ -627,9 +692,9 @@ export class Viewport extends EventTarget {
     if (!env) return;
     this.floor.visible = env.floor !== false;
     this.cyc.visible = env.cyc !== false;
-    this.actor.visible = env.actor !== false;
     this.hemi.intensity = (env.ambient ?? 0.04) * 5;
-    this.renderer.toneMappingExposure = env.exposure ?? 1;
+    this.sanitize.uniforms.uExposure.value = env.exposure ?? 1; // exposition avant le halo (voir SanitizeShader)
+    this.bloom.exposure = env.exposure ?? 1;
     for (const { model } of this.models.values()) model.setHaze(env.haze ?? 0.25);
     // étiquettes : noms et / ou adresses DMX
     this._labelsOn = !!(env.labels || env.labelPatch);
@@ -645,11 +710,13 @@ export class Viewport extends EventTarget {
   }
 
   setSnap(on) {
+    this.snapOn = on;
     this.transform.setTranslationSnap(on ? 0.1 : null);
-    this.transform.setRotationSnap(on ? THREE.MathUtils.degToRad(15) : null);
+    this.transform.setRotationSnap(on ? THREE.MathUtils.degToRad(SNAP_DEG) : null);
   }
 
   setView(name) {
+    if (this.lookId) this.lookThrough(null);
     const target = new THREE.Vector3(0, 1.2, 0);
     const views = {
       persp: [5.5, 3.2, 7.5],
@@ -679,7 +746,7 @@ export class Viewport extends EventTarget {
 
   frameSelected() {
     const entries = this._selectedEntries();
-    if (!entries.length) return;
+    if (!entries.length) return this.store.selectedObjectId ? this.frameObject(this.store.selectedObjectId) : undefined;
     const box = new THREE.Box3();
     for (const [, entry] of entries) box.union(this._bodyBox(entry.model));
     const center = box.getCenter(new THREE.Vector3());
@@ -687,6 +754,20 @@ export class Viewport extends EventTarget {
     const dir = this.camera.position.clone().sub(this.orbit.target).normalize();
     this.orbit.target.copy(center);
     this.camera.position.copy(center).addScaledVector(dir, size * 1.8 + 0.6);
+    this.orbit.update();
+  }
+
+  /** Cadre la vue sur un objet (grip ou décor). */
+  frameObject(id) {
+    const entry = this.objects.get(id);
+    if (!entry) return;
+    entry.model.body.updateMatrixWorld(true);
+    const box = new THREE.Box3().setFromObject(entry.model.body);
+    const center = box.getCenter(new THREE.Vector3());
+    const size = Math.max(0.5, box.getSize(new THREE.Vector3()).length());
+    const dir = this.camera.position.clone().sub(this.orbit.target).normalize();
+    this.orbit.target.copy(center);
+    this.camera.position.copy(center).addScaledVector(dir, size * 1.6 + 0.6);
     this.orbit.update();
   }
 
@@ -709,20 +790,129 @@ export class Viewport extends EventTarget {
     else pos.y = 2.2;
     const obj = new THREE.Object3D();
     obj.position.copy(pos);
-    if (!['tube', 'bulb', 'box-device'].includes(kind)) obj.lookAt(ACTOR_HEAD);
+    if (!['tube', 'bulb', 'box-device'].includes(kind)) obj.lookAt(this.mainAimPoint());
     return {
       position: [r3(pos.x), r3(pos.y), r3(pos.z)],
       rotation: [r3(obj.rotation.x), r3(obj.rotation.y), r3(obj.rotation.z)],
     };
   }
 
-  /** Oriente les projecteurs sélectionnés vers la tête du personnage (sauf tubes et boîtiers en sélection multiple). */
-  aimSelectedAtActor() {
+  /** Personnages, animaux, véhicules… vers lesquels on peut orienter les projecteurs. */
+  aimTargets() {
+    const list = [];
+    for (const [id, { model, type }] of this.objects) {
+      if (!type.aimable || !model.aimWorld) continue;
+      list.push({ id, name: this.store.object(id)?.name || type.short, point: model.aimWorld(), person: type.model === 'person' });
+    }
+    return list;
+  }
+
+  /** Cible par défaut : le premier personnage, sinon le centre du plateau à hauteur de visage. */
+  mainAimPoint() {
+    const targets = this.aimTargets();
+    return (targets.find((t) => t.person) || targets[0])?.point || DEFAULT_AIM.clone();
+  }
+
+  /** Oriente les projecteurs sélectionnés vers une cible (sauf tubes et boîtiers en sélection multiple). */
+  aimSelectedAt(targetId = null) {
+    const point = (targetId && this.aimTargets().find((t) => t.id === targetId)?.point) || this.mainAimPoint();
     const single = this.store.selection.size === 1;
     const entries = this._selectedEntries().filter(([, e]) => single || aimable(e.type));
-    for (const [, entry] of entries) entry.model.root.lookAt(ACTOR_HEAD);
+    for (const [, entry] of entries) entry.model.root.lookAt(point);
     this._sendTransform(true, entries.map(([id]) => id));
     this._onSelection();
+  }
+
+  aimSelectedAtActor() {
+    this.aimSelectedAt(null);
+  }
+
+  /** Caméras de la scène (objets de décor avec un objectif). */
+  cameras() {
+    return [...this.objects].filter(([, e]) => e.model.lensWorld?.()).map(([id]) => ({ id, name: this.store.object(id)?.name || 'Caméra' }));
+  }
+
+  /**
+   * Voir par une caméra de la scène (null : revenir à la vue libre). La vue suit la caméra si on
+   * la déplace ; le cadre (16/9) correspond à sa focale et à son capteur.
+   */
+  lookThrough(id) {
+    if (!id) {
+      if (!this.lookId) return;
+      this.lookId = null;
+      const v = this._savedView;
+      if (v) {
+        this.camera.position.copy(v.position);
+        this.orbit.target.copy(v.target);
+        this.camera.fov = v.fov;
+        this.camera.updateProjectionMatrix();
+      }
+      this.orbit.enabled = true;
+      this.orbit.update();
+      this._frameBox?.classList.add('hidden');
+      this.dispatchEvent(new CustomEvent('look', { detail: null }));
+      return;
+    }
+    if (!this.objects.get(id)?.model.lensWorld?.()) return;
+    if (!this.lookId) this._savedView = { position: this.camera.position.clone(), target: this.orbit.target.clone(), fov: this.camera.fov };
+    this.lookId = id;
+    this.orbit.enabled = false;
+    this._followLens();
+    this.dispatchEvent(new CustomEvent('look', { detail: id }));
+  }
+
+  _followLens() {
+    const entry = this.objects.get(this.lookId);
+    const o = this.store.object(this.lookId);
+    const lens = entry?.model.lensWorld?.();
+    if (!lens || !o) return this.lookThrough(null);
+    const fov = cameraFov(o.props);
+    const cam = this.camera;
+    cam.position.copy(lens.position);
+    cam.lookAt(lens.position.clone().add(lens.forward));
+    // cadre de la caméra dans la vue : bandes noires selon le rapport largeur / hauteur
+    const view = cam.aspect;
+    const wide = view >= fov.aspect;
+    const vfov = wide ? fov.v : 2 * Math.atan(Math.tan(fov.h / 2) / view);
+    const deg = THREE.MathUtils.radToDeg(vfov);
+    if (Math.abs(cam.fov - deg) > 1e-3) {
+      cam.fov = deg;
+      cam.updateProjectionMatrix();
+    }
+    if (!this._frameBox) {
+      this._frameBox = document.createElement('div');
+      this._frameBox.className = 'camera-frame hidden';
+      this._frameLabel = document.createElement('span');
+      this._frameBox.append(this._frameLabel);
+      this.container.append(this._frameBox);
+    }
+    const box = this._frameBox;
+    box.classList.remove('hidden');
+    box.style.width = wide ? `${(fov.aspect / view) * 100}%` : '100%';
+    box.style.height = wide ? '100%' : `${(view / fov.aspect) * 100}%`;
+    this._frameLabel.textContent = `${o.name} · ${Math.round(o.props.focal || 35)} mm · ${{ s35: 'Super 35', ff: 'Plein format', m43: 'Micro 4/3' }[o.props.sensor] || 'Super 35'} — Échap pour sortir`;
+  }
+
+  /** Surbrillance de tout le matériel et du décor (lisible dans le noir). */
+  setHighlight(on) {
+    this.highlight = !!on;
+  }
+
+  _renderHighlight() {
+    const r = this.renderer;
+    const scene = this.scene;
+    const prev = { autoClear: r.autoClear, shadows: r.shadowMap.autoUpdate, bg: scene.background, override: scene.overrideMaterial };
+    r.autoClear = false;
+    r.shadowMap.autoUpdate = false;
+    scene.background = null;
+    scene.overrideMaterial = this.hlMat;
+    this.camera.layers.set(HIGHLIGHT_LAYER);
+    r.render(scene, this.camera);
+    this.camera.layers.set(0);
+    scene.overrideMaterial = prev.override;
+    scene.background = prev.bg;
+    r.shadowMap.autoUpdate = prev.shadows;
+    r.autoClear = prev.autoClear;
   }
 
   /** Remplace la rotation du projecteur sélectionné. */
@@ -736,38 +926,90 @@ export class Viewport extends EventTarget {
   // ---------------------------------------------------------------- rendu
   _frame() {
     const time = performance.now() / 1000; // même base de temps que les commandes embarquées
-    this.orbit.update();
+    if (this.lookId) this._followLens();
+    else this.orbit.update();
     const ctx = { dmx: this.store.dmx, live: this.store.liveUniverses, time };
     for (const [id, entry] of this.models) {
       const f = this.store.fixtures.get(id);
       if (!f) continue;
       entry.source = computeOutput(f, entry.type, ctx, entry.out, this.onboard ? this.onboard.runtime(id) : (entry.rt ||= {}));
+      const tint = entry.eff?.accessories?.tint; // gélatine de couleur sur le projecteur
+      if (tint) for (let i = 0; i < entry.out.length; i += 3) (entry.out[i] *= tint[0]), (entry.out[i + 1] *= tint[1]), (entry.out[i + 2] *= tint[2]);
       const ctrl = this.onboard?.peek(id);
       if (ctrl) {
         ctrl.tick(time);
         if (ctrl.overridePixels(entry.out, entry.type.pixels, time)) entry.source = 'onboard';
       }
+      if (this.identifying.has(id)) {
+        // identification RDM : clignote en blanc, comme un vrai projecteur
+        entry.out.fill((time * 2.5) % 1 < 0.5 ? 1 : 0.02);
+        entry.source = 'identify';
+      }
+      if (this.blackout) entry.out.fill(0); // blackout général : rien ne sort, les réglages ne bougent pas
       entry.model.update(entry.out, time);
+      entry.acc?.glow(entry.out, entry.type.pixels);
       this._updateStand(entry, f);
     }
     this.gripLighting.update(this.models, this.objects);
     if (!this.paused) {
       // plan 2D affiché : les sorties restent calculées (couleurs du plan) mais la 3D n'est pas dessinée
       this.composer.render();
+      if (this.highlight) this._renderHighlight();
       if (this._labelsOn) this.labelRenderer.render(this.scene, this.camera);
     }
     const fps = this._fps;
     fps.frames++;
     const now = performance.now();
     if (now - fps.last > 1000) {
-      if (fps.el) fps.el.textContent = `${Math.round((fps.frames * 1000) / (now - fps.last))} i/s`;
+      if (fps.el) fps.el.textContent = `${Math.round((fps.frames * 1000) / (now - fps.last))} ${this.fpsUnit || 'i/s'}`;
       fps.frames = 0;
       fps.last = now;
     }
   }
 
+  /** Blackout général, comme la touche d'une console : tout est noir sans toucher aux réglages. */
+  setBlackout(on) {
+    this.blackout = !!on;
+  }
+
+  /** Identification demandée par une appli (RDM IDENTIFY_DEVICE). */
+  identify(id, on) {
+    if (on) this.identifying.add(id);
+    else this.identifying.delete(id);
+  }
+
+  /** Halo des sources lumineuses (bloom) : utile pour l'ambiance, à couper pour une image nette. */
+  setBloom(on) {
+    this.bloom.enabled = !!on;
+  }
+
   /** Dernière sortie calculée (pour les aperçus de l'interface). */
   outputOf(id) {
     return this.models.get(id) || null;
+  }
+
+  /** Vignette de la vue (écran des projets) : image JPEG 16/9 en data URL, ou null. */
+  snapshot(width = 480, height = 270) {
+    const src = this.renderer.domElement;
+    if (!src.width || !src.height) return null;
+    const paused = this.paused;
+    this.paused = false;
+    try {
+      this._frame(); // dessinée à l'instant : l'image WebGL se lit juste après
+    } finally {
+      this.paused = paused;
+    }
+    const c = document.createElement('canvas');
+    c.width = width;
+    c.height = height;
+    const g = c.getContext('2d');
+    g.fillStyle = '#050607';
+    g.fillRect(0, 0, width, height);
+    // recadrage au centre, sans déformer
+    const k = Math.max(width / src.width, height / src.height);
+    const w = width / k;
+    const hh = height / k;
+    g.drawImage(src, (src.width - w) / 2, (src.height - hh) / 2, w, hh, 0, 0, width, height);
+    return c.toDataURL('image/jpeg', 0.82);
   }
 }

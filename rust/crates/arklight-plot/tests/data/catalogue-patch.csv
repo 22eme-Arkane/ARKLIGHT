@@ -1,0 +1,10 @@
+﻿Univers;Adresse;Fin;Projecteur;Modèle;Mode;Canaux
+1;40;45;Dôme & grille;Aputure LS 600D Pro;Lighting & Effect 8-bit;6
+1;200;200;M18 plongée;ARRI ARRI M18 (HMI 1,8 kW);Ballast : gradation (1 canal);1
+1;300;302;Titan éteint;Astera Titan Tube;RGB;3
+1;400;402;NYX sur pied;Astera NYX Bulb;RGB;3
+1;450;452;Hydra « chimera »;Astera HydraPanel;RGB;3
+1;500;500;Baby 1K;Mole-Richardson Mole Baby 1K;Gradateur (1 canal);1
+2;1;3;Barre AX2;Astera AX2 PixelBar 100;RGB;3
+2;100;111;"Chimera <M> ""face""";ARRI Skypanel S60C;P01: CCT & RGBW 8bit;12
+3;1;12;S360 haut;ARRI Skypanel S360C;P01: CCT & RGBW 8bit;12

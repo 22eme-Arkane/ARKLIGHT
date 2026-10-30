@@ -3,7 +3,10 @@ import { getMode } from '../fixtures/index.js';
 import { DIMMING_CURVES, decodeDmxOutput, readAttributes } from './dmx.js';
 import { cctToRgb, hsToRgb } from './color.js';
 import { computeAsteraOutput } from './astera-light.js';
+import { activeConsoleValues, faderBuffer } from './console.js';
 import { ASTERA_INDEX_COLORS } from '../fixtures/astera-dmx.js';
+
+export { defaultFaders, faderBuffer } from './console.js';
 
 const whiteCache = new Map();
 function whiteFor(kelvin) {
@@ -50,16 +53,18 @@ function computeTraditional(fixture, type, ctx, out, rt) {
   const nominal = type.lamp?.cct || (type.technology === 'hmi' ? 5600 : 3200);
   const curve = DIMMING_CURVES[s.dimmingCurve] || DIMMING_CURVES.linear;
   const data = ctx.dmx.get(s.universe);
-  const src = controlSource(fixture, !!data);
+  const mode = getMode(type, s.dmxMode);
+  const conValues = activeConsoleValues(fixture, type, mode, rt);
+  const src = conValues ? 'console' : controlSource(fixture, !!data);
 
-  // Niveau demandé par circuit (pixel) : canal Dimmer en DMX, intensité manuelle sinon
+  // Niveau demandé par circuit (pixel) : canal Dimmer en DMX (ou console), intensité manuelle sinon
   const levels = new Array(n).fill(0);
   if (fixture.state.power) {
-    if (src === 'dmx') {
-      const mode = getMode(type, s.dmxMode);
-      if (mode && data) {
+    if (src === 'dmx' || src === 'console') {
+      const buf = src === 'console' ? faderBuffer(mode, { mode: mode.id, values: conValues }, rt) : data;
+      if (mode && buf) {
         const modePx = typeof mode.pixels === 'number' ? Math.max(1, Math.min(mode.pixels, n)) : 1;
-        const { fixture: fa, pixels } = readAttributes(mode, data, s.dmxAddress, modePx);
+        const { fixture: fa, pixels } = readAttributes(mode, buf, src === 'console' ? 1 : s.dmxAddress, modePx);
         for (let p = 0; p < n; p++) {
           const v = pixels[Math.min(modePx - 1, Math.floor((p * modePx) / n))]?.dimmer ?? fa.dimmer ?? 0;
           levels[p] = curve(v);
@@ -87,7 +92,7 @@ function computeTraditional(fixture, type, ctx, out, rt) {
       out[p * 3 + 1] = rgb[1] * rt.flux[p];
       out[p * 3 + 2] = rgb[2] * rt.flux[p];
     }
-    return src === 'dmx' ? 'dmx' : fixture.state.power ? 'manual' : 'off';
+    return src !== 'manual' ? src : fixture.state.power ? 'manual' : 'off';
   }
 
   // Tungstène : le filament suit le gradateur avec un léger retard, la couleur suit le flux
@@ -100,7 +105,7 @@ function computeTraditional(fixture, type, ctx, out, rt) {
     out[p * 3 + 1] = rgb[1] * f;
     out[p * 3 + 2] = rgb[2] * f;
   }
-  return src === 'dmx' ? 'dmx' : fixture.state.power ? 'manual' : 'off';
+  return src !== 'manual' ? src : fixture.state.power ? 'manual' : 'off';
 }
 
 /**
@@ -123,10 +128,18 @@ export function computeOutput(fixture, type, ctx, out, rt = {}) {
   const curve = DIMMING_CURVES[s.dimmingCurve] || DIMMING_CURVES.linear;
   const whiteRgb = whiteFor(s.whitePoint || 5600);
   const data = ctx.dmx.get(s.universe);
-  const src = controlSource(fixture, !!data);
+  const mode = getMode(type, s.dmxMode);
 
+  // Console ARKLIGHT : elle passe avant tout le reste tant qu'elle pilote le projecteur
+  const conValues = activeConsoleValues(fixture, type, mode, rt);
+  if (conValues) {
+    const buf = faderBuffer(mode, { mode: mode.id, values: conValues }, rt);
+    decodeDmxOutput({ mode, data: buf, address: 1, pixelCount: type.pixels, time: ctx.time, whiteRgb, curve, indexColor: ASTERA_INDEX_COLORS.color, runtime: rt }, out);
+    return 'console';
+  }
+
+  const src = controlSource(fixture, !!data);
   if (src === 'dmx') {
-    const mode = getMode(type, s.dmxMode);
     if (!mode || !data) {
       out.fill(0);
       return 'dmx';
@@ -139,6 +152,14 @@ export function computeOutput(fixture, type, ctx, out, rt = {}) {
   }
 
   const m = fixture.state.manual || {};
+  if (m.mode === 'faders') {
+    // ancien réglage « Canaux » (projets des premières versions) : lu comme un DMX reçu
+    if (mode) {
+      const buf = faderBuffer(mode, m.faders, rt);
+      decodeDmxOutput({ mode, data: buf, address: 1, pixelCount: type.pixels, time: ctx.time, whiteRgb, curve, indexColor: ASTERA_INDEX_COLORS.color, runtime: rt }, out);
+      return 'manual';
+    }
+  }
   let rgb;
   if (m.mode === 'hsi') rgb = hsToRgb(m.hue || 0, m.sat ?? 1, whiteRgb);
   else if (m.mode === 'rgb') rgb = m.rgb || [1, 1, 1];

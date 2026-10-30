@@ -6,6 +6,7 @@ import { getMode } from '../fixtures/index.js';
 import { ASTERA_INDEX_COLORS } from '../fixtures/astera-dmx.js';
 import { colorSpecRgb } from '../fixtures/astera-colors.js';
 import { cctToRgb, hsToRgb } from './color.js';
+import { activeConsoleValues, faderBuffer } from './console.js';
 import { DIMMING_CURVES, decodeDmxOutput } from './dmx.js';
 import { renderProgram } from './effects.js';
 
@@ -103,8 +104,15 @@ export function computeAsteraOutput(fixture, type, ctx, out, rt) {
   rt.input = input;
   const curve = DIMMING_CURVES[s.dimmerCurve] || DIMMING_CURVES.STANDARD;
   let src = 'standalone';
+  const mode = getMode(type, s.dmxMode);
+  const conValues = activeConsoleValues(fixture, type, mode, rt);
 
-  if (input === 'CRMX' || input === 'WIRED') {
+  if (conValues) {
+    // Console ARKLIGHT : elle passe avant l'entrée choisie (comme un DMX reçu, profil du projecteur)
+    const buf = faderBuffer(mode, { mode: mode.id, values: conValues }, rt);
+    decodeDmxOutput({ mode, data: buf, address: 1, pixelCount: px, time, whiteRgb: cctToRgb(s.whitePoint || 5600), curve, indexColor: ASTERA_INDEX_COLORS.color, runtime: rt }, out);
+    src = 'console';
+  } else if (input === 'CRMX' || input === 'WIRED') {
     const connected = input === 'CRMX' ? s.crmxLinked : s.wired;
     const data = ctx.dmx.get(s.universe);
     const signal = connected && ctx.live?.has(s.universe);

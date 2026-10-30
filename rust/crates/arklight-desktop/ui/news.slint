@@ -1,0 +1,174 @@
+// Fenêtre « Nouveautés d'ARKLIGHT » (comme celle de PANDORA) : les nouveautés de cette version
+// et l'historique des précédentes ; « Ne plus afficher jusqu'à la prochaine version ».
+import { ScrollView } from "std-widgets.slint";
+import { App, NewsEntry } from "common.slint";
+import { Theme, TextButton, Check } from "theme.slint";
+
+export component NewsDialog inherits Rectangle {
+    background: #000000b0;
+    TouchArea { }
+    Rectangle {
+        width: min(parent.width - 60px, 940px);
+        height: min(parent.height - 80px, 660px);
+        border-radius: 10px;
+        background: Theme.panel;
+        border-width: 1px;
+        border-color: Theme.line-2;
+        drop-shadow-blur: 24px;
+        drop-shadow-color: #00000080;
+        TouchArea { }
+        VerticalLayout {
+            HorizontalLayout {
+                height: 56px;
+                padding-left: 20px;
+                padding-right: 12px;
+                spacing: 8px;
+                Text {
+                    text: @tr("Nouveautés d’ARKLIGHT");
+                    color: Theme.text;
+                    font-size: 18px;
+                    font-weight: 700;
+                    vertical-alignment: center;
+                    horizontal-stretch: 1;
+                }
+                VerticalLayout {
+                    alignment: center;
+                    Rectangle {
+                        width: 30px;
+                        height: 30px;
+                        border-radius: 6px;
+                        background: close-touch.has-hover ? Theme.panel-2 : transparent;
+                        close-touch := TouchArea {
+                            clicked => {
+                                App.news-open = false;
+                            }
+                        }
+                        Text {
+                            text: "×";
+                            color: Theme.muted;
+                            font-size: 20px;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
+            }
+            Rectangle {
+                height: 1px;
+                background: Theme.line;
+            }
+            HorizontalLayout {
+                vertical-stretch: 1;
+                // versions, la plus récente en tête
+                Rectangle {
+                    width: 190px;
+                    background: #121519;
+                    VerticalLayout {
+                        padding: 10px;
+                        spacing: 4px;
+                        alignment: start;
+                        for e[i] in App.news-entries: Rectangle {
+                            height: 46px;
+                            border-radius: 6px;
+                            background: i == App.news-index ? #ffad3b22 : version-touch.has-hover ? Theme.panel-2 : transparent;
+                            border-width: i == App.news-index ? 1px : 0;
+                            border-color: Theme.accent;
+                            version-touch := TouchArea {
+                                clicked => {
+                                    App.news-index = i;
+                                }
+                            }
+                            VerticalLayout {
+                                padding-left: 10px;
+                                alignment: center;
+                                Text {
+                                    text: e.version;
+                                    color: i == App.news-index ? Theme.accent : Theme.text;
+                                    font-weight: 700;
+                                }
+                                Text {
+                                    text: e.date;
+                                    color: Theme.dim;
+                                    font-size: Theme.small;
+                                }
+                            }
+                        }
+                    }
+                }
+                Rectangle {
+                    width: 1px;
+                    background: Theme.line;
+                }
+                // la version choisie
+                news-scroll := ScrollView {
+                    horizontal-stretch: 1;
+                    content-height: max(self.visible-height, news-body.preferred-height + 120px);
+                    news-body := VerticalLayout {
+                        width: news-scroll.visible-width - 12px;
+                        padding: 22px;
+                        spacing: 10px;
+                        alignment: start;
+                        if App.news-entries.length > 0: Text {
+                            text: App.news-entries[App.news-index].version + " — " + App.news-entries[App.news-index].date;
+                            color: Theme.accent;
+                            font-size: 16px;
+                            font-weight: 700;
+                        }
+                        if App.news-entries.length > 0: VerticalLayout {
+                            spacing: 9px;
+                            for l in App.news-entries[App.news-index].lines: HorizontalLayout {
+                                spacing: 8px;
+                                if l.kind == "li": Text {
+                                    text: "•";
+                                    color: Theme.accent;
+                                    vertical-alignment: top;
+                                }
+                                Text {
+                                    horizontal-stretch: 1;
+                                    text: l.text;
+                                    color: l.kind == "lead" ? Theme.text : #cfd5dd;
+                                    font-size: l.kind == "lead" ? 15px : 13px;
+                                    font-weight: l.kind == "lead" ? 600 : 400;
+                                    wrap: word-wrap;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            Rectangle {
+                height: 1px;
+                background: Theme.line;
+            }
+            HorizontalLayout {
+                height: 54px;
+                padding-left: 20px;
+                padding-right: 16px;
+                spacing: 10px;
+                VerticalLayout {
+                    alignment: center;
+                    Check {
+                        text: @tr("Ne plus afficher jusqu’à la prochaine version");
+                        checked: App.news-hidden;
+                        toggled(on) => {
+                            App.news-hide(on);
+                        }
+                    }
+                }
+                Rectangle {
+                    horizontal-stretch: 1;
+                }
+                VerticalLayout {
+                    alignment: center;
+                    TextButton {
+                        primary: true;
+                        text: @tr("Fermer");
+                        clicked => {
+                            App.news-open = false;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

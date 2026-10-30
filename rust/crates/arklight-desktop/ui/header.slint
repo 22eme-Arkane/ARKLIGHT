@@ -1,0 +1,265 @@
+// Barre du haut (comme `.topbar` de la version JavaScript) : logo, menus, nom du projet, séquence
+// et plan, voyants (Art-Net, sACN, AsteraBox, MIDI) et « Faire un don ».
+import { ComboBox } from "std-widgets.slint";
+import { App, Dictation, MicButton } from "common.slint";
+import { Theme, StatusPill, Choice, Tip } from "theme.slint";
+import { MenuRow } from "menus.slint";
+
+export component Header inherits Rectangle {
+    height: 44px;
+    background: Theme.panel;
+    Rectangle {
+        y: parent.height - 1px;
+        height: 1px;
+        background: Theme.line;
+    }
+
+    // nom du projet : suit celui du document, sauf pendant la saisie
+    property <string> project-name: App.project-name;
+    changed project-name => {
+        if (!name-input.has-focus) {
+            name-input.text = self.project-name;
+        }
+    }
+    // F2 (Fichier › Renommer le projet)
+    property <int> focus-name: App.focus-name;
+    changed focus-name => {
+        name-input.focus();
+        name-input.select-all();
+    }
+    // nom dicté (ORAKLE)
+    property <int> dictation-seq: Dictation.seq;
+    changed dictation-seq => {
+        if (Dictation.result-for == "project-name" && Dictation.result != "") {
+            App.action("rename:" + Dictation.result);
+        }
+    }
+
+    HorizontalLayout {
+        padding-left: 12px;
+        padding-right: 12px;
+        spacing: 12px;
+
+        // logo : ouvre « À propos »
+        Rectangle {
+            width: brand-row.preferred-width;
+            brand-touch := TouchArea {
+                mouse-cursor: pointer;
+                clicked => {
+                    App.about-open = true;
+                }
+            }
+            brand-row := HorizontalLayout {
+                spacing: 10px;
+                VerticalLayout {
+                    alignment: center;
+                    Rectangle {
+                        width: 24px;
+                        height: 24px;
+                        border-radius: 6px;
+                        clip: true;
+                        Image {
+                            width: 24px;
+                            height: 24px;
+                            source: @image-url("../assets/arklight-256.png");
+                        }
+                    }
+                }
+                HorizontalLayout {
+                    Text {
+                        text: "ARK";
+                        color: Theme.text;
+                        font-size: 15px;
+                        font-weight: 800;
+                        letter-spacing: 1.8px;
+                        vertical-alignment: center;
+                    }
+                    Text {
+                        text: "LIGHT";
+                        color: Theme.accent;
+                        font-size: 15px;
+                        font-weight: 800;
+                        letter-spacing: 1.8px;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+        }
+
+        VerticalLayout {
+            alignment: center;
+            MenuRow { }
+        }
+
+        // nom du projet (modifiable)
+        VerticalLayout {
+            alignment: center;
+            Rectangle {
+                width: App.head-level > 0 ? 160px : 220px;
+                height: 28px;
+                border-radius: Theme.radius;
+                border-width: 1px;
+                border-color: name-input.has-focus ? Theme.sel : name-hover.has-hover ? Theme.line-2 : transparent;
+                background: name-input.has-focus ? Theme.field : transparent;
+                name-hover := TouchArea {
+                    clicked => {
+                        name-input.focus();
+                    }
+                }
+                HorizontalLayout {
+                    padding-left: 8px;
+                    padding-right: 2px;
+                    spacing: 2px;
+                    name-input := TextInput {
+                        text: App.project-name;
+                        color: Theme.text;
+                        font-size: Theme.font;
+                        font-weight: 600;
+                        vertical-alignment: center;
+                        single-line: true;
+                        accepted => {
+                            App.action("rename:" + self.text);
+                            App.refocus += 1;
+                        }
+                        key-pressed(e) => {
+                            if (e.text == Key.Escape) {
+                                self.text = App.project-name;
+                                App.refocus += 1;
+                                return accept;
+                            }
+                            reject
+                        }
+                    }
+                    if name-input.has-focus || name-hover.has-hover || Dictation.target == "project-name": VerticalLayout {
+                        alignment: center;
+                        MicButton {
+                            field: "project-name";
+                        }
+                    }
+                }
+            }
+        }
+
+        // séquence › plan
+        VerticalLayout {
+            alignment: center;
+            Choice {
+                width: App.head-level > 0 ? 180px : 230px;
+                model: App.plans;
+                current-index: App.plan-index;
+                selected(idx) => {
+                    App.switch-plan(idx);
+                    App.refocus += 1;
+                }
+            }
+        }
+
+        Rectangle {
+            horizontal-stretch: 1;
+        }
+
+        // adresse du PC (à saisir dans les applis), voyants
+        if App.net-ip != "" && App.head-level == 0: VerticalLayout {
+            alignment: center;
+            Text {
+                text: "IP " + App.net-ip;
+                color: Theme.dim;
+                font-family: Theme.mono;
+                font-size: Theme.tiny;
+            }
+        }
+        if App.head-level < 2: HorizontalLayout {
+            spacing: 8px;
+            alignment: end;
+            VerticalLayout {
+                alignment: center;
+                StatusPill {
+                    text: "Art-Net";
+                    state: App.artnet-state;
+                    tip: App.artnet-tip;
+                    clickable: true;
+                    clicked => {
+                        App.show-console = true;
+                        App.bottom-tab = 7;
+                    }
+                }
+            }
+            VerticalLayout {
+                alignment: center;
+                StatusPill {
+                    text: "sACN";
+                    state: App.sacn-state;
+                    tip: App.sacn-tip;
+                    clickable: true;
+                    clicked => {
+                        App.show-console = true;
+                        App.bottom-tab = 7;
+                    }
+                }
+            }
+            VerticalLayout {
+                alignment: center;
+                StatusPill {
+                    text: "AsteraBox";
+                    on: App.ble-running;
+                    tip: @tr("Fausse AsteraBox (Bluetooth)");
+                    clickable: true;
+                    clicked => {
+                        App.show-console = true;
+                        App.bottom-tab = 5;
+                    }
+                }
+            }
+            if App.midi-on: VerticalLayout {
+                alignment: center;
+                StatusPill {
+                    text: "MIDI";
+                    on: true;
+                    tip: App.midi-tip;
+                    clickable: true;
+                    clicked => {
+                        App.show-console = true;
+                        App.bottom-tab = 2;
+                    }
+                }
+            }
+        }
+
+        // soutien
+        VerticalLayout {
+            alignment: center;
+            Rectangle {
+                height: 28px;
+                width: donate-label.preferred-width + 22px;
+                border-radius: Theme.radius;
+                border-width: 1px;
+                border-color: donate-touch.has-hover ? #ff6ea0b3 : #ff6ea073;
+                background: donate-touch.has-hover ? #ff5a8c2e : #ff5a8c14;
+                donate-touch := TouchArea {
+                    mouse-cursor: pointer;
+                    changed has-hover => {
+                        if (self.has-hover && App.head-level > 1) {
+                            Tip.text = @tr("Faire un don");
+                            Tip.x = self.absolute-position.x;
+                            Tip.y = self.absolute-position.y + self.height + 4px;
+                            Tip.visible = true;
+                        } else if (!self.has-hover) {
+                            Tip.visible = false;
+                        }
+                    }
+                    clicked => {
+                        App.support-open = true;
+                    }
+                }
+                donate-label := Text {
+                    text: App.head-level > 1 ? "❤" : @tr("❤ Faire un don");
+                    color: #ff8fb1;
+                    font-weight: 600;
+                    font-size: Theme.font;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+            }
+        }
+    }
+}

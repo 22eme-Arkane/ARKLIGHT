@@ -252,10 +252,12 @@ export class OnboardController {
     const custom = this.def.customActions?.[name];
     if (custom) return custom(this, f, info);
     switch (name) {
-      case 'togglePower':
-        this.emit({ state: { power: !f.state.power } });
-        this.say(f.state.power ? 'Extinction' : 'Allumage');
+      case 'togglePower': {
+        const on = !f.state.power;
+        this.emit({ state: { power: on } });
+        this.say(on ? 'Allumage' : 'Extinction');
         break;
+      }
       case 'powerOn':
         if (!f.state.power) this.emit({ state: { power: true } }), this.say('Allumage');
         break;

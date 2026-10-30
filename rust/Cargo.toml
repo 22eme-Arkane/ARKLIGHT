@@ -1,0 +1,39 @@
+# ARKLIGHT en Rust (voir docs/rust/PLAN.md) : cœur commun PC + mobile, moteur 3D, application PC.
+[workspace]
+resolver = "3"
+members = ["crates/arklight-core", "crates/arklight-net", "crates/arklight-plot", "crates/arklight-onboard", "crates/arklight-midi", "crates/arklight-ai", "crates/arklight-render", "crates/arklight-ble", "crates/arklight-desktop"]
+
+[workspace.package]
+version = "1.0.0"
+edition = "2024"
+rust-version = "1.92"
+license = "Apache-2.0"
+authors = ["22eme ARKANE"]
+repository = "https://github.com/22eme-Arkane/ARKLIGHT"
+publish = false
+
+[workspace.dependencies]
+arklight-core = { path = "crates/arklight-core" }
+arklight-render = { path = "crates/arklight-render" }
+arklight-net = { path = "crates/arklight-net" }
+arklight-plot = { path = "crates/arklight-plot" }
+arklight-onboard = { path = "crates/arklight-onboard" }
+arklight-midi = { path = "crates/arklight-midi" }
+arklight-ai = { path = "crates/arklight-ai" }
+arklight-ble = { path = "crates/arklight-ble" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+glam = { version = "0.30", features = ["bytemuck"] }
+bytemuck = { version = "1", features = ["derive"] }
+# même version que celle de Slint (fonction unstable-wgpu-30) : la vue 3D partage sa carte graphique
+wgpu = "30"
+slint = { version = "1.18", default-features = false, features = ["std", "backend-winit", "renderer-femtovg-wgpu", "unstable-wgpu-30", "unstable-winit-030", "accessibility", "compat-1-2"] }
+slint-build = "1.18"
+rfd = "0.17"
+
+[profile.dev.package."*"]
+# les dépendances (wgpu, Slint) optimisées même en mode développement : la 3D reste fluide
+opt-level = 2
+
+[profile.release]
+lto = "thin"

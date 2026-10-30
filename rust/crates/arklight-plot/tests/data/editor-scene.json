@@ -1,0 +1,564 @@
+{
+ "app": "ARKLIGHT",
+ "format": 2,
+ "name": "Outils du plan",
+ "environment": {
+  "floor": true,
+  "cyc": true,
+  "stands": true,
+  "labels": false,
+  "labelPatch": false,
+  "haze": 0.2,
+  "ambient": 0.04,
+  "exposure": 1
+ },
+ "fixtures": [
+  {
+   "id": "f-panel",
+   "type": "arri.skypanel-s60c",
+   "name": "Panneau",
+   "position": [
+    -3,
+    2,
+    2
+   ],
+   "rotation": [
+    0.3,
+    -0.6,
+    0
+   ],
+   "settings": {
+    "universe": 1,
+    "dmxAddress": 1,
+    "dmxMode": "m1",
+    "whitePoint": 5600,
+    "dimmingCurve": "linear",
+    "support": "auto"
+   },
+   "state": {
+    "power": true,
+    "battery": 100,
+    "charging": false,
+    "manual": {
+     "mode": "cct",
+     "intensity": 0.6,
+     "cct": 5600,
+     "tint": 0,
+     "hue": 0,
+     "sat": 1
+    }
+   }
+  },
+  {
+   "id": "f-down",
+   "type": "arri.m18",
+   "name": "Plongée",
+   "position": [
+    3,
+    4.8,
+    2
+   ],
+   "rotation": [
+    1.5707963267948966,
+    0,
+    0
+   ],
+   "settings": {
+    "universe": 1,
+    "dmxAddress": 1,
+    "dmxMode": "hmi1",
+    "whitePoint": 5600,
+    "dimmingCurve": "linear",
+    "support": "auto",
+    "zoom": 40
+   },
+   "state": {
+    "power": true,
+    "battery": 100,
+    "charging": false,
+    "manual": {
+     "mode": "cct",
+     "intensity": 0.6,
+     "cct": 5600,
+     "tint": 0,
+     "hue": 0,
+     "sat": 1
+    }
+   }
+  },
+  {
+   "id": "f-tube",
+   "type": "astera.titan",
+   "name": "Tube",
+   "position": [
+    0,
+    1.4,
+    -2
+   ],
+   "rotation": [
+    0,
+    0.4,
+    1.5707963267948966
+   ],
+   "settings": {
+    "universe": 1,
+    "dmxAddress": 1,
+    "dmxMode": "1",
+    "whitePoint": 5600,
+    "dimmingCurve": "linear",
+    "support": "auto",
+    "inputSelect": "AUTO",
+    "dimmerCurve": "STANDARD",
+    "dmxFail": "HOLD",
+    "acFailure": "NO ACTION",
+    "runtime": 5,
+    "brightness": 100,
+    "crmxLinked": true,
+    "wired": false,
+    "radioPin": "0000",
+    "rfRegion": "EU",
+    "ax1Compat": false,
+    "setAddress": 0,
+    "setSize": 1,
+    "posInSet": 1,
+    "groupAddress": 1,
+    "standalone": {
+     "program": 0,
+     "intensity": 100,
+     "speed": 5,
+     "fade": 50,
+     "colors": [
+      {
+       "kind": "named",
+       "name": "RED"
+      },
+      {
+       "kind": "named",
+       "name": "GREEN"
+      },
+      {
+       "kind": "named",
+       "name": "BLUE"
+      },
+      {
+       "kind": "named",
+       "name": "5500K"
+      }
+     ]
+    }
+   },
+   "state": {
+    "power": true,
+    "battery": 100,
+    "charging": false,
+    "manual": {
+     "mode": "cct",
+     "intensity": 0.6,
+     "cct": 5600,
+     "tint": 0,
+     "hue": 0,
+     "sat": 1
+    }
+   }
+  },
+  {
+   "id": "f-bar",
+   "type": "astera.ax2-100",
+   "name": "Barre",
+   "position": [
+    -1,
+    0.3,
+    3.5
+   ],
+   "rotation": [
+    -0.2,
+    0.8,
+    0
+   ],
+   "settings": {
+    "universe": 1,
+    "dmxAddress": 1,
+    "dmxMode": "1",
+    "whitePoint": 5600,
+    "dimmingCurve": "linear",
+    "support": "auto",
+    "inputSelect": "AUTO",
+    "dimmerCurve": "STANDARD",
+    "dmxFail": "HOLD",
+    "acFailure": "NO ACTION",
+    "runtime": 5,
+    "brightness": 100,
+    "crmxLinked": true,
+    "wired": false,
+    "radioPin": "0000",
+    "rfRegion": "EU",
+    "ax1Compat": false,
+    "setAddress": 0,
+    "setSize": 1,
+    "posInSet": 1,
+    "groupAddress": 1,
+    "standalone": {
+     "program": 0,
+     "intensity": 100,
+     "speed": 5,
+     "fade": 50,
+     "colors": [
+      {
+       "kind": "named",
+       "name": "RED"
+      },
+      {
+       "kind": "named",
+       "name": "GREEN"
+      },
+      {
+       "kind": "named",
+       "name": "BLUE"
+      },
+      {
+       "kind": "named",
+       "name": "5500K"
+      }
+     ]
+    }
+   },
+   "state": {
+    "power": true,
+    "battery": 100,
+    "charging": false,
+    "manual": {
+     "mode": "cct",
+     "intensity": 0.6,
+     "cct": 5600,
+     "tint": 0,
+     "hue": 0,
+     "sat": 1
+    }
+   }
+  }
+ ],
+ "groups": [],
+ "objects": [
+  {
+   "id": "o-actor",
+   "type": "person-man",
+   "name": "Comédien",
+   "position": [
+    0,
+    0,
+    0.5
+   ],
+   "rotation": [
+    0,
+    0.5,
+    0
+   ],
+   "props": {}
+  },
+  {
+   "id": "g-frame",
+   "type": "frame-6x6",
+   "name": "Cadre 6×6",
+   "position": [
+    4,
+    0,
+    -2
+   ],
+   "rotation": [
+    0,
+    0.3,
+    0
+   ],
+   "props": {
+    "cloth": "silk"
+   }
+  },
+  {
+   "id": "g-flag",
+   "type": "flag-18x24",
+   "name": "Drapeau",
+   "position": [
+    -4.5,
+    0,
+    -1
+   ],
+   "rotation": [
+    0,
+    -0.7,
+    0
+   ],
+   "props": {
+    "cloth": "solid"
+   }
+  },
+  {
+   "id": "g-stand",
+   "type": "stand-1000",
+   "name": "Pied 1000",
+   "position": [
+    2,
+    0,
+    3.2
+   ],
+   "rotation": [
+    0,
+    0,
+    0
+   ],
+   "props": {
+    "height": 2.2
+   }
+  },
+  {
+   "id": "g-bag",
+   "type": "sandbag",
+   "name": "Sac",
+   "position": [
+    -2,
+    0,
+    -4
+   ],
+   "rotation": [
+    0,
+    0.2,
+    0
+   ],
+   "props": {}
+  }
+ ],
+ "plot": {
+  "items": [
+   {
+    "id": "p-rect",
+    "kind": "rect",
+    "points": [
+     [
+      -6,
+      -5
+     ],
+     [
+      -4,
+      -3.5
+     ]
+    ],
+    "text": "",
+    "style": {
+     "stroke": "#5aa9ff",
+     "fill": "none",
+     "width": 2,
+     "dash": false,
+     "size": 14
+    },
+    "height": 0
+   },
+   {
+    "id": "p-fill",
+    "kind": "rect",
+    "points": [
+     [
+      5,
+      3
+     ],
+     [
+      7,
+      4.5
+     ]
+    ],
+    "text": "Loges",
+    "style": {
+     "stroke": "#3ddc84",
+     "fill": "#3ddc84",
+     "width": 2,
+     "dash": false,
+     "size": 14
+    },
+    "height": 2.5
+   },
+   {
+    "id": "p-ell",
+    "kind": "ellipse",
+    "points": [
+     [
+      -6.5,
+      4
+     ],
+     [
+      -4.5,
+      5.5
+     ]
+    ],
+    "text": "",
+    "style": {
+     "stroke": "#c792ea",
+     "fill": "none",
+     "width": 2,
+     "dash": true,
+     "size": 14
+    },
+    "height": 0
+   },
+   {
+    "id": "p-poly",
+    "kind": "polygon",
+    "points": [
+     [
+      1,
+      4.5
+     ],
+     [
+      2.5,
+      5
+     ],
+     [
+      2,
+      6.5
+     ]
+    ],
+    "text": "",
+    "style": {
+     "stroke": "#ffad3b",
+     "fill": "#ffad3b",
+     "width": 2,
+     "dash": false,
+     "size": 14
+    },
+    "height": 0
+   },
+   {
+    "id": "p-free",
+    "kind": "freehand",
+    "points": [
+     [
+      4,
+      -5
+     ],
+     [
+      4.5,
+      -4.6
+     ],
+     [
+      5,
+      -4.8
+     ],
+     [
+      5.6,
+      -4.4
+     ]
+    ],
+    "text": "",
+    "style": {
+     "stroke": "#ff5c5c",
+     "fill": "none",
+     "width": 5,
+     "dash": false,
+     "size": 14
+    },
+    "height": 0
+   },
+   {
+    "id": "p-line",
+    "kind": "line",
+    "points": [
+     [
+      -2,
+      -5.5
+     ],
+     [
+      1,
+      -5.5
+     ]
+    ],
+    "text": "Câble",
+    "style": {
+     "stroke": "#ff5c5c",
+     "fill": "none",
+     "width": 2,
+     "dash": false,
+     "size": 14
+    },
+    "height": 0
+   },
+   {
+    "id": "p-arrow",
+    "kind": "arrow",
+    "points": [
+     [
+      6.5,
+      -1.5
+     ],
+     [
+      7.5,
+      1
+     ]
+    ],
+    "text": "",
+    "style": {
+     "stroke": "#3ddc84",
+     "fill": "none",
+     "width": 3,
+     "dash": false,
+     "size": 14
+    },
+    "height": 0
+   },
+   {
+    "id": "p-measure",
+    "kind": "measure",
+    "points": [
+     [
+      -7,
+      -1
+     ],
+     [
+      -7,
+      1.5
+     ]
+    ],
+    "text": "",
+    "style": {
+     "stroke": "#5aa9ff",
+     "fill": "none",
+     "width": 2,
+     "dash": false,
+     "size": 14
+    },
+    "height": 0
+   },
+   {
+    "id": "p-text",
+    "kind": "text",
+    "points": [
+     [
+      -3,
+      6.8
+     ]
+    ],
+    "text": "Régie",
+    "style": {
+     "stroke": "#ffffff",
+     "fill": "none",
+     "width": 2,
+     "dash": false,
+     "size": 20
+    },
+    "height": 0
+   }
+  ],
+  "underlay": {
+   "url": "/assets/plan.png",
+   "x": 0,
+   "z": 0,
+   "width": 12,
+   "aspect": 1.5,
+   "rotation": 0,
+   "opacity": 0.6,
+   "floor3d": false
+  },
+  "background": null,
+  "title": {
+   "production": "",
+   "author": "",
+   "notes": ""
+  }
+ }
+}

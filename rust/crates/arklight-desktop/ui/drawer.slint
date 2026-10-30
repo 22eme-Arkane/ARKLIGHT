@@ -1,0 +1,1137 @@
+// Tiroir du bas : console, moniteur DMX, face avant du projecteur, assistant IA, Bluetooth, MIDI.
+import { ListView, ScrollView, LineEdit, Slider, ComboBox, Switch, Button, CheckBox } from "std-widgets.slint";
+import { App, Dictation, LibRow, SceneRow, Field, ConsoleFader, MonitorCell, GroupRow, MoveRow, FaceItem, FaceRow, AiLine, BleLine, MidiRow, Label3D, ProjectCard, ProjectRow, ShortcutRow, Pill, Tab, Toggle, EnvSlider, FormRow, MicButton, VoiceEdit } from "common.slint";
+import { Theme, Tip, Icon, ToolButton, TextButton, ToolSep, StatusPill, PanelTitle, TabButton, ToolSlider, Choice, Check, Fader, FoldHandle, FieldEdit } from "theme.slint";
+
+export component Drawer inherits Rectangle {
+    background: Theme.panel;
+    Rectangle {
+        y: 0;
+        height: 1px;
+        background: Theme.line;
+    }
+    VerticalLayout {
+        // ---- onglets
+        Rectangle {
+            height: 34px;
+            Rectangle {
+                y: parent.height - 1px;
+                height: 1px;
+                background: Theme.line;
+            }
+            // poignée au milieu : replier / déplier le panneau du bas
+            FoldHandle {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                width: 72px;
+                height: 26px;
+                icon: App.show-console ? "chevron-down" : "chevron-up";
+                tip: App.show-console ? @tr("Replier le panneau du bas") : @tr("Déplier le panneau du bas");
+                clicked => {
+                    App.show-console = !App.show-console;
+                    App.refocus += 1;
+                }
+            }
+            HorizontalLayout {
+                padding-left: 8px;
+                padding-right: 8px;
+                padding-top: 4px;
+                spacing: 2px;
+                for t in [
+                    { id: 0, label: @tr("Console"), icon: "" },
+                    { id: 1, label: @tr("Moniteur DMX"), icon: "" },
+                    { id: 6, label: @tr("Journal"), icon: "" },
+                    { id: 7, label: @tr("Réseau"), icon: "" },
+                    { id: 2, label: "MIDI", icon: "" },
+                    { id: 5, label: "Bluetooth", icon: "" },
+                    { id: 4, label: @tr("Assistant IA"), icon: "sparkle" },
+                ]: TabButton {
+                    text: t.label;
+                    icon: t.icon;
+                    active: App.bottom-tab == t.id;
+                    clicked => {
+                        App.show-console = true;
+                        App.bottom-tab = t.id;
+                        if (t.id == 4) {
+                            App.ai("show", "");
+                        }
+                        if (t.id == 5) {
+                            App.ble("show", "");
+                        }
+                        if (t.id == 2) {
+                            App.midi("show", "");
+                        }
+                        App.refocus += 1;
+                    }
+                }
+                Rectangle {
+                    horizontal-stretch: 1;
+                }
+                if App.blackout: VerticalLayout {
+                    alignment: center;
+                    Rectangle {
+                        width: 104px;
+                        height: 24px;
+                        border-radius: 12px;
+                        background: blackout-touch.has-hover ? #7a1f1f : #5a1717;
+                        border-width: 1px;
+                        border-color: Theme.err;
+                        blackout-touch := TouchArea {
+                            clicked => {
+                                App.action("blackout");
+                            }
+                        }
+                        Text {
+                            text: "BLACKOUT";
+                            color: #ffd6d6;
+                            font-size: Theme.small;
+                            font-weight: 700;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
+            }
+        }
+        // ---- contenu de l'onglet (panneau replié : rien que la barre d'onglets)
+        if App.show-console: VerticalLayout {
+            vertical-stretch: 1;
+            padding-left: 10px;
+            padding-right: 10px;
+            padding-top: 8px;
+            padding-bottom: 8px;
+            spacing: 6px;
+            // ---- journal
+            if App.bottom-tab == 6: Rectangle {
+                background: #0f1216;
+                border-radius: 6px;
+                if App.log-lines.length == 0: Text {
+                    text: @tr("Rien pour le moment : ouvertures, enregistrements, sources DMX et erreurs s’afficheront ici.");
+                    color: Theme.dim;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+                ListView {
+                    for l in App.log-lines: HorizontalLayout {
+                        padding-left: 8px;
+                        padding-right: 8px;
+                        spacing: 10px;
+                        height: 20px;
+                        Text {
+                            text: l.time;
+                            color: Theme.dim;
+                            font-family: Theme.mono;
+                            font-size: Theme.tiny;
+                            vertical-alignment: center;
+                        }
+                        Text {
+                            horizontal-stretch: 1;
+                            text: l.text;
+                            color: l.level == "error" ? Theme.err : l.level == "warn" ? Theme.warn : Theme.text;
+                            font-size: Theme.small;
+                            vertical-alignment: center;
+                            overflow: elide;
+                        }
+                    }
+                }
+            }
+            // ---- réseau (`ui/network.js`)
+            if App.bottom-tab == 7: HorizontalLayout {
+                spacing: 24px;
+                VerticalLayout {
+                    horizontal-stretch: 1;
+                    spacing: 6px;
+                    alignment: start;
+                    Text {
+                        text: @tr("CONNECTER UNE APPLICATION");
+                        color: Theme.muted;
+                        font-size: Theme.tiny;
+                        font-weight: 700;
+                        letter-spacing: 0.9px;
+                    }
+                    Text {
+                        text: @tr("Le PC et le téléphone ou la tablette doivent être sur le même réseau Wi-Fi. Dans l’application (Luminair, Blackout, console…), choisis Art-Net ou sACN et vise cette adresse :");
+                        color: Theme.muted;
+                        font-size: Theme.small;
+                        wrap: word-wrap;
+                    }
+                    Text {
+                        text: App.net-ip != "" ? App.net-ip : @tr("pas de réseau");
+                        color: Theme.accent;
+                        font-family: Theme.mono;
+                        font-size: 14px;
+                    }
+                    Text {
+                        text: @tr("Art-Net : le simulateur répond à la découverte (ArtPoll) sous le nom « ARKLIGHT ». sACN : multicast ou unicast, port 5568. Rien ne s’affiche dans « Sources DMX actives » alors que l’appli émet ? Le pare-feu Windows bloque sans doute ARKLIGHT : autorise-le pour les réseaux privés, et vérifie que le Wi-Fi est en profil « Privé ».");
+                        color: Theme.dim;
+                        font-size: Theme.tiny;
+                        wrap: word-wrap;
+                    }
+                    HorizontalLayout {
+                        spacing: 8px;
+                        Text {
+                            text: @tr("Numérotation Art-Net");
+                            color: Theme.muted;
+                            vertical-alignment: center;
+                        }
+                        Choice {
+                            width: 220px;
+                            model: [@tr("Art-Net 0 = Univers 0"), @tr("Art-Net 0 = Univers 1")];
+                            current-index: App.net-offset;
+                            selected(idx) => {
+                                App.net-offset-changed(idx);
+                            }
+                        }
+                        Rectangle { }
+                    }
+                }
+                VerticalLayout {
+                    horizontal-stretch: 1;
+                    spacing: 6px;
+                    alignment: start;
+                    Text {
+                        text: @tr("SOURCES DMX ACTIVES");
+                        color: Theme.muted;
+                        font-size: Theme.tiny;
+                        font-weight: 700;
+                        letter-spacing: 0.9px;
+                    }
+                    HorizontalLayout {
+                        spacing: 8px;
+                        for h in [@tr("Protocole"), @tr("Adresse"), @tr("Nom"), @tr("Univers")]: Text {
+                            width: 110px;
+                            text: h;
+                            color: Theme.muted;
+                            font-size: Theme.small;
+                            font-weight: 600;
+                        }
+                        Rectangle { }
+                    }
+                    if App.net-sources.length == 0: Text {
+                        text: @tr("Aucune source pour le moment");
+                        color: Theme.dim;
+                        font-italic: true;
+                        font-size: Theme.small;
+                    }
+                    for src in App.net-sources: HorizontalLayout {
+                        spacing: 8px;
+                        Text {
+                            width: 110px;
+                            text: src.protocol;
+                            color: Theme.text;
+                            font-size: Theme.small;
+                        }
+                        Text {
+                            width: 110px;
+                            text: src.address;
+                            color: Theme.text;
+                            font-family: Theme.mono;
+                            font-size: Theme.small;
+                        }
+                        Text {
+                            width: 110px;
+                            text: src.name;
+                            color: Theme.text;
+                            font-size: Theme.small;
+                            overflow: elide;
+                        }
+                        Text {
+                            width: 110px;
+                            text: src.universes;
+                            color: Theme.text;
+                            font-family: Theme.mono;
+                            font-size: Theme.small;
+                        }
+                        Rectangle { }
+                    }
+                    Text {
+                        text: App.net-counters;
+                        color: Theme.dim;
+                        font-size: Theme.small;
+                    }
+                }
+            }
+            if App.bottom-tab == 4: HorizontalLayout {
+                spacing: 8px;
+                Choice {
+                    width: 260px;
+                    model: App.ai-providers;
+                    current-index: App.ai-provider-index;
+                    selected(idx) => {
+                        App.ai("provider", idx);
+                    }
+                }
+                Choice {
+                    width: 220px;
+                    model: App.ai-models;
+                    current-index: App.ai-model-index;
+                    selected(idx) => {
+                        App.ai("model", App.ai-models[idx]);
+                    }
+                }
+                if App.ai-url-shown: FieldEdit {
+                    width: 210px;
+                    mono: true;
+                    text: App.ai-url != "" ? App.ai-url : App.ai-url-default;
+                    accepted(t) => {
+                        App.ai("url", t == App.ai-url-default ? "" : t);
+                    }
+                }
+                TextButton {
+                    text: @tr("Actualiser");
+                    clicked => {
+                        App.ai("models", "");
+                    }
+                }
+                if App.ai-key-needed: LineEdit {
+                    width: 200px;
+                    input-type: password;
+                    placeholder-text: App.ai-key-saved ? @tr("clé enregistrée") : @tr("clé API");
+                    text <=> App.ai-key;
+                    accepted => {
+                        App.ai("key", App.ai-key);
+                        App.ai-key = "";
+                    }
+                }
+                if App.ai-aiodos && !App.ai-aiodos-pending && App.ai-aiodos-state != "ready" && App.ai-log.length > 0: TextButton {
+                    text: @tr("Se connecter à AIODOS");
+                    clicked => {
+                        App.ai("aiodos", "");
+                    }
+                }
+                // demande d'accès en cours : le code à comparer dans AIODOS, en grand, et « Annuler »
+                if App.ai-aiodos && App.ai-aiodos-pending && App.ai-aiodos-code != "": Text {
+                    text: App.ai-aiodos-code;
+                    color: Theme.accent;
+                    font-size: 20px;
+                    font-weight: 700;
+                    vertical-alignment: center;
+                }
+                if App.ai-aiodos && App.ai-aiodos-pending: TextButton {
+                    text: @tr("bouton" => "Annuler");
+                    clicked => {
+                        App.ai("aiodos-cancel", "");
+                    }
+                }
+                TextButton {
+                    text: @tr("Nouvelle conversation");
+                    enabled: !App.ai-busy;
+                    clicked => {
+                        App.ai("reset", "");
+                    }
+                }
+                Rectangle { }
+            }
+            if App.bottom-tab == 4: Rectangle {
+                background: #0f1216;
+                border-radius: 6px;
+                // AIODOS pas encore prêt : ce qu'il faut faire, en grand, au milieu de la conversation
+                if App.ai-log.length == 0 && !(App.ai-aiodos && App.ai-aiodos-state != "ready" && App.ai-aiodos-state != ""): Text {
+                    text: @tr("Demande par exemple : « ajoute 4 Titan en contre, en bleu » ou « oriente la face vers le comédien ». Chaque action de l’assistant s’annule avec Ctrl+Z.");
+                    color: Theme.dim;
+                    wrap: word-wrap;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+                if App.ai-log.length == 0 && (App.ai-aiodos && App.ai-aiodos-state != "ready" && App.ai-aiodos-state != ""): VerticalLayout {
+                    alignment: center;
+                    spacing: 8px;
+                    padding: 10px;
+                    Text {
+                        text: App.ai-aiodos-state == "not_installed" ? @tr("L’assistant fonctionne avec AIODOS, qui n’est pas encore installé sur cet ordinateur.")
+                            : App.ai-aiodos-state == "not_running" ? @tr("AIODOS est installé mais arrêté.")
+                            : App.ai-aiodos-pending ? @tr("Dans la fenêtre d’AIODOS, vérifie que le code est le même, puis autorise ARKLIGHT :")
+                            : @tr("Connecte ARKLIGHT à AIODOS pour utiliser l’assistant : les demandes sont calculées sur cet ordinateur.");
+                        color: Theme.text;
+                        font-size: 14px;
+                        wrap: word-wrap;
+                        horizontal-alignment: center;
+                    }
+                    if App.ai-aiodos-pending && App.ai-aiodos-code != "": Text {
+                        text: App.ai-aiodos-code;
+                        color: Theme.accent;
+                        font-family: Theme.mono;
+                        font-size: 24px;
+                        font-weight: 700;
+                        horizontal-alignment: center;
+                    }
+                    HorizontalLayout {
+                        alignment: center;
+                        spacing: 8px;
+                        if App.ai-aiodos-state == "not_installed": TextButton {
+                            primary: true;
+                            text: @tr("Installer AIODOS");
+                            clicked => {
+                                App.ai("aiodos-install", "");
+                            }
+                        }
+                        if App.ai-aiodos-state == "not_running": TextButton {
+                            primary: true;
+                            text: @tr("Lancer AIODOS");
+                            clicked => {
+                                App.ai("aiodos-launch", "");
+                            }
+                        }
+                        if App.ai-aiodos-state != "not_installed" && App.ai-aiodos-state != "not_running" && !App.ai-aiodos-pending: TextButton {
+                            primary: true;
+                            text: @tr("Se connecter à AIODOS");
+                            clicked => {
+                                App.ai("aiodos", "");
+                            }
+                        }
+                        if App.ai-aiodos-pending: TextButton {
+                            text: @tr("bouton" => "Annuler");
+                            clicked => {
+                                App.ai("aiodos-cancel", "");
+                            }
+                        }
+                        if !App.ai-aiodos-pending: TextButton {
+                            text: @tr("Vérifier à nouveau");
+                            clicked => {
+                                App.ai("aiodos-refresh", "");
+                            }
+                        }
+                    }
+                    if App.ai-aiodos-message != "" && !App.ai-aiodos-pending: Text {
+                        text: App.ai-aiodos-message;
+                        color: Theme.dim;
+                        font-size: Theme.small;
+                        wrap: word-wrap;
+                        horizontal-alignment: center;
+                    }
+                }
+                ListView {
+                    for l in App.ai-log: HorizontalLayout {
+                        padding: 4px;
+                        padding-left: 8px;
+                        spacing: 8px;
+                        Text {
+                            width: 70px;
+                            text: l.role == "user" ? @tr("Toi") : l.role == "assistant" ? @tr("Assistant") : l.role == "error" ? @tr("Erreur") : "";
+                            color: l.role == "user" ? #8fb8ff : l.role == "error" ? #ff7b7b : #ffad3b;
+                            font-size: 12px;
+                            font-weight: 600;
+                        }
+                        Text {
+                            text: l.text;
+                            color: l.role == "tool" || l.role == "note" ? Theme.muted : Theme.text;
+                            font-size: l.role == "tool" ? 11px : 13px;
+                            wrap: word-wrap;
+                            horizontal-stretch: 1;
+                        }
+                    }
+                }
+            }
+            // photo jointe : vignette, nom, fond du plan 2D, retirer
+            if App.bottom-tab == 4 && App.ai-photo-name != "": HorizontalLayout {
+                spacing: 8px;
+                height: 40px;
+                Rectangle {
+                    width: 64px;
+                    border-radius: 4px;
+                    clip: true;
+                    Image {
+                        width: parent.width;
+                        height: parent.height;
+                        source: App.ai-photo;
+                        image-fit: cover;
+                    }
+                }
+                Text {
+                    text: App.ai-photo-name;
+                    color: Theme.text;
+                    vertical-alignment: center;
+                    overflow: elide;
+                    max-width: 260px;
+                }
+                VerticalLayout {
+                    alignment: center;
+                    horizontal-stretch: 0;
+                    Check {
+                        text: @tr("Aussi en fond du plan 2D");
+                        checked: App.ai-photo-underlay;
+                        toggled(on) => {
+                            App.ai("photo-underlay", on ? "1" : "0");
+                        }
+                    }
+                }
+                VerticalLayout {
+                    alignment: center;
+                    horizontal-stretch: 0;
+                    TextButton {
+                        text: "×";
+                        clicked => {
+                            App.ai("photo-remove", "");
+                        }
+                    }
+                }
+                Rectangle {
+                    horizontal-stretch: 1;
+                }
+            }
+            if App.bottom-tab == 4: HorizontalLayout {
+                spacing: 8px;
+                VerticalLayout {
+                    alignment: center;
+                    ToolButton {
+                        icon: "image";
+                        tip: @tr("Joindre une photo (plan de feu dessiné à la main, repérage…)");
+                        clicked => {
+                            App.ai("photo", "");
+                        }
+                    }
+                }
+                VerticalLayout {
+                    alignment: center;
+                    Rectangle {
+                        width: examples-button.natural-width;
+                        height: 30px;
+                        examples-menu := ContextMenuArea {
+                            enabled: false;
+                            Menu {
+                                for ex in [
+                                    @tr("Reconstruis le plan de feu de cette photo (joins la photo d’un plan dessiné)"),
+                                    @tr("Ajoute une face et un contre sur le comédien"),
+                                    @tr("Ré-adresse tous les projecteurs à partir de 1, de gauche à droite"),
+                                    @tr("Mets les tubes en bleu à 50 %"),
+                                    @tr("Crée un nouveau plan pour le contrechamp"),
+                                ]: MenuItem {
+                                    title: ex;
+                                    activated => {
+                                        App.ai-input = ex;
+                                    }
+                                }
+                            }
+                        }
+                        examples-button := ToolButton {
+                            width: parent.width;
+                            text: @tr("Exemples");
+                            dropdown: true;
+                            clicked => {
+                                examples-menu.show({ x: 0, y: -170px });
+                            }
+                        }
+                    }
+                }
+                VoiceEdit {
+                    field: "ai-input";
+                    placeholder-text: App.ai-status != "" ? App.ai-status : @tr("Écris ou dicte ta demande, puis Entrée");
+                    enabled: !App.ai-busy;
+                    text <=> App.ai-input;
+                    accepted => {
+                        App.ai("send", App.ai-input);
+                        App.ai-input = "";
+                    }
+                }
+                if !App.ai-busy: TextButton {
+                    text: @tr("Envoyer");
+                    primary: true;
+                    enabled: App.ai-input != "" || App.ai-photo-name != "";
+                    clicked => {
+                        App.ai("send", App.ai-input);
+                        App.ai-input = "";
+                    }
+                }
+                if App.ai-busy: TextButton {
+                    text: @tr("Arrêter");
+                    clicked => {
+                        App.ai("stop", "");
+                    }
+                }
+            }
+            if App.bottom-tab == 4 && App.ai-status != "": Text {
+                text: App.ai-status;
+                color: Theme.accent;
+                font-size: 12px;
+                overflow: elide;
+            }
+            if App.bottom-tab == 5: HorizontalLayout {
+                spacing: 8px;
+                Choice {
+                    width: 320px;
+                    enabled: !App.ble-running;
+                    model: App.ble-emulators;
+                    current-index: App.ble-emulator-index;
+                    selected(idx) => {
+                        App.ble("emulator", idx);
+                    }
+                }
+                TextButton {
+                    text: App.ble-running ? @tr("Arrêter (le PC n’est plus visible)") : @tr("Rendre le PC visible en Bluetooth");
+                    primary: !App.ble-running;
+                    clicked => {
+                        App.ble(App.ble-running ? "stop" : "start", "");
+                    }
+                }
+                TextButton {
+                    text: @tr("Relire l’adaptateur");
+                    clicked => {
+                        App.ble("adapter", "");
+                    }
+                }
+                TextButton {
+                    text: @tr("Vider le journal");
+                    clicked => {
+                        App.ble("clear", "");
+                    }
+                }
+                Rectangle { }
+            }
+            if App.bottom-tab == 5: Text {
+                text: App.ble-status;
+                color: Theme.muted;
+                font-size: 12px;
+                wrap: word-wrap;
+            }
+            if App.bottom-tab == 5 && App.ble-note != "": Text {
+                text: App.ble-note;
+                color: Theme.accent;
+                font-size: 11px;
+                wrap: word-wrap;
+            }
+            if App.bottom-tab == 5: Rectangle {
+                background: #0f1216;
+                border-radius: 6px;
+                if App.ble-lines.length == 0: Text {
+                    text: @tr("Journal des échanges avec le téléphone (écritures, lectures, notifications).");
+                    color: Theme.dim;
+                    font-size: 12px;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+                ListView {
+                    for l in App.ble-lines: Text {
+                        x: 8px;
+                        text: l.text;
+                        color: l.input ? #8fb8ff : #c9ced6;
+                        font-family: "Consolas";
+                        font-size: 11px;
+                    }
+                }
+            }
+            if App.bottom-tab == 2: HorizontalLayout {
+                spacing: 8px;
+                Choice {
+                    width: 250px;
+                    model: App.midi-presets;
+                    current-index: App.midi-preset-index;
+                    selected(idx) => {
+                        App.midi-preset-index = idx;
+                        App.midi("preset", idx);
+                    }
+                }
+                // premier canal MIDI de la console (préréglage intégré)
+                if App.midi-builtin: Choice {
+                    width: 96px;
+                    model: [@tr("Canal 1"), @tr("Canal 2"), @tr("Canal 3"), @tr("Canal 4"), @tr("Canal 5"), @tr("Canal 6"), @tr("Canal 7"), @tr("Canal 8"), @tr("Canal 9"), @tr("Canal 10"), @tr("Canal 11"), @tr("Canal 12"), @tr("Canal 13"), @tr("Canal 14"), @tr("Canal 15"), @tr("Canal 16")];
+                    current-index: App.midi-channel - 1;
+                    selected(idx) => {
+                        App.midi("channel", idx + 1);
+                    }
+                }
+                if App.midi-user: VerticalLayout {
+                    alignment: center;
+                    ToolButton {
+                        icon: "trash";
+                        tip: @tr("Supprimer ce préréglage enregistré");
+                        clicked => {
+                            App.midi("delete-preset", "");
+                        }
+                    }
+                }
+                VerticalLayout {
+                    alignment: center;
+                    Rectangle {
+                        width: preset-button.natural-width;
+                        height: 30px;
+                        preset-menu := ContextMenuArea {
+                            enabled: false;
+                            Menu {
+                                MenuItem {
+                                    title: @tr("Enregistrer comme préréglage…");
+                                    activated => {
+                                        App.midi("save-preset", "");
+                                    }
+                                }
+                                MenuItem {
+                                    title: @tr("Exporter…");
+                                    activated => {
+                                        App.midi("export", "");
+                                    }
+                                }
+                                MenuItem {
+                                    title: @tr("Importer…");
+                                    activated => {
+                                        App.midi("import", "");
+                                    }
+                                }
+                            }
+                        }
+                        preset-button := ToolButton {
+                            width: parent.width;
+                            text: @tr("Préréglage");
+                            dropdown: true;
+                            clicked => {
+                                preset-menu.show({ x: 0, y: self.height + 2px });
+                            }
+                        }
+                    }
+                }
+                TextButton {
+                    text: App.midi-learning ? @tr("Arrêter") : @tr("Apprendre…");
+                    clicked => {
+                        App.midi(App.midi-learning ? "stop" : "learn", "");
+                    }
+                }
+                TextButton {
+                    text: @tr("Faders 1 → 8");
+                    clicked => {
+                        App.midi("wizard", "faders");
+                    }
+                }
+                TextButton {
+                    text: @tr("Touches → groupes");
+                    clicked => {
+                        App.midi("wizard", "groups");
+                    }
+                }
+                TextButton {
+                    text: @tr("Touches → projecteurs");
+                    clicked => {
+                        App.midi("wizard", "fixtures");
+                    }
+                }
+                TextButton {
+                    text: @tr("Tout effacer");
+                    enabled: App.midi-rows.length > 0;
+                    clicked => {
+                        App.midi("clear", "");
+                    }
+                }
+                Rectangle { }
+            }
+            if App.bottom-tab == 2: HorizontalLayout {
+                spacing: 14px;
+                Text {
+                    min-width: 0px;
+                    max-width: 260px;
+                    text: App.midi-devices;
+                    color: Theme.muted;
+                    font-size: 12px;
+                    overflow: elide;
+                }
+                Text {
+                    min-width: 0px;
+                    max-width: 300px;
+                    text: @tr("Dernier message : {}", App.midi-last);
+                    color: Theme.muted;
+                    font-size: 12px;
+                    overflow: elide;
+                }
+                Text {
+                    text: App.midi-status != "" ? App.midi-status : App.midi-page != "" ? App.midi-page : App.midi-summary;
+                    min-width: 0px;
+                    color: App.midi-status != "" ? #ffad3b : Theme.muted;
+                    font-size: 12px;
+                    overflow: elide;
+                    horizontal-stretch: 1;
+                }
+            }
+            if App.bottom-tab == 2: Rectangle {
+                background: #0f1216;
+                border-radius: 6px;
+                if App.midi-rows.length == 0: Text {
+                    text: @tr("Aucune correspondance : choisis un préréglage pour ta console, ou « Apprendre… » puis bouge un fader du contrôleur.");
+                    color: Theme.dim;
+                    font-size: 12px;
+                    wrap: word-wrap;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+                ListView {
+                    for m in App.midi-rows: HorizontalLayout {
+                        height: 30px;
+                        padding-left: 8px;
+                        padding-right: 8px;
+                        spacing: 8px;
+                        Text {
+                            width: 200px;
+                            text: m.learning ? @tr("Bouge un fader ou appuie sur une touche…") : m.source;
+                            color: m.learning ? #ffad3b : Theme.text;
+                            font-family: "Consolas";
+                            font-size: 12px;
+                            vertical-alignment: center;
+                            overflow: elide;
+                        }
+                        Text {
+                            text: "→";
+                            color: Theme.dim;
+                            vertical-alignment: center;
+                        }
+                        Choice {
+                            width: 300px;
+                            enabled: !m.preset;
+                            model: App.midi-kinds;
+                            current-index: m.kind-index;
+                            selected(idx) => {
+                                App.midi-kind(m.id, idx);
+                            }
+                        }
+                        if m.params.length > 0: Choice {
+                            width: 200px;
+                            enabled: !m.preset;
+                            model: m.params;
+                            current-index: m.param-index;
+                            selected(idx) => {
+                                App.midi-param(m.id, idx);
+                            }
+                        }
+                        if m.params.length == 0: Text {
+                            width: 200px;
+                            text: m.note;
+                            color: Theme.dim;
+                            font-size: 11px;
+                            vertical-alignment: center;
+                            overflow: elide;
+                        }
+                        TextButton {
+                            text: @tr("Réapprendre");
+                            enabled: !m.preset;
+                            clicked => {
+                                App.midi("relearn", m.id);
+                            }
+                        }
+                        TextButton {
+                            text: "×";
+                            enabled: !m.preset;
+                            clicked => {
+                                App.midi("remove", m.id);
+                            }
+                        }
+                        Rectangle { }
+                    }
+                }
+            }
+            // ---- moniteur DMX (`ui/dmx-monitor.js`) : univers, sources, conflits, ré-adressage
+            if App.bottom-tab == 1: HorizontalLayout {
+                spacing: 10px;
+                Text {
+                    text: @tr("Univers");
+                    color: Theme.muted;
+                    vertical-alignment: center;
+                }
+                VerticalLayout {
+                    alignment: center;
+                    Choice {
+                        width: 130px;
+                        model: App.monitor-universes;
+                        current-index: App.monitor-universe-index;
+                        selected(idx) => {
+                            App.monitor-universe(idx);
+                        }
+                    }
+                }
+                Text {
+                    text: App.monitor-title;
+                    color: Theme.muted;
+                    font-size: Theme.small;
+                    vertical-alignment: center;
+                    overflow: elide;
+                }
+                Rectangle {
+                    horizontal-stretch: 1;
+                }
+                if App.monitor-conflicts != "": VerticalLayout {
+                    alignment: center;
+                    Rectangle {
+                        height: 28px;
+                        width: conflict-text.preferred-width + 22px;
+                        border-radius: Theme.radius;
+                        background: conflict-touch.has-hover ? #3a1a1a : #2a1414;
+                        border-width: 1px;
+                        border-color: Theme.err;
+                        conflict-touch := TouchArea {
+                            clicked => {
+                                App.action("readdress-conflicts");
+                            }
+                        }
+                        conflict-text := Text {
+                            text: App.monitor-conflicts;
+                            color: #ffb3b3;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
+                VerticalLayout {
+                    alignment: center;
+                    TextButton {
+                        text: @tr("Ré-adressage auto…");
+                        clicked => {
+                            App.action("readdress");
+                        }
+                    }
+                }
+            }
+            // 512 canaux, 32 par rangée ; nom des projecteurs posé sur leurs canaux
+            if App.bottom-tab == 1: mon-scroll := ScrollView {
+                vertical-stretch: 1;
+                // à l'ouverture et quand la sélection change : la rangée du projecteur choisi
+                property <int> want-row: App.monitor-row;
+                init => {
+                    self.content-y = -self.want-row * 32px;
+                }
+                changed want-row => {
+                    self.content-y = -self.want-row * 32px;
+                }
+                content-height: 16 * 32px;
+                Rectangle {
+                    x: 0;
+                    y: 0;
+                    width: mon-scroll.visible-width - 4px;
+                    height: 16 * 32px;
+                    property <length> cw: (self.width - 31 * 2px) / 32;
+                    for c[i] in App.monitor-cells: cell := Rectangle {
+                        x: mod(i, 32) * (parent.cw + 2px);
+                        y: floor(i / 32) * 32px;
+                        width: parent.cw;
+                        height: 30px;
+                        border-radius: 2px;
+                        background: c.conflict ? #3a1616 : c.patched ? #13171c : #101317;
+                        border-width: 1px;
+                        border-color: c.mine ? Theme.accent : c.conflict ? Theme.err : #1c2026;
+                        // valeur reçue
+                        Rectangle {
+                            x: 1px;
+                            y: parent.height - 1px - self.height;
+                            width: parent.width - 2px;
+                            height: (parent.height - 2px) * c.value / 255;
+                            background: c.mine ? #7a5a1f : #2b4a7a;
+                        }
+                        // repère du projecteur, début de son patch
+                        if c.patched && !c.conflict: Rectangle {
+                            x: 1px;
+                            y: 1px;
+                            width: parent.width - 2px;
+                            height: 3px;
+                            background: c.color;
+                        }
+                        if c.start: Rectangle {
+                            x: 0;
+                            width: 2px;
+                            background: #c9d1db;
+                        }
+                        Text {
+                            x: 3px;
+                            y: 2px;
+                            text: i + 1;
+                            color: c.conflict ? #ffb3b3 : Theme.dim;
+                            font-size: 8px;
+                        }
+                        if c.value > 0: Text {
+                            x: parent.width - self.width - 3px;
+                            y: parent.height - self.height - 1px;
+                            text: c.value;
+                            color: #cfd6df;
+                            font-family: Theme.mono;
+                            font-size: 10px;
+                        }
+                        cell-touch := TouchArea {
+                            mouse-cursor: c.owner != "" ? MouseCursor.pointer : MouseCursor.default;
+                            pointer-event(e) => {
+                                if (e.kind == PointerEventKind.down && e.button == PointerEventButton.left && c.owner != "") {
+                                    App.monitor-pick(c.owner, e.modifiers.control);
+                                }
+                            }
+                        }
+                        property <bool> hovering: cell-touch.has-hover;
+                        changed hovering => {
+                            if (self.hovering) {
+                                Tip.text = c.tip;
+                                Tip.x = self.absolute-position.x;
+                                Tip.y = self.absolute-position.y + self.height + 4px;
+                                Tip.visible = true;
+                            } else if (Tip.text == c.tip) {
+                                Tip.visible = false;
+                            }
+                        }
+                    }
+                    for l in App.monitor-labels: Text {
+                        x: l.col * (parent.cw + 2px) + 3px;
+                        y: l.row * 32px + 11px;
+                        width: l.span * (parent.cw + 2px) - 6px;
+                        text: l.text;
+                        color: #f2f4f7;
+                        font-size: 9px;
+                        font-weight: 600;
+                        overflow: elide;
+                    }
+                }
+            }
+            // en-tête de la console (`.console-head`) : qui est piloté, profil, actions
+            if App.bottom-tab == 0: HorizontalLayout {
+                spacing: 10px;
+                Text {
+                    text: App.console-title;
+                    color: Theme.text;
+                    font-weight: 600;
+                    vertical-alignment: center;
+                    overflow: elide;
+                }
+                if App.console-chips.length == 0 && App.console-sub != "": Text {
+                    text: App.console-sub;
+                    color: Theme.muted;
+                    vertical-alignment: center;
+                    overflow: elide;
+                }
+                if App.console-chips.length > 0: HorizontalLayout {
+                    spacing: 4px;
+                    for c[i] in App.console-chips: VerticalLayout {
+                        alignment: center;
+                        Rectangle {
+                            height: 24px;
+                            width: chip-text.preferred-width + 16px;
+                            border-radius: Theme.radius;
+                            background: i == App.console-chip ? Theme.active : chip-touch.has-hover ? Theme.hover : Theme.panel-2;
+                            border-width: 1px;
+                            border-color: i == App.console-chip ? Theme.active-line : Theme.line-2;
+                            chip-touch := TouchArea {
+                                clicked => {
+                                    App.console-action("family:" + i);
+                                }
+                            }
+                            chip-text := Text {
+                                text: c;
+                                color: i == App.console-chip ? #ffffff : Theme.text;
+                                font-size: Theme.small;
+                                horizontal-alignment: center;
+                                vertical-alignment: center;
+                            }
+                        }
+                    }
+                }
+                if App.console-profiles.length > 0: VerticalLayout {
+                    alignment: center;
+                    Choice {
+                        width: 240px;
+                        model: App.console-profiles;
+                        current-index: App.console-profile;
+                        selected(idx) => {
+                            App.console-action("profile:" + idx);
+                        }
+                    }
+                }
+                if App.console-place != "": Text {
+                    text: App.console-place;
+                    color: Theme.muted;
+                    font-family: Theme.mono;
+                    font-size: Theme.tiny;
+                    vertical-alignment: center;
+                }
+                Rectangle {
+                    horizontal-stretch: 1;
+                }
+                if App.console-profiles.length > 0: HorizontalLayout {
+                    spacing: 6px;
+                    TextButton {
+                        text: @tr("Plein feu");
+                        clicked => {
+                            App.console-action("full");
+                        }
+                    }
+                    TextButton {
+                        text: @tr("Noir");
+                        clicked => {
+                            App.console-action("black");
+                        }
+                    }
+                    if App.console-pixels > 1: TextButton {
+                        text: @tr("Arc-en-ciel");
+                        clicked => {
+                            App.console-action("rainbow");
+                        }
+                    }
+                    ToolButton {
+                        text: "0–255";
+                        active: App.console-raw;
+                        tip: @tr("Afficher les valeurs DMX brutes (0–255) plutôt qu’en %, K ou °");
+                        clicked => {
+                            App.console-action("raw");
+                        }
+                    }
+                }
+            }
+            // état : piloté ou non, alertes de patch
+            if App.bottom-tab == 0 && (App.console-note != "" || App.console-warn != ""): HorizontalLayout {
+                spacing: 14px;
+                Text {
+                    text: App.console-note;
+                    color: Theme.muted;
+                    font-size: 11.5px;
+                    vertical-alignment: center;
+                    overflow: elide;
+                }
+                if App.console-warn != "": Text {
+                    text: App.console-warn;
+                    color: Theme.warn;
+                    font-size: 11.5px;
+                    vertical-alignment: center;
+                    overflow: elide;
+                }
+                Rectangle { }
+            }
+            if App.bottom-tab == 0: console-scroll := ScrollView {
+                HorizontalLayout {
+                    height: console-scroll.visible-height - 4px;
+                    spacing: 4px;
+                    alignment: start;
+                    for fd[i] in App.console-faders: Rectangle {
+                      width: 52px;
+                      background: #111418;
+                      border-radius: 4px;
+                      border-width: 1px;
+                      border-color: fd.mark != "" ? #4f8fd8 : Theme.line;
+                      VerticalLayout {
+                        padding-top: 3px;
+                        padding-bottom: 2px;
+                        spacing: 1px;
+                        Text {
+                            text: fd.text;
+                            color: Theme.accent;
+                            font-family: Theme.mono;
+                            font-size: Theme.tiny;
+                            horizontal-alignment: center;
+                            overflow: elide;
+                        }
+                        Fader {
+                            vertical-stretch: 1;
+                            maximum: fd.max;
+                            value: fd.value;
+                            changed(v) => {
+                                App.console-fader(i, v);
+                            }
+                        }
+                        Text {
+                            height: 22px;
+                            text: fd.label;
+                            color: Theme.muted;
+                            font-size: 9.5px;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                            wrap: word-wrap;
+                            overflow: elide;
+                        }
+                        Text {
+                            text: fd.mark != "" ? fd.channel + " · " + fd.mark : fd.channel;
+                            color: fd.mark != "" ? #7fb2ec : Theme.dim;
+                            font-family: Theme.mono;
+                            font-size: 9px;
+                            horizontal-alignment: center;
+                        }
+                      }
+                    }
+                }
+            }
+        }
+    }
+}

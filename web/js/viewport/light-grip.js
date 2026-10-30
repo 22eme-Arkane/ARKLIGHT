@@ -13,6 +13,8 @@ const MAX_SHADOW_SPOTS = 6; // chaque ombre coûte un rendu de la scène : on ga
 const MAX_AREA_LIGHTS = 6;
 const AREA_MIN = 0.002; // luminance en dessous de laquelle un rebond est ignoré
 
+const _tint = new THREE.Color();
+const _tc = new THREE.Color();
 const _p = new THREE.Vector3();
 const _q = new THREE.Vector3();
 const _d = new THREE.Vector3();
@@ -121,8 +123,14 @@ export class GripLighting {
         l.target.getWorldPosition(_axis);
         const end = _axis.sub(_p).normalize().multiplyScalar(30).add(_p);
         let k = 1;
-        for (const o of occ) if ((!o.solid || !l.castShadow) && segmentHitsRect(_p, end, o)) k *= o.t;
+        _tint.setRGB(1, 1, 1);
+        for (const o of occ) {
+          if ((o.solid && l.castShadow) || !segmentHitsRect(_p, end, o)) continue;
+          k *= o.t;
+          if (o.tint) _tint.multiply(_tc.setRGB(o.tint[0], o.tint[1], o.tint[2])); // gélatine : la lumière prend sa couleur
+        }
         l.intensity *= k;
+        if (_tint.r < 1 || _tint.g < 1 || _tint.b < 1) l.color.multiply(_tint);
       }
     }
 
@@ -193,7 +201,7 @@ export class GripLighting {
         const side = i === 0 ? 1 : -1; // côté de la source
         const color = face.c.multiplyScalar(1 / face.e);
         if (o.reflect) emitters.push({ o, dir: side, lum: (o.reflect * face.e) / Math.PI, color });
-        if (o.diffuse) emitters.push({ o, dir: -side, lum: (o.diffuse * face.e) / Math.PI, color });
+        if (o.diffuse) emitters.push({ o, dir: -side, lum: (o.diffuse * face.e) / Math.PI, color: o.tint ? color.clone().multiply(new THREE.Color(...o.tint)) : color });
       });
     }
     emitters.sort((a, b) => b.lum - a.lum);

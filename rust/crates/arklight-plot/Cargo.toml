@@ -1,0 +1,20 @@
+[package]
+name = "arklight-plot"
+description = "Plan de feu 2D d'ARKLIGHT (PC et mobile) : rendu SVG, symboles, listes du matériel et du patch, export MVR"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+arklight-core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+# image du plan (affichage, export PNG) : même version que celle de Slint ; polices chargées depuis
+# leurs fichiers (sans « system-fonts », qui demande fontconfig)
+resvg = { version = "0.48", default-features = false, features = ["text", "raster-images"] }
+# export PDF : compression de l'image (bibliothèque déjà compilée pour resvg et png)
+miniz_oxide = "0.9"

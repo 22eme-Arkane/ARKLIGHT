@@ -5732,7 +5732,7 @@ export const OFL_FIXTURES = [
       },
       {
        "label": "Saturation",
-       "f": "dimmer"
+       "f": "sat"
       }
      ]
     },
@@ -5780,7 +5780,7 @@ export const OFL_FIXTURES = [
       },
       {
        "label": "Saturation",
-       "f": "dimmer"
+       "f": "sat"
       }
      ]
     },

@@ -3,7 +3,11 @@ import { OnboardController } from '/shared/onboard/engine.js';
 import { AsteraV5Controller } from '/shared/onboard/astera-v5.js';
 import { AsteraAx1Controller } from '/shared/onboard/astera-ax1.js';
 import { AsteraBoxController } from '/shared/onboard/astera-box.js';
+import { PanelController } from '/shared/onboard/panel.js';
+import { panelFor } from '/shared/onboard/panels/index.js';
 import { h } from './dom.js';
+import { buildPanelFace, drawPanelDisplay, fitPanel } from './panel-face.js';
+import { releaseOnLookChange } from '/shared/engine/console.js';
 
 export const now = () => performance.now() / 1000;
 
@@ -60,6 +64,8 @@ export class OnboardRegistry {
         },
         env: () => ({ appConnected: (this.store.ble?.phones?.length || 0) > 0, dmxLive: (u) => this.store.liveUniverses.has(u) }),
       });
+    else if (panelFor(type))
+      c = new PanelController({ type, def: panelFor(type), getFixture: opts.getFixture, emit: opts.emit, env: () => ({ dmxLive: (u) => this.store.liveUniverses.has(u) }) });
     else if (type.controls?.buttons) c = new OnboardController(opts);
     else return null;
     this.controllers.set(id, c);
@@ -73,6 +79,7 @@ export class OnboardRegistry {
   _apply(id, changes) {
     const f = this.store.fixtures.get(id);
     if (!f) return;
+    changes = releaseOnLookChange(f, changes); // régler la lumière au menu rend la main à la console
     if (changes.settings) Object.assign(f.settings, changes.settings);
     if (changes.state) Object.assign(f.state, changes.state);
     this.store.upsertFixture(f, this.store.clientId);
@@ -240,7 +247,8 @@ export function createControlPanel({ registry }) {
     if (!mounted) return;
     const { ctrl, canvas, holdBars, msg, leds } = mounted;
     const t = now();
-    if (canvas) drawOled(canvas, ctrl.display(t), { lcd: mounted.type.controls?.display?.kind === 'lcd' });
+    if (canvas && mounted.panel) drawPanelDisplay(canvas, ctrl.display(t), ctrl.def.display);
+    else if (canvas) drawOled(canvas, ctrl.display(t), { lcd: mounted.type.controls?.display?.kind === 'lcd' });
     for (const [id, bar] of holdBars) {
       const held = ctrl.heldFor(id, t);
       bar.style.width = `${Math.min(100, (held / 5) * 100)}%`;
@@ -298,6 +306,17 @@ export function createControlPanel({ registry }) {
                   ? 'Menus embarqués de ce modèle : pas encore simulés. Il se pilote en DMX avec ses profils officiels.'
                   : 'Pas de commandes embarquées sur ce modèle.';
       box.append(h('div', { class: 'note' }, text));
+      return box;
+    }
+    if (ctrl instanceof PanelController) {
+      // panneaux ARRI, Aputure, Hive… : face avant décrite par la marque (shared/onboard/panels)
+      const pf = buildPanelFace(ctrl);
+      const msg = h('div', { class: 'device-msg' });
+      box.append(pf.face, msg);
+      if (pf.note) box.append(h('div', { class: 'note' }, pf.note));
+      mounted = { f, type, ctrl, canvas: pf.canvas, holdBars: pf.holdBars, msg, leds: pf.leds.size ? pf.leds : null, panel: true };
+      requestAnimationFrame(() => fitPanel(pf.face));
+      loop();
       return box;
     }
     const def = type.controls || {};

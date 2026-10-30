@@ -1,6 +1,8 @@
 // Géométrie du plan de feu (vue de dessus) : empreintes des projecteurs et du grip, faisceaux.
 // Repère du plan : x vers la droite, z vers le bas de l'écran (le fond / cyclo en haut, la caméra en bas).
 import * as THREE from 'three';
+import { isProp } from '/shared/objects.js';
+import { propSize } from '/shared/props.js';
 
 /** Demi-dimensions locales du corps d'un projecteur (axes du modèle 3D). */
 export function bodyHalfExtents(type) {
@@ -79,8 +81,12 @@ export function fixturePlan(fixture, type) {
   };
 }
 
-/** Élément de grip vu de dessus : empreinte selon sa famille. */
+/** Objet vu de dessus (grip ou décor) : empreinte selon sa famille ou ses dimensions. */
 export function objectPlan(obj, type) {
+  if (isProp(type)) {
+    const [w, h, d] = propSize(type, obj.props || {});
+    return { poly: footprint([w / 2, h / 2, d / 2], obj.position, obj.rotation), center: [obj.position[0], obj.position[2]] };
+  }
   const fam = type.family;
   let half;
   if (fam === 'frame' || fam === 'flag') half = [type.w / 2, type.h / 2, 0.02];
@@ -88,6 +94,15 @@ export function objectPlan(obj, type) {
   else if (fam === 'box' || fam === 'bag') half = type.size.map((v) => v / 2);
   else half = [0.35, 0.05, 0.35]; // pied seul : emprise des jambes
   return { poly: footprint(half, obj.position, obj.rotation), center: [obj.position[0], obj.position[2]] };
+}
+
+/** Oreilles d'un cadre (milieu des côtés, où se fixent les pieds), au sol : [[x, z], [x, z]]. */
+export function frameEars(obj, type) {
+  const m = rotationMatrix(obj.rotation || [0, 0, 0]);
+  return [-1, 1].map((k) => {
+    const v = new THREE.Vector3((k * type.w) / 2, 0, 0).applyMatrix4(m);
+    return [obj.position[0] + v.x, obj.position[2] + v.z];
+  });
 }
 
 /** Distance d'un point à un segment (pour cliquer sur les lignes et flèches). */

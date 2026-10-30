@@ -1,0 +1,2329 @@
+{
+  "app": "ARKLIGHT",
+  "format": 2,
+  "savedAt": "2026-10-27T15:00:11.908Z",
+  "version": 1,
+  "name": "demo-night",
+  "environment": {
+    "floor": true,
+    "cyc": false,
+    "stands": true,
+    "labels": false,
+    "labelPatch": false,
+    "haze": 0.1,
+    "ambient": 0.035,
+    "exposure": 0.35
+  },
+  "fixtures": [
+    {
+      "id": "fmvqtb56p6whj",
+      "type": "arri.m18",
+      "name": "M18 rebond",
+      "position": [
+        -1,
+        3,
+        5
+      ],
+      "rotation": [
+        -2.756,
+        -1.181,
+        -2.782
+      ],
+      "settings": {
+        "universe": 1,
+        "dmxAddress": 1,
+        "dmxMode": "hmi1",
+        "whitePoint": 5600,
+        "dimmingCurve": "linear",
+        "support": "auto",
+        "zoom": 40,
+        "fixtureNumber": 1
+      },
+      "state": {
+        "power": true,
+        "battery": 100,
+        "charging": false,
+        "manual": {
+          "mode": "cct",
+          "intensity": 0.6,
+          "cct": 5600,
+          "tint": 0,
+          "hue": 0,
+          "sat": 1
+        }
+      }
+    },
+    {
+      "id": "fmvqtb56q0726",
+      "type": "arri.skypanel-s360c",
+      "name": "S360 face",
+      "position": [
+        5.8,
+        2.7,
+        4.6
+      ],
+      "rotation": [
+        2.854,
+        -0.902,
+        2.914
+      ],
+      "settings": {
+        "universe": 1,
+        "dmxAddress": 2,
+        "dmxMode": "m1",
+        "whitePoint": 5600,
+        "dimmingCurve": "linear",
+        "support": "auto",
+        "fixtureNumber": 2
+      },
+      "state": {
+        "power": true,
+        "battery": 100,
+        "charging": false,
+        "manual": {
+          "mode": "cct",
+          "intensity": 0.45,
+          "cct": 4300,
+          "tint": 0,
+          "hue": 0,
+          "sat": 1
+        }
+      }
+    },
+    {
+      "id": "fmvqtb56qal1h",
+      "type": "aputure.nova-p300c",
+      "name": "Nova débouchage",
+      "position": [
+        -2.8,
+        1.8,
+        3.6
+      ],
+      "rotation": [
+        3.039,
+        0.686,
+        -3.076
+      ],
+      "settings": {
+        "universe": 1,
+        "dmxAddress": 14,
+        "dmxMode": "m1",
+        "whitePoint": 5600,
+        "dimmingCurve": "linear",
+        "support": "auto",
+        "fixtureNumber": 3
+      },
+      "state": {
+        "power": true,
+        "battery": 100,
+        "charging": false,
+        "manual": {
+          "mode": "cct",
+          "intensity": 0.18,
+          "cct": 4300,
+          "tint": 0,
+          "hue": 0,
+          "sat": 1
+        }
+      }
+    },
+    {
+      "id": "fmvqtb56qi9uf",
+      "type": "dmg-lumiere.sl1-mix",
+      "name": "SL1 regard",
+      "position": [
+        0.9,
+        1.7,
+        2.4
+      ],
+      "rotation": [
+        3.095,
+        -0.396,
+        3.124
+      ],
+      "settings": {
+        "universe": 1,
+        "dmxAddress": 21,
+        "dmxMode": "m1",
+        "whitePoint": 5600,
+        "dimmingCurve": "linear",
+        "support": "auto",
+        "fixtureNumber": 4
+      },
+      "state": {
+        "power": true,
+        "battery": 100,
+        "charging": false,
+        "manual": {
+          "mode": "cct",
+          "intensity": 0.08,
+          "cct": 4300,
+          "tint": 0,
+          "hue": 0,
+          "sat": 1
+        }
+      }
+    },
+    {
+      "id": "fmvqtb56qo1ky",
+      "type": "aputure.ls-600d-pro",
+      "name": "600D contre jardin",
+      "position": [
+        -1.6,
+        3.4,
+        -4.4
+      ],
+      "rotation": [
+        0.373,
+        0.238,
+        -0.092
+      ],
+      "settings": {
+        "universe": 1,
+        "dmxAddress": 24,
+        "dmxMode": "m1",
+        "whitePoint": 5600,
+        "dimmingCurve": "linear",
+        "support": "auto",
+        "fixtureNumber": 5
+      },
+      "state": {
+        "power": true,
+        "battery": 100,
+        "charging": false,
+        "manual": {
+          "mode": "cct",
+          "intensity": 0.55,
+          "cct": 6500,
+          "tint": 0,
+          "hue": 0,
+          "sat": 1
+        }
+      }
+    },
+    {
+      "id": "fmvqtb56qum8m",
+      "type": "aputure.ls-600d",
+      "name": "600D contre cour",
+      "position": [
+        3,
+        3.6,
+        -4.2
+      ],
+      "rotation": [
+        0.435,
+        -0.468,
+        0.207
+      ],
+      "settings": {
+        "universe": 1,
+        "dmxAddress": 30,
+        "dmxMode": "m1",
+        "whitePoint": 5600,
+        "dimmingCurve": "linear",
+        "support": "auto",
+        "fixtureNumber": 6
+      },
+      "state": {
+        "power": true,
+        "battery": 100,
+        "charging": false,
+        "manual": {
+          "mode": "cct",
+          "intensity": 0.45,
+          "cct": 6500,
+          "tint": 0,
+          "hue": 0,
+          "sat": 1
+        }
+      }
+    },
+    {
+      "id": "fmvqtb56qbjhb",
+      "type": "arri.skypanel-s60c",
+      "name": "S60 lune",
+      "position": [
+        5.2,
+        3.2,
+        -3
+      ],
+      "rotation": [
+        0.512,
+        -0.918,
+        0.42
+      ],
+      "settings": {
+        "universe": 1,
+        "dmxAddress": 31,
+        "dmxMode": "m1",
+        "whitePoint": 5600,
+        "dimmingCurve": "linear",
+        "support": "auto",
+        "fixtureNumber": 7
+      },
+      "state": {
+        "power": true,
+        "battery": 100,
+        "charging": false,
+        "manual": {
+          "mode": "hsi",
+          "intensity": 0.5,
+          "cct": 5600,
+          "tint": 0,
+          "hue": 215,
+          "sat": 0.45
+        }
+      }
+    },
+    {
+      "id": "fmvqtb56qlhl0",
+      "type": "astera.titan",
+      "name": "Titan enseigne 1",
+      "position": [
+        -3.9,
+        2.4,
+        -3.25
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "universe": 1,
+        "dmxAddress": 43,
+        "dmxMode": "1",
+        "whitePoint": 5600,
+        "dimmingCurve": "linear",
+        "support": "hanging",
+        "inputSelect": "AUTO",
+        "dimmerCurve": "STANDARD",
+        "dmxFail": "HOLD",
+        "acFailure": "NO ACTION",
+        "runtime": 5,
+        "brightness": 100,
+        "crmxLinked": true,
+        "wired": false,
+        "radioPin": "0000",
+        "rfRegion": "EU",
+        "ax1Compat": false,
+        "setAddress": 0,
+        "setSize": 1,
+        "posInSet": 1,
+        "groupAddress": 1,
+        "standalone": {
+          "program": 0,
+          "intensity": 45,
+          "speed": 5,
+          "fade": 50,
+          "colors": [
+            {
+              "kind": "hsi",
+              "hue": 28,
+              "sat": 85,
+              "cct": 5600
+            },
+            {
+              "kind": "hsi",
+              "hue": 28,
+              "sat": 85,
+              "cct": 5600
+            },
+            {
+              "kind": "hsi",
+              "hue": 28,
+              "sat": 85,
+              "cct": 5600
+            },
+            {
+              "kind": "hsi",
+              "hue": 28,
+              "sat": 85,
+              "cct": 5600
+            }
+          ]
+        },
+        "fixtureNumber": 8
+      },
+      "state": {
+        "power": true,
+        "battery": 100,
+        "charging": false,
+        "manual": {
+          "mode": "cct",
+          "intensity": 0.6,
+          "cct": 5600,
+          "tint": 0,
+          "hue": 0,
+          "sat": 1
+        },
+        "blueMode": false,
+        "acceptConfig": false,
+        "standby": false
+      }
+    },
+    {
+      "id": "fmvqtb56qrixl",
+      "type": "astera.titan",
+      "name": "Titan enseigne 2",
+      "position": [
+        -5.6,
+        2.4,
+        -3.25
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "universe": 1,
+        "dmxAddress": 46,
+        "dmxMode": "1",
+        "whitePoint": 5600,
+        "dimmingCurve": "linear",
+        "support": "hanging",
+        "inputSelect": "AUTO",
+        "dimmerCurve": "STANDARD",
+        "dmxFail": "HOLD",
+        "acFailure": "NO ACTION",
+        "runtime": 5,
+        "brightness": 100,
+        "crmxLinked": true,
+        "wired": false,
+        "radioPin": "0000",
+        "rfRegion": "EU",
+        "ax1Compat": false,
+        "setAddress": 0,
+        "setSize": 1,
+        "posInSet": 1,
+        "groupAddress": 1,
+        "standalone": {
+          "program": 0,
+          "intensity": 45,
+          "speed": 5,
+          "fade": 50,
+          "colors": [
+            {
+              "kind": "hsi",
+              "hue": 28,
+              "sat": 85,
+              "cct": 5600
+            },
+            {
+              "kind": "hsi",
+              "hue": 28,
+              "sat": 85,
+              "cct": 5600
+            },
+            {
+              "kind": "hsi",
+              "hue": 28,
+              "sat": 85,
+              "cct": 5600
+            },
+            {
+              "kind": "hsi",
+              "hue": 28,
+              "sat": 85,
+              "cct": 5600
+            }
+          ]
+        },
+        "fixtureNumber": 9
+      },
+      "state": {
+        "power": true,
+        "battery": 100,
+        "charging": false,
+        "manual": {
+          "mode": "cct",
+          "intensity": 0.6,
+          "cct": 5600,
+          "tint": 0,
+          "hue": 0,
+          "sat": 1
+        },
+        "blueMode": false,
+        "acceptConfig": false,
+        "standby": false
+      }
+    },
+    {
+      "id": "fmvqtb56q3uku",
+      "type": "astera.nyx",
+      "name": "NYX guinguette 1",
+      "position": [
+        -3.9,
+        2.6,
+        -1.6
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "universe": 1,
+        "dmxAddress": 49,
+        "dmxMode": "1",
+        "whitePoint": 5600,
+        "dimmingCurve": "linear",
+        "support": "hanging",
+        "inputSelect": "AUTO",
+        "dimmerCurve": "STANDARD",
+        "dmxFail": "HOLD",
+        "acFailure": "NO ACTION",
+        "runtime": 5,
+        "brightness": 100,
+        "crmxLinked": true,
+        "wired": false,
+        "radioPin": "0000",
+        "rfRegion": "EU",
+        "ax1Compat": false,
+        "setAddress": 0,
+        "setSize": 1,
+        "posInSet": 1,
+        "groupAddress": 1,
+        "standalone": {
+          "program": 0,
+          "intensity": 35,
+          "speed": 5,
+          "fade": 50,
+          "colors": [
+            {
+              "kind": "hsi",
+              "hue": 0,
+              "sat": 0,
+              "cct": 2400
+            },
+            {
+              "kind": "hsi",
+              "hue": 0,
+              "sat": 0,
+              "cct": 2400
+            },
+            {
+              "kind": "hsi",
+              "hue": 0,
+              "sat": 0,
+              "cct": 2400
+            },
+            {
+              "kind": "hsi",
+              "hue": 0,
+              "sat": 0,
+              "cct": 2400
+            }
+          ]
+        },
+        "fixtureNumber": 10
+      },
+      "state": {
+        "power": true,
+        "battery": 100,
+        "charging": false,
+        "manual": {
+          "mode": "cct",
+          "intensity": 0.6,
+          "cct": 5600,
+          "tint": 0,
+          "hue": 0,
+          "sat": 1
+        },
+        "blueMode": false,
+        "acceptConfig": false,
+        "standby": false
+      }
+    },
+    {
+      "id": "fmvqtb56qdiii",
+      "type": "astera.nyx",
+      "name": "NYX guinguette 2",
+      "position": [
+        -4.9,
+        2.6,
+        -1
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "universe": 1,
+        "dmxAddress": 52,
+        "dmxMode": "1",
+        "whitePoint": 5600,
+        "dimmingCurve": "linear",
+        "support": "hanging",
+        "inputSelect": "AUTO",
+        "dimmerCurve": "STANDARD",
+        "dmxFail": "HOLD",
+        "acFailure": "NO ACTION",
+        "runtime": 5,
+        "brightness": 100,
+        "crmxLinked": true,
+        "wired": false,
+        "radioPin": "0000",
+        "rfRegion": "EU",
+        "ax1Compat": false,
+        "setAddress": 0,
+        "setSize": 1,
+        "posInSet": 1,
+        "groupAddress": 1,
+        "standalone": {
+          "program": 0,
+          "intensity": 35,
+          "speed": 5,
+          "fade": 50,
+          "colors": [
+            {
+              "kind": "hsi",
+              "hue": 0,
+              "sat": 0,
+              "cct": 2400
+            },
+            {
+              "kind": "hsi",
+              "hue": 0,
+              "sat": 0,
+              "cct": 2400
+            },
+            {
+              "kind": "hsi",
+              "hue": 0,
+              "sat": 0,
+              "cct": 2400
+            },
+            {
+              "kind": "hsi",
+              "hue": 0,
+              "sat": 0,
+              "cct": 2400
+            }
+          ]
+        },
+        "fixtureNumber": 11
+      },
+      "state": {
+        "power": true,
+        "battery": 100,
+        "charging": false,
+        "manual": {
+          "mode": "cct",
+          "intensity": 0.6,
+          "cct": 5600,
+          "tint": 0,
+          "hue": 0,
+          "sat": 1
+        },
+        "blueMode": false,
+        "acceptConfig": false,
+        "standby": false
+      }
+    },
+    {
+      "id": "fmvqtb56qfyf0",
+      "type": "astera.nyx",
+      "name": "NYX guinguette 3",
+      "position": [
+        -5.9,
+        2.6,
+        -0.4
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "settings": {
+        "universe": 1,
+        "dmxAddress": 55,
+        "dmxMode": "1",
+        "whitePoint": 5600,
+        "dimmingCurve": "linear",
+        "support": "hanging",
+        "inputSelect": "AUTO",
+        "dimmerCurve": "STANDARD",
+        "dmxFail": "HOLD",
+        "acFailure": "NO ACTION",
+        "runtime": 5,
+        "brightness": 100,
+        "crmxLinked": true,
+        "wired": false,
+        "radioPin": "0000",
+        "rfRegion": "EU",
+        "ax1Compat": false,
+        "setAddress": 0,
+        "setSize": 1,
+        "posInSet": 1,
+        "groupAddress": 1,
+        "standalone": {
+          "program": 0,
+          "intensity": 35,
+          "speed": 5,
+          "fade": 50,
+          "colors": [
+            {
+              "kind": "hsi",
+              "hue": 0,
+              "sat": 0,
+              "cct": 2400
+            },
+            {
+              "kind": "hsi",
+              "hue": 0,
+              "sat": 0,
+              "cct": 2400
+            },
+            {
+              "kind": "hsi",
+              "hue": 0,
+              "sat": 0,
+              "cct": 2400
+            },
+            {
+              "kind": "hsi",
+              "hue": 0,
+              "sat": 0,
+              "cct": 2400
+            }
+          ]
+        },
+        "fixtureNumber": 12
+      },
+      "state": {
+        "power": true,
+        "battery": 100,
+        "charging": false,
+        "manual": {
+          "mode": "cct",
+          "intensity": 0.6,
+          "cct": 5600,
+          "tint": 0,
+          "hue": 0,
+          "sat": 1
+        },
+        "blueMode": false,
+        "acceptConfig": false,
+        "standby": false
+      }
+    },
+    {
+      "id": "fmvqtb56q8b20",
+      "type": "astera.helios",
+      "name": "Helios voiture",
+      "position": [
+        0.3,
+        1.15,
+        -1.9
+      ],
+      "rotation": [
+        0,
+        1.571,
+        0
+      ],
+      "settings": {
+        "universe": 1,
+        "dmxAddress": 58,
+        "dmxMode": "1",
+        "whitePoint": 5600,
+        "dimmingCurve": "linear",
+        "support": "none",
+        "inputSelect": "AUTO",
+        "dimmerCurve": "STANDARD",
+        "dmxFail": "HOLD",
+        "acFailure": "NO ACTION",
+        "runtime": 5,
+        "brightness": 100,
+        "crmxLinked": true,
+        "wired": false,
+        "radioPin": "0000",
+        "rfRegion": "EU",
+        "ax1Compat": false,
+        "setAddress": 0,
+        "setSize": 1,
+        "posInSet": 1,
+        "groupAddress": 1,
+        "standalone": {
+          "program": 0,
+          "intensity": 25,
+          "speed": 5,
+          "fade": 50,
+          "colors": [
+            {
+              "kind": "hsi",
+              "hue": 0,
+              "sat": 0,
+              "cct": 3200
+            },
+            {
+              "kind": "hsi",
+              "hue": 0,
+              "sat": 0,
+              "cct": 3200
+            },
+            {
+              "kind": "hsi",
+              "hue": 0,
+              "sat": 0,
+              "cct": 3200
+            },
+            {
+              "kind": "hsi",
+              "hue": 0,
+              "sat": 0,
+              "cct": 3200
+            }
+          ]
+        },
+        "fixtureNumber": 13
+      },
+      "state": {
+        "power": true,
+        "battery": 100,
+        "charging": false,
+        "manual": {
+          "mode": "cct",
+          "intensity": 0.6,
+          "cct": 5600,
+          "tint": 0,
+          "hue": 0,
+          "sat": 1
+        },
+        "blueMode": false,
+        "acceptConfig": false,
+        "standby": false
+      }
+    },
+    {
+      "id": "fmvqtb56qmjlm",
+      "type": "hive.wasp-100-c",
+      "name": "Wasp lampadaire",
+      "position": [
+        2.6,
+        4,
+        -2.5
+      ],
+      "rotation": [
+        1.558,
+        0,
+        0
+      ],
+      "settings": {
+        "universe": 1,
+        "dmxAddress": 61,
+        "dmxMode": "m1",
+        "whitePoint": 5600,
+        "dimmingCurve": "linear",
+        "support": "hanging",
+        "fixtureNumber": 14
+      },
+      "state": {
+        "power": true,
+        "battery": 100,
+        "charging": false,
+        "manual": {
+          "mode": "hsi",
+          "intensity": 0.8,
+          "cct": 5600,
+          "tint": 0,
+          "hue": 32,
+          "sat": 0.7
+        }
+      }
+    },
+    {
+      "id": "fmvqtb56q604r",
+      "type": "mole.baby-1k",
+      "name": "Baby 1K porte du café",
+      "position": [
+        -6.8,
+        2.2,
+        -1.4
+      ],
+      "rotation": [
+        1.292,
+        0.942,
+        -1.231
+      ],
+      "settings": {
+        "universe": 1,
+        "dmxAddress": 65,
+        "dmxMode": "dim1",
+        "whitePoint": 5600,
+        "dimmingCurve": "linear",
+        "support": "auto",
+        "zoom": 31,
+        "fixtureNumber": 15
+      },
+      "state": {
+        "power": true,
+        "battery": 100,
+        "charging": false,
+        "manual": {
+          "mode": "cct",
+          "intensity": 0.7,
+          "cct": 3200,
+          "tint": 0,
+          "hue": 0,
+          "sat": 1
+        }
+      }
+    }
+  ],
+  "groups": [
+    {
+      "id": "gmvqtb56rbpmk",
+      "name": "Face",
+      "ids": [
+        "fmvqtb56p6whj",
+        "fmvqtb56q0726",
+        "fmvqtb56qal1h",
+        "fmvqtb56qi9uf"
+      ]
+    },
+    {
+      "id": "gmvqtb56s8gs6",
+      "name": "Contres et lune",
+      "ids": [
+        "fmvqtb56qo1ky",
+        "fmvqtb56qum8m",
+        "fmvqtb56qbjhb"
+      ]
+    },
+    {
+      "id": "gmvqtb56s5ttv",
+      "name": "Practicals",
+      "ids": [
+        "fmvqtb56qlhl0",
+        "fmvqtb56qrixl",
+        "fmvqtb56q3uku",
+        "fmvqtb56qdiii",
+        "fmvqtb56qfyf0",
+        "fmvqtb56q8b20",
+        "fmvqtb56qmjlm",
+        "fmvqtb56q604r"
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "id": "omvqtb56rr8vu",
+      "type": "frame-20x20",
+      "name": "Cadre 20×20 1",
+      "position": [
+        -5.2,
+        3.65,
+        3.4
+      ],
+      "rotation": [
+        0,
+        2.122,
+        0
+      ],
+      "props": {
+        "cloth": "ultrabounce"
+      }
+    },
+    {
+      "id": "omvqtb56ryzjk",
+      "type": "frame-12x12",
+      "name": "Cadre 12×12 1",
+      "position": [
+        3.8,
+        2.43,
+        3
+      ],
+      "rotation": [
+        0,
+        -2.206,
+        0
+      ],
+      "props": {
+        "cloth": "grid"
+      }
+    },
+    {
+      "id": "omvqtb56rx8l3",
+      "type": "frame-8x8",
+      "name": "Cadre 8×8 1",
+      "position": [
+        2,
+        2.4,
+        -3
+      ],
+      "rotation": [
+        0,
+        -0.424,
+        0
+      ],
+      "props": {
+        "cloth": "net-single"
+      }
+    },
+    {
+      "id": "omvqtb56rd9uz",
+      "type": "frame-6x6",
+      "name": "Cadre 6×6 1",
+      "position": [
+        -2,
+        1.6,
+        2.9
+      ],
+      "rotation": [
+        0,
+        2.504,
+        0
+      ],
+      "props": {
+        "cloth": "lee-216"
+      }
+    },
+    {
+      "id": "omvqtb56roz82",
+      "type": "flag-24x36",
+      "name": "Drapeau 24×36 1",
+      "position": [
+        2.6,
+        1.9,
+        1.7
+      ],
+      "rotation": [
+        0,
+        -2.2,
+        0
+      ],
+      "props": {
+        "cloth": "solid"
+      }
+    },
+    {
+      "id": "omvqtb56red36",
+      "type": "floppy",
+      "name": "Floppy 1",
+      "position": [
+        -1.9,
+        1.4,
+        -0.4
+      ],
+      "rotation": [
+        0,
+        1.2,
+        0
+      ],
+      "props": {
+        "cloth": "solid"
+      }
+    },
+    {
+      "id": "omvqtb56rwyep",
+      "type": "poly-4x8",
+      "name": "Polystyrène 1",
+      "position": [
+        1.4,
+        1.22,
+        1.9
+      ],
+      "rotation": [
+        0,
+        -2.453,
+        0
+      ],
+      "props": {}
+    },
+    {
+      "id": "omvqtb56rqek3",
+      "type": "reflector-1m",
+      "name": "Réflecteur 1",
+      "position": [
+        -1.2,
+        1,
+        1.4
+      ],
+      "rotation": [
+        0,
+        2.356,
+        0
+      ],
+      "props": {}
+    },
+    {
+      "id": "omvqtb56rso9n",
+      "type": "applebox-full",
+      "name": "Cube plein 1",
+      "position": [
+        0.9,
+        0.1,
+        4.4
+      ],
+      "rotation": [
+        0,
+        0.1,
+        0
+      ],
+      "props": {}
+    },
+    {
+      "id": "omvqtb56rkpi5",
+      "type": "applebox-half",
+      "name": "Demi-cube 1",
+      "position": [
+        1.45,
+        0.05,
+        4.45
+      ],
+      "rotation": [
+        0,
+        -0.2,
+        0
+      ],
+      "props": {}
+    },
+    {
+      "id": "omvqtb56rgfxz",
+      "type": "applebox-pancake",
+      "name": "Galette 1",
+      "position": [
+        1.2,
+        0.0125,
+        4
+      ],
+      "rotation": [
+        0,
+        0.4,
+        0
+      ],
+      "props": {}
+    },
+    {
+      "id": "omvqtb56rk6mc",
+      "type": "sandbag",
+      "name": "Sac de sable 1",
+      "position": [
+        -6.3,
+        0.06,
+        4.9
+      ],
+      "rotation": [
+        0,
+        0.3,
+        0
+      ],
+      "props": {}
+    },
+    {
+      "id": "omvqtb56rpxpo",
+      "type": "sandbag",
+      "name": "Sac de sable 2",
+      "position": [
+        -4.2,
+        0.06,
+        1.8
+      ],
+      "rotation": [
+        0,
+        0.3,
+        0
+      ],
+      "props": {}
+    },
+    {
+      "id": "omvqtb56rhemw",
+      "type": "sandbag",
+      "name": "Sac de sable 3",
+      "position": [
+        2.9,
+        0.06,
+        4.5
+      ],
+      "rotation": [
+        0,
+        0.3,
+        0
+      ],
+      "props": {}
+    },
+    {
+      "id": "omvqtb56r6u43",
+      "type": "sandbag",
+      "name": "Sac de sable 4",
+      "position": [
+        6.5,
+        0.06,
+        5.3
+      ],
+      "rotation": [
+        0,
+        0.3,
+        0
+      ],
+      "props": {}
+    },
+    {
+      "id": "omvqtb56r9l8n",
+      "type": "cstand",
+      "name": "C-stand 1",
+      "position": [
+        6.3,
+        0,
+        1
+      ],
+      "rotation": [
+        0,
+        0.5,
+        0
+      ],
+      "props": {
+        "height": 2
+      }
+    },
+    {
+      "id": "omvqtb56rka5u",
+      "type": "person-man",
+      "name": "Comédien",
+      "position": [
+        -0.6,
+        0,
+        0.3
+      ],
+      "rotation": [
+        0,
+        0.4,
+        0
+      ],
+      "props": {
+        "pose": "standing",
+        "height": 180,
+        "build": "man",
+        "skin": "#e0aa83",
+        "hair": "short",
+        "hairColor": "#2b1d14",
+        "top": "#3d4f6b",
+        "pants": "#2a2e35"
+      }
+    },
+    {
+      "id": "omvqtb56r8lda",
+      "type": "person-woman",
+      "name": "Comédienne",
+      "position": [
+        0.6,
+        0,
+        0.1
+      ],
+      "rotation": [
+        0,
+        -0.5,
+        0
+      ],
+      "props": {
+        "pose": "standing",
+        "height": 166,
+        "build": "woman",
+        "skin": "#f2cfb3",
+        "hair": "long",
+        "hairColor": "#5a3a22",
+        "top": "#8c3b4a",
+        "pants": "#2f3340"
+      }
+    },
+    {
+      "id": "omvqtb56rh5in",
+      "type": "person-phone",
+      "name": "Passante au téléphone",
+      "position": [
+        4,
+        0,
+        -1.6
+      ],
+      "rotation": [
+        0,
+        -2.4,
+        0
+      ],
+      "props": {
+        "pose": "phone",
+        "height": 168,
+        "build": "woman",
+        "skin": "#b97b55",
+        "hair": "long",
+        "hairColor": "#1a1310",
+        "top": "#c9b48a",
+        "pants": "#3a3f4a"
+      }
+    },
+    {
+      "id": "omvqtb56rinkk",
+      "type": "person-walking",
+      "name": "Passant",
+      "position": [
+        -2.9,
+        0,
+        2.2
+      ],
+      "rotation": [
+        0,
+        1.5,
+        0
+      ],
+      "props": {
+        "pose": "walking",
+        "height": 176,
+        "build": "man",
+        "skin": "#7d4f35",
+        "hair": "short",
+        "hairColor": "#2b1d14",
+        "top": "#5b6b3a",
+        "pants": "#2b2f36"
+      }
+    },
+    {
+      "id": "omvqtb56rh166",
+      "type": "person-child",
+      "name": "Enfant",
+      "position": [
+        3.4,
+        0,
+        0.6
+      ],
+      "rotation": [
+        0,
+        -1.4,
+        0
+      ],
+      "props": {
+        "pose": "standing",
+        "height": 125,
+        "build": "child",
+        "skin": "#b97b55",
+        "hair": "short",
+        "hairColor": "#2b1d14",
+        "top": "#d98c2b",
+        "pants": "#3b4a6b"
+      }
+    },
+    {
+      "id": "omvqtb56rensy",
+      "type": "dog",
+      "name": "Chien",
+      "position": [
+        4,
+        0,
+        0.75
+      ],
+      "rotation": [
+        0,
+        -1.4,
+        0
+      ],
+      "props": {
+        "color": "#c79a5f"
+      }
+    },
+    {
+      "id": "omvqtb56rfrpt",
+      "type": "person-sitting",
+      "name": "Cliente du café",
+      "position": [
+        -4,
+        0,
+        -1.15
+      ],
+      "rotation": [
+        0,
+        3.142,
+        0
+      ],
+      "props": {
+        "pose": "sitting",
+        "height": 172,
+        "build": "woman",
+        "skin": "#e0aa83",
+        "hair": "long",
+        "hairColor": "#1e1612",
+        "top": "#2f6f73",
+        "pants": "#34302c"
+      }
+    },
+    {
+      "id": "omvqtb56rucvz",
+      "type": "cat",
+      "name": "Chat",
+      "position": [
+        -3.3,
+        0,
+        -2.6
+      ],
+      "rotation": [
+        0,
+        0.7,
+        0
+      ],
+      "props": {
+        "color": "#6f6a66"
+      }
+    },
+    {
+      "id": "omvqtb56raqu7",
+      "type": "pigeon",
+      "name": "Pigeon 1",
+      "position": [
+        4.6,
+        0,
+        -0.5
+      ],
+      "rotation": [
+        0,
+        1,
+        0
+      ],
+      "props": {
+        "color": "#7c8088"
+      }
+    },
+    {
+      "id": "omvqtb56rt67e",
+      "type": "pigeon",
+      "name": "Pigeon 2",
+      "position": [
+        4.9,
+        0,
+        -0.8
+      ],
+      "rotation": [
+        0,
+        2.4,
+        0
+      ],
+      "props": {
+        "color": "#7c8088"
+      }
+    },
+    {
+      "id": "omvqtb56rrniq",
+      "type": "car-sedan",
+      "name": "Voiture des comédiens",
+      "position": [
+        0.3,
+        0,
+        -1.9
+      ],
+      "rotation": [
+        0,
+        1.571,
+        0
+      ],
+      "props": {
+        "color": "#2c3e5a"
+      }
+    },
+    {
+      "id": "omvqtb56rup3x",
+      "type": "van-large",
+      "name": "Camion régie",
+      "position": [
+        9,
+        0,
+        -3.8
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "props": {
+        "color": "#f4f4f2"
+      }
+    },
+    {
+      "id": "omvqtb56r0e6d",
+      "type": "generator",
+      "name": "Groupe électrogène",
+      "position": [
+        10.5,
+        0,
+        3
+      ],
+      "rotation": [
+        0,
+        0.4,
+        0
+      ],
+      "props": {
+        "color": "#d9a21b"
+      }
+    },
+    {
+      "id": "omvqtb56rdifc",
+      "type": "motorbike",
+      "name": "Moto",
+      "position": [
+        4.8,
+        0,
+        -0.4
+      ],
+      "rotation": [
+        0,
+        0.5,
+        0
+      ],
+      "props": {
+        "color": "#1d1f24"
+      }
+    },
+    {
+      "id": "omvqtb56rmet9",
+      "type": "scooter",
+      "name": "Scooter",
+      "position": [
+        5.6,
+        0,
+        -2
+      ],
+      "rotation": [
+        0,
+        -0.6,
+        0
+      ],
+      "props": {
+        "color": "#8fb8c9"
+      }
+    },
+    {
+      "id": "omvqtb56ry8fa",
+      "type": "bicycle",
+      "name": "Vélo",
+      "position": [
+        -2.9,
+        0,
+        -3.25
+      ],
+      "rotation": [
+        0,
+        1.571,
+        0
+      ],
+      "props": {
+        "color": "#2f6f4f"
+      }
+    },
+    {
+      "id": "omvqtb56rd3mi",
+      "type": "streetlamp",
+      "name": "Réverbère",
+      "position": [
+        2.6,
+        0,
+        -3
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "props": {
+        "color": "#2b2f33"
+      }
+    },
+    {
+      "id": "omvqtb56rpipl",
+      "type": "bench",
+      "name": "Banc",
+      "position": [
+        3.7,
+        0,
+        -2.9
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "props": {
+        "color": "#7a5232"
+      }
+    },
+    {
+      "id": "omvqtb56rxgb4",
+      "type": "bin",
+      "name": "Poubelle",
+      "position": [
+        4.7,
+        0,
+        -2.7
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "props": {
+        "color": "#3c5a3c"
+      }
+    },
+    {
+      "id": "omvqtb56ri124",
+      "type": "traffic-cone",
+      "name": "Cône 1",
+      "position": [
+        -2.3,
+        0,
+        -0.6
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "props": {
+        "color": "#f26a1b"
+      }
+    },
+    {
+      "id": "omvqtb56r7eu7",
+      "type": "traffic-cone",
+      "name": "Cône 2",
+      "position": [
+        -2.3,
+        0,
+        -3
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "props": {
+        "color": "#f26a1b"
+      }
+    },
+    {
+      "id": "omvqtb56r3mie",
+      "type": "traffic-cone",
+      "name": "Cône 3",
+      "position": [
+        3,
+        0,
+        -1
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "props": {
+        "color": "#f26a1b"
+      }
+    },
+    {
+      "id": "omvqtb56r790x",
+      "type": "road-sign",
+      "name": "Panneau",
+      "position": [
+        -2.1,
+        0,
+        -4.3
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "props": {
+        "color": "#c8202a"
+      }
+    },
+    {
+      "id": "omvqtb56r4ju7",
+      "type": "tree",
+      "name": "Platane 1",
+      "position": [
+        -1,
+        0,
+        -5.4
+      ],
+      "rotation": [
+        0,
+        0.3,
+        0
+      ],
+      "props": {
+        "height": 5,
+        "color": "#3f6b2f"
+      }
+    },
+    {
+      "id": "omvqtb56rhro0",
+      "type": "tree",
+      "name": "Platane 2",
+      "position": [
+        1.9,
+        0,
+        -5.9
+      ],
+      "rotation": [
+        0,
+        1.7,
+        0
+      ],
+      "props": {
+        "height": 5,
+        "color": "#3f6b2f"
+      }
+    },
+    {
+      "id": "omvqtb56rbpwb",
+      "type": "pine",
+      "name": "Pin",
+      "position": [
+        5.4,
+        0,
+        -5.6
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "props": {
+        "height": 4.5,
+        "color": "#2c4a2e"
+      }
+    },
+    {
+      "id": "omvqtb56rj4pp",
+      "type": "bush",
+      "name": "Massif 1",
+      "position": [
+        -2.9,
+        0,
+        -4.7
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "props": {
+        "color": "#46703a"
+      }
+    },
+    {
+      "id": "omvqtb56rp0zc",
+      "type": "bush",
+      "name": "Massif 2",
+      "position": [
+        4.1,
+        0,
+        -4.4
+      ],
+      "rotation": [
+        0,
+        0.8,
+        0
+      ],
+      "props": {
+        "color": "#46703a"
+      }
+    },
+    {
+      "id": "omvqtb56rhyaf",
+      "type": "wall-window",
+      "name": "Façade du café",
+      "position": [
+        -4.7,
+        0,
+        -3.5
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "props": {
+        "width": 2.4,
+        "height": 2.6,
+        "color": "#e0d6c4"
+      }
+    },
+    {
+      "id": "omvqtb56r9xox",
+      "type": "wall-door",
+      "name": "Porte du café",
+      "position": [
+        -7.1,
+        0,
+        -3.5
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "props": {
+        "width": 2.4,
+        "height": 2.6,
+        "color": "#cfd8d4"
+      }
+    },
+    {
+      "id": "omvqtb56rf0xx",
+      "type": "table-round",
+      "name": "Table 1",
+      "position": [
+        -4,
+        0,
+        -1.8
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "props": {
+        "color": "#8a5c34"
+      }
+    },
+    {
+      "id": "omvqtb56rdltl",
+      "type": "chair",
+      "name": "Chaise 1",
+      "position": [
+        -4,
+        0,
+        -1.15
+      ],
+      "rotation": [
+        0,
+        3.142,
+        0
+      ],
+      "props": {
+        "color": "#9a6a3c"
+      }
+    },
+    {
+      "id": "omvqtb56rs7aq",
+      "type": "chair",
+      "name": "Chaise 2",
+      "position": [
+        -4,
+        0,
+        -2.45
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "props": {
+        "color": "#9a6a3c"
+      }
+    },
+    {
+      "id": "omvqtb56r2277",
+      "type": "table-round",
+      "name": "Table 2",
+      "position": [
+        -5.6,
+        0,
+        -0.5
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "props": {
+        "color": "#8a5c34"
+      }
+    },
+    {
+      "id": "omvqtb56rtfe8",
+      "type": "chair",
+      "name": "Chaise 3",
+      "position": [
+        -5.6,
+        0,
+        0.15
+      ],
+      "rotation": [
+        0,
+        3.142,
+        0
+      ],
+      "props": {
+        "color": "#9a6a3c"
+      }
+    },
+    {
+      "id": "omvqtb56rsuxy",
+      "type": "chair",
+      "name": "Chaise 4",
+      "position": [
+        -6.25,
+        0,
+        -0.5
+      ],
+      "rotation": [
+        0,
+        1.571,
+        0
+      ],
+      "props": {
+        "color": "#9a6a3c"
+      }
+    },
+    {
+      "id": "omvqtb56r0r7q",
+      "type": "plant",
+      "name": "Plante 1",
+      "position": [
+        -3.3,
+        0,
+        -3.1
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "props": {
+        "color": "#b8603a"
+      }
+    },
+    {
+      "id": "omvqtb56rmoq4",
+      "type": "plant",
+      "name": "Plante 2",
+      "position": [
+        -6,
+        0,
+        -3.1
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "props": {
+        "color": "#b8603a"
+      }
+    },
+    {
+      "id": "omvqtb56rj3kr",
+      "type": "crate",
+      "name": "Cagette",
+      "position": [
+        -6.5,
+        0,
+        -2.6
+      ],
+      "rotation": [
+        0,
+        0.3,
+        0
+      ],
+      "props": {
+        "color": "#a77d4f"
+      }
+    },
+    {
+      "id": "omvqtb56rgpe2",
+      "type": "bottle",
+      "name": "Bouteille",
+      "position": [
+        -3.95,
+        0.75,
+        -1.8
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "props": {
+        "color": "#2f6b3a"
+      }
+    },
+    {
+      "id": "omvqtb56rm8ll",
+      "type": "wine-glass",
+      "name": "Verre 1",
+      "position": [
+        -4.15,
+        0.75,
+        -1.7
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "props": {
+        "color": "#6b1426"
+      }
+    },
+    {
+      "id": "omvqtb56rm1zc",
+      "type": "wine-glass",
+      "name": "Verre 2",
+      "position": [
+        -5.55,
+        0.75,
+        -0.45
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "props": {
+        "color": "#6b1426"
+      }
+    },
+    {
+      "id": "omvqtb56rmwva",
+      "type": "camera-dolly",
+      "name": "Caméra A",
+      "position": [
+        0.2,
+        0,
+        5.2
+      ],
+      "rotation": [
+        0,
+        3.142,
+        0
+      ],
+      "props": {
+        "focal": 40,
+        "sensor": "s35",
+        "color": "#3a3d42"
+      }
+    },
+    {
+      "id": "omvqtb56ry49z",
+      "type": "camera-tripod",
+      "name": "Caméra B",
+      "position": [
+        -3.3,
+        0,
+        4
+      ],
+      "rotation": [
+        0,
+        2.427,
+        0
+      ],
+      "props": {
+        "focal": 85,
+        "sensor": "s35",
+        "lens": 1.45,
+        "color": "#25272b"
+      }
+    },
+    {
+      "id": "omvqtb56rdo07",
+      "type": "director-chair",
+      "name": "Fauteuil réalisatrice",
+      "position": [
+        2.1,
+        0,
+        6.8
+      ],
+      "rotation": [
+        0,
+        3.142,
+        0
+      ],
+      "props": {
+        "color": "#141414"
+      }
+    },
+    {
+      "id": "omvqtb56rsfyg",
+      "type": "monitor-stand",
+      "name": "Moniteur",
+      "position": [
+        2.9,
+        0,
+        5.7
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "props": {
+        "color": "#2b2d31"
+      }
+    },
+    {
+      "id": "omvqtb56rmq0v",
+      "type": "boom-stand",
+      "name": "Perche son",
+      "position": [
+        -1.6,
+        0,
+        1.7
+      ],
+      "rotation": [
+        0,
+        2.6,
+        0
+      ],
+      "props": {
+        "color": "#6f6a62"
+      }
+    },
+    {
+      "id": "omvqtb56rutrr",
+      "type": "person-pointing",
+      "name": "Réalisatrice",
+      "position": [
+        2.7,
+        0,
+        6.3
+      ],
+      "rotation": [
+        0,
+        3.142,
+        0
+      ],
+      "props": {
+        "pose": "pointing",
+        "height": 175,
+        "build": "man",
+        "skin": "#e0aa83",
+        "hair": "short",
+        "hairColor": "#2b1d14",
+        "top": "#7a7f88",
+        "pants": "#2a2e35"
+      }
+    },
+    {
+      "id": "omvqtb56rao2d",
+      "type": "person-crossed",
+      "name": "Cheffe opératrice",
+      "position": [
+        0.9,
+        0,
+        6.2
+      ],
+      "rotation": [
+        0,
+        3.142,
+        0
+      ],
+      "props": {
+        "pose": "crossed",
+        "height": 182,
+        "build": "man",
+        "skin": "#4b2e21",
+        "hair": "bald",
+        "hairColor": "#2b1d14",
+        "top": "#26282c",
+        "pants": "#1f2125"
+      }
+    },
+    {
+      "id": "omvqtb56r84tk",
+      "type": "person-man",
+      "name": "Électro",
+      "position": [
+        6,
+        0,
+        3.6
+      ],
+      "rotation": [
+        0,
+        -1.9,
+        0
+      ],
+      "props": {
+        "pose": "standing",
+        "height": 180,
+        "build": "man",
+        "skin": "#e0aa83",
+        "hair": "short",
+        "hairColor": "#2b1d14",
+        "top": "#1d1f22",
+        "pants": "#1d1f22"
+      }
+    },
+    {
+      "id": "omvqtb56rj346",
+      "type": "flightcase",
+      "name": "Flight 1",
+      "position": [
+        7.4,
+        0,
+        -1.4
+      ],
+      "rotation": [
+        0,
+        0.2,
+        0
+      ],
+      "props": {
+        "color": "#1b1c1f"
+      }
+    },
+    {
+      "id": "omvqtb56r5y56",
+      "type": "flightcase",
+      "name": "Flight 2",
+      "position": [
+        7.6,
+        0,
+        -0.5
+      ],
+      "rotation": [
+        0,
+        -0.1,
+        0
+      ],
+      "props": {
+        "color": "#1b1c1f"
+      }
+    }
+  ],
+  "plot": {
+    "items": [
+      {
+        "id": "pmvqtb56siwh1",
+        "kind": "rect",
+        "points": [
+          [
+            -8.4,
+            -3.7
+          ],
+          [
+            -2.9,
+            0.9
+          ]
+        ],
+        "text": "Terrasse du café",
+        "style": {
+          "stroke": "#c792ea",
+          "fill": "none",
+          "width": 2,
+          "dash": true,
+          "size": 16
+        },
+        "height": 0
+      },
+      {
+        "id": "pmvqtb56s5ysg",
+        "kind": "arrow",
+        "points": [
+          [
+            -7.5,
+            3.1
+          ],
+          [
+            5.5,
+            3.1
+          ]
+        ],
+        "text": "Passage des figurants",
+        "style": {
+          "stroke": "#3ddc84",
+          "fill": "none",
+          "width": 2,
+          "dash": false,
+          "size": 16
+        },
+        "height": 0
+      },
+      {
+        "id": "pmvqtb56s324d",
+        "kind": "measure",
+        "points": [
+          [
+            0.2,
+            4.4
+          ],
+          [
+            0,
+            0.3
+          ]
+        ],
+        "text": "",
+        "style": {
+          "stroke": "#5aa9ff",
+          "fill": "none",
+          "width": 2,
+          "dash": false,
+          "size": 16
+        },
+        "height": 0
+      },
+      {
+        "id": "pmvqtb56s9dlg",
+        "kind": "text",
+        "points": [
+          [
+            7.6,
+            -7.2
+          ]
+        ],
+        "text": "Régie",
+        "style": {
+          "stroke": "#9aa3ae",
+          "fill": "none",
+          "width": 2,
+          "dash": false,
+          "size": 18
+        },
+        "height": 0
+      },
+      {
+        "id": "pmvqtb56suwtf",
+        "kind": "text",
+        "points": [
+          [
+            9.2,
+            5.6
+          ]
+        ],
+        "text": "Groupe à 50 m",
+        "style": {
+          "stroke": "#9aa3ae",
+          "fill": "none",
+          "width": 2,
+          "dash": false,
+          "size": 14
+        },
+        "height": 0
+      }
+    ],
+    "underlay": null,
+    "background": null,
+    "title": {
+      "production": "Projet d’exemple ARKLIGHT",
+      "author": "",
+      "notes": "Nuit — rue et terrasse de café"
+    }
+  },
+  "current": {
+    "seq": "smvqtb56oa7xr",
+    "plan": "pmvqtb56ooznj"
+  },
+  "sequences": [
+    {
+      "id": "smvqtb56oa7xr",
+      "name": "Séquence 1",
+      "plans": [
+        {
+          "id": "pmvqtb56ooznj",
+          "name": "Plan 1",
+          "scene": null
+        }
+      ]
+    }
+  ]
+}

@@ -26,7 +26,7 @@ const ARC3_FILL = {
 
 export function mountRemote({ store, viewport, onboard }) {
   const panel = h('div', { class: 'remote-panel hidden' });
-  document.querySelector('.viewport-wrap').append(panel);
+  (document.querySelector('.viewport-area') || document.querySelector('.viewport-wrap')).append(panel);
   let model = 'ARC1';
   let target = 'selected';
 

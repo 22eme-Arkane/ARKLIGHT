@@ -1,0 +1,27 @@
+[package]
+name = "arklight-ai"
+description = "Assistant IA d'ARKLIGHT : AIODOS (IA locale d'ARKANE), Ollama, API en ligne ; outils qui agissent sur le projet"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+arklight-core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+# HTTPS des API en ligne (Anthropic, OpenAI, Mistral, Gemini) ; ring sert aussi à la preuve d'identité d'AIODOS (HMAC-SHA-256)
+rustls = { version = "0.23.46", default-features = false, features = ["ring", "std", "tls12", "logging"] }
+ring = { version = "0.17.14", default-features = false, features = ["alloc"] }
+webpki-roots = { version = "1.0.9", default-features = false }
+rustls-pki-types = { version = "1.15.1", default-features = false, features = ["std"] }
+# étiquettes des plans dessinés, appels d'outils écrits dans le texte (mêmes motifs que la version JavaScript)
+regex = { version = "1", default-features = false, features = ["std", "unicode-perl", "unicode-case"] }
+
+[target.'cfg(windows)'.dependencies]
+# clés API chiffrées par Windows (DPAPI : CryptProtectData / CryptUnprotectData) ; AIODOS lancé ou non ;
+# dossier d'installation d'AIODOS lu dans le registre (RegGetValueW, en UTF-16)
+windows-sys = { version = "0.61.2", features = ["Win32_Foundation", "Win32_Security_Cryptography", "Win32_System_Registry", "Win32_System_Threading"] }
